@@ -12,7 +12,7 @@ with open('CHANGELOG.md') as history_file:
     history = history_file.read()
 
 requirements = [
-    # TODO: put package requirements here
+    'six'
 ]
 
 setup_requirements = [
