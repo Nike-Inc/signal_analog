@@ -22,8 +22,10 @@ pipeline:
           source "$WORKSPACE/bin/activate"
           "$WORKSPACE/bin/pip" install --upgrade pip
           "$WORKSPACE/bin/pip" install --requirement requirements_dev.txt
-          py.test --junitxml=report.xml \
-            --html=report.html --self-contained-html
+          py.test --ignore=lib \
+            --junitxml=report.xml \
+            --html=report.html \
+            --self-contained-html
     deploy:
       name: 01_deploy
       location: https://bitbucket.nike.com/scm/KEYSTONE_JOBS/command-runner.git
