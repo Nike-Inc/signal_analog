@@ -11,3 +11,4 @@ Sphinx
 pytest
 pytest-runner
 pytest-html
+six
