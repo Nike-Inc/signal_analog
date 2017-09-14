@@ -1,0 +1,13 @@
+--index-url ***REMOVED***
+--trusted-host ***REMOVED***
+pip
+bumpversion
+wheel
+watchdog
+flake8
+tox
+coverage
+Sphinx
+pytest
+pytest-runner
+pytest-html
