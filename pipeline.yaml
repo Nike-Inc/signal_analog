@@ -1,0 +1,71 @@
+default: &project signal_analog
+
+application:
+  team: NIK
+  name: *project
+  stashProjectKey: NIK
+  stashRepositoryKey: *project
+
+pipeline:
+  jenkins:
+    url: https://nikeplus.tools.nikecloud.com/
+  dslFiles:
+    pra:
+      name: 00_pull-request-analysis
+      location: https://bitbucket.nike.com/scm/keystone_jobs/pull-request-analysis.git
+      version: v1.1.2
+      parameters:
+        qualityConfig: pipeline.yaml
+        testCommand: |
+          source /opt/rh/python27/enable
+          virtualenv "$WORKSPACE"
+          source "$WORKSPACE/bin/activate"
+          "$WORKSPACE/bin/pip" install --upgrade pip
+          "$WORKSPACE/bin/pip" install --requirement requirements_dev.txt
+          py.test --junitxml=report.xml \
+            --html=report.html --self-contained-html
+    deploy:
+      name: 01_deploy
+      location: https://bitbucket.nike.com/scm/KEYSTONE_JOBS/command-runner.git
+      parameters:
+        active: true
+        executeCommands: |
+          source /opt/rh/python27/enable
+          virtualenv "$WORKSPACE"
+          source "$WORKSPACE/bin/activate"
+          "$WORKSPACE/bin/pip" install --upgrade pip
+          "$WORKSPACE/bin/pip" install --upgrade setuptools
+          "$WORKSPACE/bin/pip" install --upgrade wheel
+          "$WORKSPACE/bin/pip" install --requirement requirements_dev.txt
+
+          mkdir -p ~/.pip
+          # Make sure that exectors are properly configured to deploy to Artifactory.
+          cat <<E_PIP > ~/.pip.conf
+          [global]
+          index-url = https://maven:ludist@artifactory.nike.com/artifactory/api/pypi/python-virtual/simple
+          trusted-host = artifactory.nike.com
+          E_PIP
+
+          cat <<E_PYPI > ~/.pypirc
+          [distutils]
+          index-servers = python-local
+          [python-local]
+          repository: https://artifactory.nike.com/artifactory/api/pypi/python-local
+          username: maven
+          password: ludist
+          E_PYPI
+
+          # DEPLOY ME FURIOUSLY
+          python setup.py install bdist_wheel upload -r python-local
+
+quality:
+  profiles:
+    default:
+      reports:
+        - format: junit
+          outputLocations:
+            - report.xml
+          artifacts:
+            - report.html
+            - report.xml
+          mainArchivalFile: report.html
