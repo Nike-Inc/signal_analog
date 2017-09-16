@@ -12,7 +12,8 @@ with open('CHANGELOG.md') as history_file:
     history = history_file.read()
 
 requirements = [
-    'six'
+    'six',
+    'requests'
 ]
 
 setup_requirements = [
