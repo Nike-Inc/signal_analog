@@ -85,3 +85,8 @@ dist: clean ## builds source and wheel package
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
+
+generate-flow: clean ## generate the SignalFlow module using `st`
+	curl --output flow.html https://developers.signalfx.com/reference && \
+		st flow.html --output-path signal_analog/flow.py && \
+		rm -rf flow.html
