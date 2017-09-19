@@ -21,12 +21,12 @@ setup_requirements = [
 
 test_requirements = [
     'pytest',
-    # TODO: put package test requirements here
+    'hypothesis'
 ]
 
 setup(
     name='signal_analog',
-    version='0.1.2',
+    version='0.2.0',
     description="Troposphere-like library for building and composing SignalFx SignalFlow programs.",
     long_description=readme + '\n\n' + history,
     author="Fernando Freire",
