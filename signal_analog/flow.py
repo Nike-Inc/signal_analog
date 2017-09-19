@@ -198,7 +198,7 @@ class StrArg(object):
             raise Exception("Arg cannot be None.")
         self.arg = arg
     def __str__(self):
-        return "\"" + self.arg + "\""
+        return "\"" + str(self.arg) + "\""
 class KWArg(object):
     def __init__(self, keyword, arg):
         if not keyword:
@@ -250,12 +250,12 @@ class Detect(Function):
     def __init__(self, on, off=None, mode=None):
         """Creates a  object.A  object is used to create events when a  condition is met and when it clears. These events can be used to notify people of when the conditions within the detect block are met. In order to actually publish the events the  must be invokeddetect(on, off=None, mode="paired")Returns reference to a  stream.The examples above show simple scenarios in which you apply a single static threshold to all the timeseries of the input stream. In more complex scenarios or infrastructures, it is often needed to have distinct thresholds for different services, or based on some other differentiating dimension.Instead of creating multiple detectors, or having multiple detect()s in the same program, you can use the 's function ability to generate constant-value timeseries with user-defined dimensions and rely on timeseries correlation to match your input timeseries to those thresholds.You can use the  to access a collection of SignalFlow functions, each of which captures a common analytical pattern used in alerting. Most of these functions can be also accessed as  in the SignalFx web UI, such as Stopped Reporting or Sudden Change."""
         super(Detect, self).__init__("detect")
-        self.args = [StrArg(on), KWArg("off", off), KWArg("mode", mode), StrArg(paired), StrArg(split)]
+        self.args = [StrArg(on), KWArg("off", off), KWArg("mode", mode)]
 class When(Function):
     def __init__(self, predicate, lasting=None, at_least=None):
         """Creates a  object for use in  functions. The  object is a generator of boolean values, depending on whether or not the predicate hold true or not when evaluated. The lasting and at_least parameters can be used to control how long and how often the predicate must be true for the  object to return True when evaluated.when(predicate, lasting=None, at_least=1.0)when(predicate, lasting=None)Returns a  object."""
         super(When, self).__init__("when")
-        self.args = [StrArg(predicate), KWArg("lasting", lasting), KWArg("at_least", at_least), StrArg(lasting)]
+        self.args = [StrArg(predicate), KWArg("lasting", lasting), KWArg("at_least", at_least)]
 class Lasting(Function):
     def __init__(self, lasting=None, at_least=None):
         """Convenience wrapper for holding both the lasting and optionally the at_least parameter to pass to a  function.lasting(lasting=None, at_least=1.0)Returns a  object."""
