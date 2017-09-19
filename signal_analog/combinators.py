@@ -1,10 +1,10 @@
 """Provides n-ary combinators for SignalFlow programs."""
 
 
-class BinaryCombinator(object):
+class NAryCombinator(object):
 
     def __init__(self, operator, *ns):
-        """Binary combinator for SignalFlow objects.
+        """N-ary combinator for SignalFlow objects.
 
         Arguments:
             operator: the operator to intersperse amongst expressions.
@@ -14,7 +14,7 @@ class BinaryCombinator(object):
             An object that can be serialized to SignalFlow.
         """
         if not operator:
-            raise ValueError("Operator in BinaryCombinator cannot be empty.")
+            raise ValueError("Operator in NAryCombinator cannot be empty.")
 
         self.operator = operator
         self.stack = ns
@@ -24,13 +24,13 @@ class BinaryCombinator(object):
         return combinator.join(map(str, self.stack))
 
 
-class And(BinaryCombinator):
+class And(NAryCombinator):
 
     def __init__(self, *ns):
         super(And, self).__init__('and', *ns)
 
 
-class Or(BinaryCombinator):
+class Or(NAryCombinator):
 
     def __init__(self, *ns):
         super(Or, self).__init__('or', *ns)
