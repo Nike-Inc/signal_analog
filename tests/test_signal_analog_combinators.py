@@ -12,13 +12,13 @@ from .generators import *
 def test_binary_combinator_empty_operator(value):
     """Binary combinator should not allow empty operators"""
     with pytest.raises(ValueError):
-        comb.BinaryCombinator(value)
+        comb.NAryCombinator(value)
 
 
 @given(op=ascii(), values=lists(elements=ascii()))
 def test_binary_combinator_str(op, values):
     """Binary combinator should always intersperse its op in the elements."""
-    assert str(comb.BinaryCombinator(op, *values)) == \
+    assert str(comb.NAryCombinator(op, *values)) == \
         " {0} ".format(op).join(map(str, values))
 
 
