@@ -13,3 +13,4 @@ pytest-runner
 pytest-html
 six
 requests
+hypothesis
