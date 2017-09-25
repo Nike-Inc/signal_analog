@@ -22,7 +22,8 @@ setup_requirements = [
 
 test_requirements = [
     'pytest',
-    'hypothesis'
+    'hypothesis',
+    'requests-mock'
 ]
 
 setup(

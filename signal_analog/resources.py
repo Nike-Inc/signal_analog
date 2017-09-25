@@ -1,11 +1,13 @@
 import requests
 import json
 
+__SIGNALFX_API_ENDPOINT__ = 'https://api.signalfx.com/v2'
+
 
 class Resource(object):
 
-    def __init__(self, base_url='https://api.signalfx.com/v2', endpoint='/',
-                 api_token=None, identifier=None):
+    def __init__(self, base_url=__SIGNALFX_API_ENDPOINT__, endpoint='/',
+                 api_token=None):
         """Encapsulation for resources that can exist in the SignalFx API.
 
         This version of the Resource class does not manage any state with the
@@ -15,7 +17,9 @@ class Resource(object):
         quite there yet.
 
         Attributes:
-            TODO
+            base_url: the base endpoint to use when talking to SignalFx
+            endpoint: the particarul endpoint to hit for this resource
+            api_token: the api token to authenticate requests with
         """
 
         # Users may want to provide this via the `with_*` builder instead of
@@ -23,9 +27,6 @@ class Resource(object):
         # don't pass one in at this point.
         if api_token is not None:
             self.__set_api_token__(api_token)
-
-        if identifier is not None:
-            self.__set_id__(identifier)
 
         self.__set_endpoint__(endpoint)
         self.__set_base_url__(base_url)
@@ -66,21 +67,10 @@ class Resource(object):
         self.is_valid(base_url, "Cannot proceed with empty base_url")
         self.base_url = base_url
 
-    def __set_id__(self, identifier):
-        """Internal helper for setting valid base_urls."""
-        self.is_valid(identifier, "Cannot proceed with empty identifier")
-        self.id = identifier
-
     def with_api_token(self, token):
         """Set the API token for this resource."""
 
         self.__set_api_token__(token)
-        return self
-
-    def with_id(self, identifier):
-        """Set the resource ID for update/delete operations."""
-
-        self.__set_id__(identifier)
         return self
 
     def create(self):
@@ -106,14 +96,8 @@ class Resource(object):
             }
         )
 
-        if response.status_code == requests.codes.ok:
-            return response.json()
-        else:
-            return response.raise_for_status()
+        # Throw an exception if we received a non-2xx response.
+        response.raise_for_status()
 
-
-class Dashboard(Resource):
-
-    def __init__(self):
-        """Base representation of a dashboard in SignalFx."""
-        super(Resource, self).__init__(endpoint='/dashboard')
+        # Otherwise, return our status code
+        return response.json()
