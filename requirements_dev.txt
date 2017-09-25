@@ -14,3 +14,4 @@ pytest-html
 six
 requests
 hypothesis
+requests-mock
