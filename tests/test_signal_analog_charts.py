@@ -26,7 +26,7 @@ def test_chart_with_name():
 
 
 def test_chart_with_description():
-    expected = 'Petite frère'
+    expected = 'Petite frere'
     chart = Chart().with_description(expected)
     assert chart.options['description'] == expected
 
