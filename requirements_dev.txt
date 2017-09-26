@@ -12,4 +12,7 @@ pytest
 pytest-runner
 pytest-html
 six
+requests
 hypothesis
+requests-mock
+enum34

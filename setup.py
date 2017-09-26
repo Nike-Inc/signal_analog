@@ -12,7 +12,11 @@ with open('CHANGELOG.md') as history_file:
     history = history_file.read()
 
 requirements = [
-    'six'
+    # py2/3 compat dependencies
+    'six',
+    'enum34',
+    # all other modules
+    'requests'
 ]
 
 setup_requirements = [
@@ -21,12 +25,13 @@ setup_requirements = [
 
 test_requirements = [
     'pytest',
-    'hypothesis'
+    'hypothesis',
+    'requests-mock'
 ]
 
 setup(
     name='signal_analog',
-    version='0.2.0',
+    version='0.3.0',
     description="Troposphere-like library for building and composing SignalFx SignalFlow programs.",
     long_description=readme + '\n\n' + history,
     author="Fernando Freire",
