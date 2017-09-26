@@ -12,7 +12,10 @@ with open('CHANGELOG.md') as history_file:
     history = history_file.read()
 
 requirements = [
+    # py2/3 compat dependencies
     'six',
+    'enum34',
+    # all other modules
     'requests'
 ]
 
