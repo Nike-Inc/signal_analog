@@ -4,6 +4,9 @@
 
   * Adds support for base Resource object. Will be used for Chart/Dashboard
   abstractions in future versions.
+  * Adds support for base Chart and TimeSeriesChart objects. Note that some
+  TimeSeriesChart builder options have not yet been implemented (and marked
+  clearly with NotImplementedErrors)
 
 ## 0.2.0 (2017-09-18)
 
