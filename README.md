@@ -3,10 +3,6 @@
 A troposphere-like library for building and composing SignalFx SignalFlow
 programs into Charts, Dashboards, and Detectors.
 
-If you are looking for ready made patterns then consider the more user friendly
-[signal_analog_patterns] library (Note: not yet created, stay tuned!
--- @ffreire).
-
 The rest of this document assumes familiarity with the SignalFx API, SignalFlow
 language, and Chart/Dashboard models.
 
@@ -152,10 +148,9 @@ memory_chart = TimeSeriesChart()\
 
 [Terrific]; there's only a few more details before we have a complete chart.
 
-In order for any chart to be created we must provide an API token. API tokens
-are created at the organization level and are typically handed out by account
-administrators. If you don't have an API token contact your account
-administrator. If you're unsure who your account administrator is consult
+In order for any chart to be created we must provide an API token. Contact
+your account administrator for the best way to access your account's API
+tokens. If you are unsure who your account administrator is consult
 [this document to determine the appropriate contact][sfx-contact].
 
 With API token in hand we can now create our chart in the API:
