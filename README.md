@@ -215,6 +215,10 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
             print('{0}: {1}'.format(msg.timestamp_ms, msg.properties))
 ```
 
+## Contributing
+
+Consult the [docs here for more info about contributing](CONTRIBUTING.md).
+
 ## Credits
 
 This package was created with

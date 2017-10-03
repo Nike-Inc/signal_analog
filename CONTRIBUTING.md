@@ -1,13 +1,11 @@
-Contributing
-============
+# Contributing
 
 Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
 You can contribute in many ways:
 
-Types of Contributions
-----------------------
+## Types of Contributions
 
 ### Report Bugs
 
@@ -20,20 +18,18 @@ If you are reporting a bug, please include:
 
 ### Fix Bugs
 
-Look through the GitHub issues for bugs. Anything tagged with "bug" and
-"help wanted" is open to whoever wants to implement it.
+Look through issues for bugs in the JIRA SIP project. Anything tagged with
+a "bug" ticket type is open to whoever wants to implement it.
 
 ### Implement Features
 
-Look through the GitHub issues for features. Anything tagged with
-"enhancement" and "help wanted" is open to whoever wants to implement
-it.
+Look through issues for stories in the SIP JIRA project.
 
 ### Write Documentation
 
 Signal Analog could always use more documentation,
 whether as part of the official Signal Analog docs,
-in docstrings, or even on the web in blog posts, articles, and such.
+in docstrings, or even on Confluence in blog posts, articles, and such.
 
 ### Submit Feedback
 
@@ -45,50 +41,48 @@ If you are proposing a feature:
 -   Remember that this is a volunteer-driven project, and that
     contributions are welcome :)
 
-Get Started!
-------------
+## Get Started!
 
 Ready to contribute? Here's how to set up
 signal_analog for local development.
 
-1.  Fork the signal_analog repo on GitHub.
+1.  Fork the signal_analog repo on BitBucket.
 2.  Clone your fork locally:
 
-        $ git clone git@github.com:your_name_here/signal_analog.git
+        $ git clone ssh://git@bitbucket.nike.com/nik/signal_analog.git
 
 3.  Install your local copy into a virtualenv. Assuming you have
-    virtualenvwrapper installed, this is how you set up your fork for
-    local development:
+    at least python3 installed:
 
-        $ mkvirtualenv signal_analog
         $ cd signal_analog/
-        $ python setup.py develop
+        $ python3 -m venv venv
+        $ source venv/bin/activate
+        $ pip install -r requirements_dev.txt
 
 4.  Create a branch for local development:
 
-        $ git checkout -b name-of-your-bugfix-or-feature
+        $ git checkout -b feature/name-of-your-feature
+
+    Or if creating a bugfix
+
+        $ git checkout -b fix/name-of-your-bugfix
 
     Now you can make your changes locally.
 
-5.  When you're done making changes, check that your changes pass flake8
-    and the tests, including testing other Python versions with tox:
+5.  When you're done making changes, check that your changes pass tests,
+    including testing other Python versions with tox:
 
-        $ flake8 signal_analog tests
-        $ python setup.py test or py.test
-        $ tox
+        $ make test-all
 
-    To get flake8 and tox, just pip install them into your virtualenv.
-
-6.  Commit your changes and push your branch to GitHub:
+6.  Commit your changes and push your branch to BitBucket:
 
         $ git add .
         $ git commit -m "Your detailed description of your changes."
         $ git push origin name-of-your-bugfix-or-feature
 
-7.  Submit a pull request through the GitHub website.
+7.  Submit a pull request through the BitBucket website.
 
-Pull Request Guidelines
------------------------
+## Pull Request Guidelines
 
 Before you submit a pull request, check that it meets these guidelines:
 
@@ -96,11 +90,16 @@ Before you submit a pull request, check that it meets these guidelines:
 2.  If the pull request adds functionality, the docs should be updated.
     Put your new functionality into a function with a docstring, and add
     the feature to the list in README.md.
-3.  The pull request should work for Python 2.6, 2.7, 3.3, 3.4 and 3.5,
-    and for PyPy.
+3.  The pull request should work for Python 2.7 and 3.6.
+4.  The project version should be updated accordingly
 
-Tips
-----
+      * You can use `bumpversion` for this (installed as part of
+      requirements_dev.txt). Either `major`, `minor`, or `patch` depending on
+      the feature added. If you're unsure, request help in the Pull Request!
+
+5.  New changes should be added to CHANGELOG.md
+
+## Tips
 
 To run a subset of tests:
 
