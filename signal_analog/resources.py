@@ -18,7 +18,7 @@ class Resource(object):
 
         Attributes:
             base_url: the base endpoint to use when talking to SignalFx
-            endpoint: the particarul endpoint to hit for this resource
+            endpoint: the particular endpoint to hit for this resource
             api_token: the api token to authenticate requests with
         """
 
@@ -73,31 +73,38 @@ class Resource(object):
         self.__set_api_token__(token)
         return self
 
-    def create(self):
+    def create(self, dry_run=False):
         """Create this resource in the SignalFx API.
 
         Arguments:
-            None.
+            dry_run: Boolean indicator for a dry-run. When true, this resource will
+                print its configured state and not actually call the SignalFX API.
+                Default is false.
 
         Returns:
             The JSON response if successful, None otherwise. For exceptional
             (400-500) responses an exception will be raised.
+            When dry_run is true, exception is not raised when API key is missing.
         """
 
-        # TODO figure out a cleaner abstraction for validating pre_conditions
-        self.is_valid(self.api_token)
         self.is_valid(self.options)
 
-        response = requests.post(
-            url=self.base_url + self.endpoint, data=json.dumps(self.options),
-            headers={
-                'X-SF-Token': self.api_token,
-                'Content-Type': 'application/json'
-            }
-        )
+        if dry_run is False:
+            # TODO figure out a cleaner abstraction for validating pre_conditions
+            self.is_valid(self.api_token)
 
-        # Throw an exception if we received a non-2xx response.
-        response.raise_for_status()
+            response = requests.post(
+                url=self.base_url + self.endpoint, data=json.dumps(self.options),
+                headers={
+                    'X-SF-Token': self.api_token,
+                    'Content-Type': 'application/json'
+                }
+            )
 
-        # Otherwise, return our status code
-        return response.json()
+            # Throw an exception if we received a non-2xx response.
+            response.raise_for_status()
+
+            # Otherwise, return our status code
+            return response.json()
+        else:
+            return json.dumps(self.options)
