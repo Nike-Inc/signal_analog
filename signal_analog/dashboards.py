@@ -1,4 +1,6 @@
-import json, requests
+import json
+import requests
+
 from signal_analog.resources import Resource
 
 
@@ -16,7 +18,6 @@ class Dashboard(Resource):
 
 	def with_charts(self, *charts):
 		for chart in charts:
-			#self.options['charts'].append(chart.options)
 			self.options['charts'].append(chart)
 		return self
 
