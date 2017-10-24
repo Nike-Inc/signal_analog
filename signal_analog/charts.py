@@ -54,6 +54,30 @@ class PlotType(Enum):
     histogram = "Histogram"
 
 
+class AxisOption(object):
+    """Encapsulation for options on chart axes."""
+
+    def __init__(self, min, max, label, high_watermark, low_watermark):
+        for arg in [min, max, label, high_watermark, low_watermark]:
+            if not arg:
+                raise ValueError("{0} cannot be empty".format(arg))
+
+        if max < min:
+            msg = "min cannot be less than max in axis with label {0}"
+            raise ValueError(msg.format(label))
+
+        self.opts = {
+            'min': min,
+            'max': max,
+            'label': label,
+            'lowWatermark': low_watermark,
+            'highWatermark': high_watermark
+        }
+
+    def to_dict(self):
+        return self.opts
+
+
 class TimeSeriesChart(Chart):
 
     def __init__(self):
@@ -82,19 +106,46 @@ class TimeSeriesChart(Chart):
         self.chart_options.update({'colorBy': color_by.value})
         return self
 
-    def with_program_options(self):
-        raise NotImplementedError()
+    def with_program_options(
+            self, min_resolution, max_delay, disable_sampling=False):
+        """Specify the options to apply to the given SignalFlow program."""
 
-    def with_time_config(self):
-        raise NotImplementedError()
+        self.is_valid(min_resolution)
+        self.is_valid(max_delay)
+        program_opts = {
+            'minimumResolution': min_resolution,
+            'maxDelay': max_delay,
+            'disableSampling': disable_sampling
+        }
+        self.chart_options.update({'programOptions': program_opts})
+        return self
 
-    def with_axes(self):
-        """TODO
+    def with_time_config_relative(self, range):
+        """Options to set the relative view window into the given chart."""
+        self.is_valid(range)
+        opts = {'type': 'relative', 'range': range}
+        self.chart_options.update({'time': opts})
+        return self
+
+    def with_time_config_absolute(self, start, end):
+        """Options to set the absolute view window into the given chart."""
+        self.is_valid(start)
+        self.is_valid(end)
+        opts = {'type': 'absolute', 'start': start, 'end': end}
+        self.chart_options.update({'time': opts})
+        return self
+
+    def with_axes(self, axes):
+        """Options for labelling axes on TimeSeries charts.
 
         Don't leave your axes laying about or this guy might show up:
         https://youtu.be/V2FygG84bg8
         """
-        raise NotImplementedError()
+        self.is_valid(axes)
+        self.chart_options.update({
+            'axes': list(map(lambda x: x.to_dict(), axes))
+        })
+        return self
 
     def with_legend_options(self):
         raise NotImplementedError()
