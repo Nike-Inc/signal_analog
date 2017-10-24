@@ -1,7 +1,7 @@
 import pytest
 
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
-                                 PlotType
+                                 PlotType, AxisOption
 from signal_analog.flow import Data
 
 
@@ -11,6 +11,7 @@ def test_chart_with_empties(value):
         Chart().with_name(value)
         Chart().with_description(value)
         Chart().with_program()
+        AxisOption(value, value, value, value, value)
 
 
 def test_chart_init():
@@ -82,10 +83,54 @@ def test_ts_chart_with_axis_precision():
     assert chart.chart_options['axisPrecision'] == 1
 
 
+def test_ts_chart_with_program_opts():
+    opts = {'minimumResolution': 1, 'maxDelay': 2, 'disableSampling': False}
+    chart = TimeSeriesChart().with_program_options(1, 2)
+    assert chart.chart_options['programOptions'] == opts
+
+
+def test_ts_chart_with_time_config_relative():
+    opts = {'type': 'relative', 'range': 1000}
+    chart = TimeSeriesChart().with_time_config_relative(1000)
+    assert chart.chart_options['time'] == opts
+
+
+def test_ts_chart_with_time_config_absolute():
+    opts = {'type': 'absolute', 'start': 1, 'end': 2}
+    chart = TimeSeriesChart().with_time_config_absolute(1, 2)
+    assert chart.chart_options['time'] == opts
+
+
+def test_ts_chart_overwrite_time_config():
+    """Ensure that relative/absolute options overwrite each other"""
+    opts_a = {'type': 'absolute', 'start': 1, 'end': 2}
+    opts_r = {'type': 'relative', 'range': 1000}
+
+    chart = TimeSeriesChart().with_time_config_absolute(1, 2)
+
+    assert chart.chart_options['time'] == opts_a
+
+    chart.with_time_config_relative(1000)
+
+    assert chart.chart_options['time'] != opts_a
+    assert chart.chart_options['time'] == opts_r
+
+
+def test_axis_option_max_greater_than_min():
+    with pytest.raises(ValueError):
+        AxisOption(1, 0, 'evil', 1, 2)
+
+
+def test_ts_chart_with_axes():
+    axis_of_evil = AxisOption(1, 2, 'evil', 1, 2)
+    opts = [axis_of_evil.to_dict()]
+
+    chart = TimeSeriesChart().with_axes([axis_of_evil])
+
+    assert chart.chart_options['axes'] == opts
+
+
 not_implemented_methods = [
-                             "with_program_options",
-                             "with_time_config",
-                             "with_axes",
                              "with_legend_options",
                              "with_line_chart_options",
                              "with_area_chart_options",
