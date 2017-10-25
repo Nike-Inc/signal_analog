@@ -1,7 +1,7 @@
 import pytest
 
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
-                                 PlotType, AxisOption
+                                 PlotType, AxisOption, FieldOption
 from signal_analog.flow import Data
 
 
@@ -12,6 +12,7 @@ def test_chart_with_empties(value):
         Chart().with_description(value)
         Chart().with_program()
         AxisOption(value, value, value, value, value)
+        FieldOption(value, False)
 
 
 def test_chart_init():
@@ -130,10 +131,50 @@ def test_ts_chart_with_axes():
     assert chart.chart_options['axes'] == opts
 
 
+def test_ts_chart_with_linechart_options():
+    opts = {'showDataMarkers': False}
+    chart = TimeSeriesChart()\
+        .with_default_plot_type(PlotType.line_chart)\
+        .with_line_chart_options()
+    assert chart.chart_options['lineChartOptions'] == opts
+
+
+def test_ts_chart_with_areachart_options():
+    opts = {'showDataMarkers': False}
+    chart = TimeSeriesChart()\
+        .with_default_plot_type(PlotType.area_chart)\
+        .with_area_chart_options()
+    assert chart.chart_options['areaChartOptions'] == opts
+
+
+def test_ts_chart_with_modified_linechart_options():
+    opts = {'showDataMarkers': True}
+    chart = TimeSeriesChart()\
+        .with_default_plot_type(PlotType.area_chart)\
+        .with_area_chart_options(show_data_markers=True)
+    assert chart.chart_options['areaChartOptions'] == opts
+
+
+def test_ts_chart_with_wrong_chart_options():
+    with pytest.raises(ValueError):
+        TimeSeriesChart()\
+            .with_default_plot_type(PlotType.area_chart)\
+            .with_line_chart_options()
+
+
+def test_ts_chart_with_field_options():
+    opt = FieldOption('foo')
+    chart = TimeSeriesChart().with_legend_options([opt])
+    assert chart.chart_options['fields'] == [opt.to_dict()]
+
+
+def test_ts_chart_with_field_options_disabled():
+    opt = FieldOption('bar', enabled=False)
+    chart = TimeSeriesChart().with_legend_options([opt])
+    assert chart.chart_options['fields'] == [opt.to_dict()]
+
+
 not_implemented_methods = [
-                             "with_legend_options",
-                             "with_line_chart_options",
-                             "with_area_chart_options",
                              "with_publish_label_options",
                              "with_chart_legend_options"
                           ]
