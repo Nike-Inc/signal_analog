@@ -1,12 +1,15 @@
+"""Chart objects representable in the SignalFX API."""
+
+from enum import Enum
+
 from signal_analog.resources import Resource
 import signal_analog.util as util
-from enum import Enum
 
 
 class Chart(Resource):
+    """Base representation of a chart in SignalFx."""
 
     def __init__(self):
-        """Base representation of a chart in SignalFx."""
         super(Chart, self).__init__(endpoint='/chart')
         self.options = {}
 
@@ -79,10 +82,30 @@ class PaletteColor(Enum):
     mountain_green = 15
 
 
-class AxisOption(object):
+class ChartOption(object):
+    """Base option class for chart options that require validation."""
+
+    def __init__(self):
+        self.opts = {}
+
+    def to_dict(self):
+        return self.opts
+
+
+class AxisOption(ChartOption):
     """Encapsulation for options on chart axes."""
 
     def __init__(self, min, max, label, high_watermark, low_watermark):
+        """Initializes this class with valid values, raises ValueError
+           if any values are missing.
+
+        Arguments:
+            min: the minimum value for the axis
+            max: the maximum value for the axis
+            label: label of the axis
+            high_watermark: a line ot draw as a high watermar
+            low_watermark: a line to draw as a low watermark
+        """
         for arg in [min, max, label, high_watermark, low_watermark]:
             if not arg:
                 raise ValueError("{0} cannot be empty".format(arg))
@@ -99,27 +122,38 @@ class AxisOption(object):
             'highWatermark': high_watermark
         }
 
-    def to_dict(self):
-        return self.opts
 
-
-class FieldOption(object):
+class FieldOption(ChartOption):
     """Field options used to display columns in a chart's table."""
 
     def __init__(self, property, enabled=True):
+        """Initialize a field option, raise ValueError if property is not
+           defined.
+
+        Arguments:
+            property: property that may be part of a MTS in the visualization
+            enabled: whether the property should be displayed in the legend
+        """
         if not property:
             raise ValueError('Field option cannot be blank')
 
         self.opts = {'property': property, 'enabled': enabled}
 
-    def to_dict(self):
-        return self.opts
 
-
-class PublishLabelOptions(object):
+class PublishLabelOptions(ChartOption):
     """Options for displaying published timeseries data."""
 
     def __init__(self, label, y_axis, palette_index, plot_type, display_name):
+        """Initializes and validates publish label options.
+
+        Arguments:
+            label: label used in the publish statement that displayes the plot
+            y_axis: the y-axis associated with values for this plot.
+                    Must be 0 (left) or 1 (right).
+            palette_index: the indexed palette color to use for all plot lines
+            plot_type: the visualization style to use
+            display_name: an alternate name to show in the legend
+        """
         for arg in [label, display_name]:
             util.is_valid(arg)
         util.in_given_enum(palette_index, PaletteColor)
@@ -137,14 +171,11 @@ class PublishLabelOptions(object):
             'displayName': display_name
         }
 
-    def to_dict(self):
-        return self.opts
-
 
 class TimeSeriesChart(Chart):
+    """A time series chart."""
 
     def __init__(self):
-        """A time series chart."""
         super(TimeSeriesChart, self).__init__()
         self.chart_options = {'type': 'TimeSeriesChart'}
 
@@ -164,7 +195,23 @@ class TimeSeriesChart(Chart):
 
     def with_program_options(
             self, min_resolution, max_delay, disable_sampling=False):
-        """Specify the options to apply to the given SignalFlow program."""
+        """How should the program underlying the visualization be run.
+
+        Arguments:
+            min_resolution: min resolution to use for computing program
+            max_delay: How long to wait for late datapoints, in ms.
+            disable_sampling: samples a subset of output MTS unless enabled.
+                              Improves chart performance for heavier MTS.
+
+        Consult this page for more information on min resolution:
+            https://docs.signalfx.com/en/latest/reference/analytics-docs/how-choose-data-resolution.html
+
+        Consult this page for more information on late datapoints:
+            https://docs.signalfx.com/en/latest/charts/chart-options-tab.html#max-delay
+
+        Returns:
+            This TimeSeriesChart with program options.
+        """
 
         util.is_valid(min_resolution)
         util.is_valid(max_delay)
@@ -177,14 +224,29 @@ class TimeSeriesChart(Chart):
         return self
 
     def with_time_config_relative(self, range):
-        """Options to set the relative view window into the given chart."""
+        """Options to set the relative view window into the given chart.
+
+        Arguments:
+            range: Absolute millisecond offset from now to visualize.
+
+        Returns:
+            This TimeSeriesChart with absolute time config
+        """
         util.is_valid(range)
         opts = {'type': 'relative', 'range': range}
         self.chart_options.update({'time': opts})
         return self
 
     def with_time_config_absolute(self, start, end):
-        """Options to set the absolute view window into the given chart."""
+        """Options to set the absolute view window into the given chart.
+
+        Arguments:
+            start: Milliseconds since epoch to start the visualization.
+            end: Milliseconds since epoch to end the visualization.
+
+        Returns:
+            This TimeSeriesChart with a relative time config.
+        """
         util.is_valid(start)
         util.is_valid(end)
         opts = {'type': 'absolute', 'start': start, 'end': end}
@@ -204,6 +266,7 @@ class TimeSeriesChart(Chart):
         return self
 
     def with_legend_options(self, field_opts):
+        """Options for the behavior of this chart's legend."""
         util.is_valid(field_opts)
         opts = list(map(lambda x: x.to_dict(), field_opts))
         self.chart_options.update({'fields': opts})
@@ -217,9 +280,22 @@ class TimeSeriesChart(Chart):
         return self
 
     def __has_opt(self, opt_name):
+        """Identify if the given option exists in this TimeSeriesChart."""
         return self.chart_options.get(opt_name, None) is not None
 
     def __with_chart_options(self, clazz, show_data_markers=False):
+        """Internal helper validating line/area plot options.
+
+        Arguments:
+            clazz: the type of plot to set options for
+            show_data_markers: whether or not to show data markers in the chart
+
+        Returns:
+            This TimeSeriesChart with line/area plot options set.
+
+        Raises:
+            ValueError: a line/area option was set on the wrong plot type
+        """
         plot_type = self.chart_options.get('defaultPlotType', '')
         if plot_type.lower() not in clazz.lower():
             msg = "Attempted to define '{0}' but chart is of type '{1}'"
@@ -230,25 +306,27 @@ class TimeSeriesChart(Chart):
         return self
 
     def with_line_chart_options(self, show_data_markers=False):
+        """Modify options on line plot types."""
         return self.__with_chart_options('lineChartOptions', show_data_markers)
 
     def with_area_chart_options(self, show_data_markers=False):
+        """Modify options on line plot types."""
         return self.__with_chart_options('areaChartOptions', show_data_markers)
 
     def stack_chart(self, boolean):
-        """Whether area and bar charts in the visualization should be
-           stacked.
-        """
+        """Should area/bar charts in the visualization be stacked."""
         self.chart_options.update({'stack': str(boolean).lower()})
         return self
 
     def with_default_plot_type(self, plot_type):
+        """The default plot display style for the visualization."""
         util.is_valid(plot_type)
         util.in_given_enum(plot_type, PlotType)
         self.chart_options.update({'defaultPlotType': plot_type.value})
         return self
 
     def with_publish_label_options(self, publish_opts):
+        """Plot-level customization, associated with a publish statement."""
         util.is_valid(publish_opts)
         self.chart_options.update(
             {'PublishLabelOptions': publish_opts.to_dict()})
