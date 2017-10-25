@@ -1,4 +1,5 @@
 from signal_analog.resources import Resource
+import signal_analog.util as util
 from enum import Enum
 
 
@@ -11,13 +12,13 @@ class Chart(Resource):
 
     def with_name(self, name):
         """The name to give this chart."""
-        self.is_valid(name)
+        util.is_valid(name)
         self.options.update({'name': name})
         return self
 
     def with_description(self, description):
         """The description to attach to this chart."""
-        self.is_valid(description)
+        util.is_valid(description)
         self.options.update({'description': description})
         return self
 
@@ -29,7 +30,7 @@ class Chart(Resource):
 
         https://developers.signalfx.com/docs/signalflow-overview
         """
-        self.is_valid(program)
+        util.is_valid(program)
         self.options.update({'programText': str(program)})
         return self
 
@@ -52,6 +53,30 @@ class PlotType(Enum):
     area_chart = "AreaChart"
     column_chart = "ColumnChart"
     histogram = "Histogram"
+
+
+class PaletteColor(Enum):
+    """All available colors for use in charts.
+
+    Semantic names for colors mostly pulled from:
+        http://www.htmlcsscolor.com/
+    """
+    gray = 0
+    navy_blue = 1
+    sky_blue = 2
+    shakespeare = 3
+    rust = 4
+    tangerine = 5
+    sunflower = 6
+    mulberry = 7
+    hot_pink = 8
+    rose = 9
+    slate_blue = 10
+    violet = 11
+    plum = 12
+    green = 13
+    light_green = 14
+    mountain_green = 15
 
 
 class AxisOption(object):
@@ -91,6 +116,31 @@ class FieldOption(object):
         return self.opts
 
 
+class PublishLabelOptions(object):
+    """Options for displaying published timeseries data."""
+
+    def __init__(self, label, y_axis, palette_index, plot_type, display_name):
+        for arg in [label, display_name]:
+            util.is_valid(arg)
+        util.in_given_enum(palette_index, PaletteColor)
+        util.in_given_enum(plot_type, PlotType)
+        if y_axis not in [0, 1]:
+            msg = "YAxis for chart must be 0 (Left) or 1 (Right); " +\
+                    "'{0}' provided."
+            raise ValueError(msg.format(y_axis))
+
+        self.opts = {
+            'label': label,
+            'yAxis': y_axis,
+            'paletteIndex': palette_index.value,
+            'plotType': plot_type.value,
+            'displayName': display_name
+        }
+
+    def to_dict(self):
+        return self.opts
+
+
 class TimeSeriesChart(Chart):
 
     def __init__(self):
@@ -98,24 +148,17 @@ class TimeSeriesChart(Chart):
         super(TimeSeriesChart, self).__init__()
         self.chart_options = {'type': 'TimeSeriesChart'}
 
-    def in_given_enum(self, value, enum):
-        if type(value) != enum or value not in enum:
-            msg = '"{0}" must be one of {1} for given {2}.'
-            valid_values = [x.value for x in enum]
-            raise ValueError(
-                msg.format(value, valid_values, type(self).__name__))
-
     def with_unit_prefix(self, prefix):
         """Add a unit prefix to this chart."""
-        self.is_valid(prefix)
-        self.in_given_enum(prefix, UnitPrefix)
+        util.is_valid(prefix)
+        util.in_given_enum(prefix, UnitPrefix)
         self.chart_options.update({'unitPrefix': prefix.value})
         return self
 
     def with_color_by(self, color_by):
         """Determine how timeseries are colored in this chart."""
-        self.is_valid(color_by)
-        self.in_given_enum(color_by, ColorBy)
+        util.is_valid(color_by)
+        util.in_given_enum(color_by, ColorBy)
         self.chart_options.update({'colorBy': color_by.value})
         return self
 
@@ -123,8 +166,8 @@ class TimeSeriesChart(Chart):
             self, min_resolution, max_delay, disable_sampling=False):
         """Specify the options to apply to the given SignalFlow program."""
 
-        self.is_valid(min_resolution)
-        self.is_valid(max_delay)
+        util.is_valid(min_resolution)
+        util.is_valid(max_delay)
         program_opts = {
             'minimumResolution': min_resolution,
             'maxDelay': max_delay,
@@ -135,15 +178,15 @@ class TimeSeriesChart(Chart):
 
     def with_time_config_relative(self, range):
         """Options to set the relative view window into the given chart."""
-        self.is_valid(range)
+        util.is_valid(range)
         opts = {'type': 'relative', 'range': range}
         self.chart_options.update({'time': opts})
         return self
 
     def with_time_config_absolute(self, start, end):
         """Options to set the absolute view window into the given chart."""
-        self.is_valid(start)
-        self.is_valid(end)
+        util.is_valid(start)
+        util.is_valid(end)
         opts = {'type': 'absolute', 'start': start, 'end': end}
         self.chart_options.update({'time': opts})
         return self
@@ -154,14 +197,14 @@ class TimeSeriesChart(Chart):
         Don't leave your axes laying about or this guy might show up:
         https://youtu.be/V2FygG84bg8
         """
-        self.is_valid(axes)
+        util.is_valid(axes)
         self.chart_options.update({
             'axes': list(map(lambda x: x.to_dict(), axes))
         })
         return self
 
     def with_legend_options(self, field_opts):
-        self.is_valid(field_opts)
+        util.is_valid(field_opts)
         opts = list(map(lambda x: x.to_dict(), field_opts))
         self.chart_options.update({'fields': opts})
         return self
@@ -200,22 +243,32 @@ class TimeSeriesChart(Chart):
         return self
 
     def with_default_plot_type(self, plot_type):
-        self.is_valid(plot_type)
-        self.in_given_enum(plot_type, PlotType)
+        util.is_valid(plot_type)
+        util.in_given_enum(plot_type, PlotType)
         self.chart_options.update({'defaultPlotType': plot_type.value})
         return self
 
-    def with_publish_label_options(self):
-        raise NotImplementedError()
+    def with_publish_label_options(self, publish_opts):
+        util.is_valid(publish_opts)
+        self.chart_options.update(
+            {'PublishLabelOptions': publish_opts.to_dict()})
+        return self
 
     def with_axis_precision(self, num):
         """Force a specific number of significant digits in the y-axis."""
-        self.is_valid(num)
+        util.is_valid(num)
         self.chart_options.update({'axisPrecision': num})
         return self
 
-    def with_chart_legend_options(self):
-        raise NotImplementedError()
+    def with_chart_legend_options(self, dimension, show_legend=False):
+        """Show the on-chart legend using the given dimension."""
+        util.is_valid(dimension)
+        opts = {
+            'showLegend': show_legend,
+            'dimensionInLegend': dimension
+        }
+        self.chart_options.update({'onChartLegendOptions': opts})
+        return self
 
     def create(self):
         # We want to make sure TimeSeriesChart options are passed
