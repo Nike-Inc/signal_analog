@@ -78,6 +78,19 @@ class AxisOption(object):
         return self.opts
 
 
+class FieldOption(object):
+    """Field options used to display columns in a chart's table."""
+
+    def __init__(self, property, enabled=True):
+        if not property:
+            raise ValueError('Field option cannot be blank')
+
+        self.opts = {'property': property, 'enabled': enabled}
+
+    def to_dict(self):
+        return self.opts
+
+
 class TimeSeriesChart(Chart):
 
     def __init__(self):
@@ -136,7 +149,7 @@ class TimeSeriesChart(Chart):
         return self
 
     def with_axes(self, axes):
-        """Options for labelling axes on TimeSeries charts.
+        """Options for labeling axes on TimeSeries charts.
 
         Don't leave your axes laying about or this guy might show up:
         https://youtu.be/V2FygG84bg8
@@ -147,8 +160,11 @@ class TimeSeriesChart(Chart):
         })
         return self
 
-    def with_legend_options(self):
-        raise NotImplementedError()
+    def with_legend_options(self, field_opts):
+        self.is_valid(field_opts)
+        opts = list(map(lambda x: x.to_dict(), field_opts))
+        self.chart_options.update({'fields': opts})
+        return self
 
     def show_event_lines(self, boolean):
         """Whether vertical highlight lines should be drawn in the
@@ -157,12 +173,24 @@ class TimeSeriesChart(Chart):
         self.chart_options.update({'showEventLines': str(boolean).lower()})
         return self
 
-    # TODO don't allow line and area opts to be defined at the same time
-    def with_line_chart_options(self):
-        raise NotImplementedError()
+    def __has_opt(self, opt_name):
+        return self.chart_options.get(opt_name, None) is not None
 
-    def with_area_chart_options(self):
-        raise NotImplementedError()
+    def __with_chart_options(self, clazz, show_data_markers=False):
+        plot_type = self.chart_options.get('defaultPlotType', '')
+        if plot_type.lower() not in clazz.lower():
+            msg = "Attempted to define '{0}' but chart is of type '{1}'"
+            raise ValueError(msg.format(clazz, plot_type))
+
+        opts = {'showDataMarkers': show_data_markers}
+        self.chart_options.update({clazz: opts})
+        return self
+
+    def with_line_chart_options(self, show_data_markers=False):
+        return self.__with_chart_options('lineChartOptions', show_data_markers)
+
+    def with_area_chart_options(self, show_data_markers=False):
+        return self.__with_chart_options('areaChartOptions', show_data_markers)
 
     def stack_chart(self, boolean):
         """Whether area and bar charts in the visualization should be
