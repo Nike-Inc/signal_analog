@@ -2,6 +2,9 @@
 
 
 def in_given_enum(value, enum):
+    """Determines if the given value is in the given enum. Raises ValueError
+       if it is not.
+    """
     if type(value) != enum or value not in enum:
         msg = '"{0}" must be one of {1}.'
         valid_values = [x.value for x in enum]
