@@ -1,5 +1,6 @@
 import requests
 import json
+import signal_analog.util as util
 
 __SIGNALFX_API_ENDPOINT__ = 'https://api.signalfx.com/v2'
 
@@ -31,22 +32,6 @@ class Resource(object):
         self.__set_endpoint__(endpoint)
         self.__set_base_url__(base_url)
 
-    def is_valid(self, value, error_message=None):
-        """Void method ensuring value is non-empty.
-
-        Arguments:
-            value: the value to check
-            error_message: an optional error message to provide the user
-
-        Returns:
-            Nothing.
-        """
-        if not value:
-            if error_message:
-                raise ValueError(error_message)
-            else:
-                raise ValueError()
-
     def __set_api_token__(self, token):
         """Internal helper for setting valid API tokens."""
 
@@ -54,17 +39,17 @@ class Resource(object):
         Either pass one in at Resource instantiation time or provide one
         via the `with_api_token` method."""
 
-        self.is_valid(token, message)
+        util.is_valid(token, message)
         self.api_token = token
 
     def __set_endpoint__(self, endpoint):
         """Internal helper for setting valid endpoints."""
-        self.is_valid(endpoint,  "Cannot proceed with an empty endpoint")
+        util.is_valid(endpoint,  "Cannot proceed with an empty endpoint")
         self.endpoint = endpoint
 
     def __set_base_url__(self, base_url):
         """Internal helper for setting valid base_urls."""
-        self.is_valid(base_url, "Cannot proceed with empty base_url")
+        util.is_valid(base_url, "Cannot proceed with empty base_url")
         self.base_url = base_url
 
     def with_api_token(self, token):
@@ -87,11 +72,11 @@ class Resource(object):
             When dry_run is true, exception is not raised when API key is missing.
         """
 
-        self.is_valid(self.options)
+        util.is_valid(self.options)
 
         if dry_run is False:
             # TODO figure out a cleaner abstraction for validating pre_conditions
-            self.is_valid(self.api_token)
+            util.is_valid(self.api_token)
 
             response = requests.post(
                 url=self.base_url + self.endpoint, data=json.dumps(self.options),
