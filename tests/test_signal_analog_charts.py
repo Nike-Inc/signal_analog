@@ -1,7 +1,8 @@
 import pytest
 
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
-                                 PlotType, AxisOption, FieldOption
+                                 PlotType, AxisOption, FieldOption,\
+                                 PublishLabelOptions, PaletteColor
 from signal_analog.flow import Data
 
 
@@ -13,6 +14,7 @@ def test_chart_with_empties(value):
         Chart().with_program()
         AxisOption(value, value, value, value, value)
         FieldOption(value, False)
+        PublishLabelOptions(value, value, value, value, value)
 
 
 def test_chart_init():
@@ -174,14 +176,26 @@ def test_ts_chart_with_field_options_disabled():
     assert chart.chart_options['fields'] == [opt.to_dict()]
 
 
-not_implemented_methods = [
-                             "with_publish_label_options",
-                             "with_chart_legend_options"
-                          ]
+def test_ts_chart_with_publish_label_options():
+    opts = PublishLabelOptions(
+        'somelabel', 0, PaletteColor.mountain_green, PlotType.area_chart, 'foo'
+    )
+    chart = TimeSeriesChart().with_publish_label_options(opts)
+    assert chart.chart_options['PublishLabelOptions'] == opts.to_dict()
 
 
-@pytest.mark.parametrize("fn", not_implemented_methods)
-def test_not_implemented(fn):
-    with pytest.raises(NotImplementedError):
-        chart = TimeSeriesChart()
-        getattr(chart, fn)()
+def test_publish_label_options_invalid_y_axis():
+    with pytest.raises(ValueError) as ve:
+        PublishLabelOptions(
+            'somelabel', 2,
+            PaletteColor.mountain_green, PlotType.area_chart, 'foo'
+        )
+
+        assert "chart must be 0" in ve.message
+
+
+def test_ts_chart_with_legend_options():
+    opts = {'showLegend': True, 'dimensionInLegend': 'foo'}
+    chart = TimeSeriesChart()\
+        .with_chart_legend_options('foo', show_legend=True)
+    assert chart.chart_options['onChartLegendOptions'] == opts
