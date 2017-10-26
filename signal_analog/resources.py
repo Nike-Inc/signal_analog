@@ -62,24 +62,26 @@ class Resource(object):
         """Create this resource in the SignalFx API.
 
         Arguments:
-            dry_run: Boolean indicator for a dry-run. When true, this resource will
-                print its configured state and not actually call the SignalFX API.
-                Default is false.
+            dry_run: Boolean indicator for a dry-run. When true, this resource
+                     will print its configured state and not actually call the
+                     SignalFX API.  Default is false.
 
         Returns:
             The JSON response if successful, None otherwise. For exceptional
             (400-500) responses an exception will be raised.
-            When dry_run is true, exception is not raised when API key is missing.
+            When dry_run is true, exception is not raised when API key is
+            missing.
         """
 
         util.is_valid(self.options)
 
         if dry_run is False:
-            # TODO figure out a cleaner abstraction for validating pre_conditions
+            # TODO figure out better abstraction for validating pre_conditions
             util.is_valid(self.api_token)
 
             response = requests.post(
-                url=self.base_url + self.endpoint, data=json.dumps(self.options),
+                url=self.base_url + self.endpoint,
+                data=json.dumps(self.options),
                 headers={
                     'X-SF-Token': self.api_token,
                     'Content-Type': 'application/json'
