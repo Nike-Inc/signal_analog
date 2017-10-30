@@ -3,6 +3,11 @@
 Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
+#### A quick note on code style:
+
+This project follows the development practices outlined in this document:
+[Python Development Environments][python-dev]
+
 You can contribute in many ways:
 
 ## Types of Contributions
@@ -74,6 +79,10 @@ signal_analog for local development.
 
         $ make test-all
 
+6.  Also be sure to check your code against PEP8 rules:
+
+        $ make lint
+
 6.  Commit your changes and push your branch to BitBucket:
 
         $ git add .
@@ -105,3 +114,5 @@ To run a subset of tests:
 
     $ py.test tests.test_signal_analog
 
+
+[python-dev]: ***REMOVED***#WIP:PythonDevelopmentEnvironments-CodeStyle
