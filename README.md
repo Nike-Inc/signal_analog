@@ -9,16 +9,27 @@ language, and Chart/Dashboard models.
 For more information about the above concepts consult the
 [upstream documentation].
 
-## Features
+## TOC
+
+  - [Features](#features)
+      - [Planned Features](#planned-features)
+  - [Installation](#installation)
+  - [Usage](#usage)
+      - [Building Charts with `signal_analog`](#charts)
+      - [Talking to the SignalFlow API Directly](#signalflow)
+  - [Contributing](#contributing)
+  - [Credits](#credits)
+
+## Features <a name="features"></a>
 
   - Provides bindings for the SignalFlow DSL
   - Provides abstractions for building Charts
 
-### Planned Features
+### Planned Features <a name="planned-features"></a>
 
   - High-level constructs for building Dashboards and Detectors
 
-## Installation
+## Installation <a name="installation"></a>
 
 Add `signal_analog` to the requirements file in your project:
 
@@ -41,9 +52,9 @@ following documentation for more info:
 
 https://confluence.nike.com/x/1kPlCg
 
-## Usage
+## Usage <a name="usage"></a>
 
-### Building Charts with `signal_analog`
+### Building Charts with `signal_analog` <a name="charts"></a>
 
 `signal_analog` provides constructs for building charts in the
 `signal_analog.charts` module. As of version `0.3.0` only a subset of the
@@ -170,7 +181,7 @@ From this point forward we can see our chart in the SignalFx UI by navigating
 to https://app.signalfx.com/#/chart/v2/\<chart\_id\>, where `chart_id` is
 the `id` field from our chart response.
 
-### Talking to the SignalFlow API Directly
+### Talking to the SignalFlow API Directly <a name="signalflow"></a>
 
 If you need to process SignalFx data outside of their walled garden it may be
 useful to call the SignalFlow API directly. Note that you may incur time
@@ -215,15 +226,15 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
             print('{0}: {1}'.format(msg.timestamp_ms, msg.properties))
 ```
 
-## Contributing
+## Contributing <a name="contributing"></a>
 
 Consult the [docs here for more info about contributing](CONTRIBUTING.md).
 
-## Credits
+## Credits <a name="credits"></a>
 
 This package was created with
 [Cookiecutter](https://github.com/audreyr/cookiecutter) and the
-[nik/nike-python-template](https://bitbucket.nike.com/projects/NIK/repos/nike-python-template/browse)
+[nik/nike-python-template](https://bitbucket.nike.com/projects/NIK/repos/nike_python_template/browse)
 project template.
 
 [upstream documentation]: https://developers.signalfx.com/docs/signalflow-overview
