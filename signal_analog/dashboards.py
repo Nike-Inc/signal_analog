@@ -1,8 +1,15 @@
 import json
+
 import requests
 
 from signal_analog.resources import Resource
 import signal_analog.util as util
+
+
+def merge_dicts(options1, options2):
+    combined = options1.copy()
+    combined.update(options2)
+    return combined
 
 
 class Dashboard(Resource):
@@ -29,18 +36,19 @@ class Dashboard(Resource):
         See: https://developers.signalfx.com/v2/reference#dashboardsimple
         """
         request_param = {'name': self.options.get('name', None)}
-        chart_options = [chart.options for chart in self.options['charts']]
+        charts = [merge_dicts(chart.options, chart.chart_options)
+                  for chart in self.options['charts']]
 
         if dry_run is True:
             dump = dict(self.options)
-            dump.update({'charts': chart_options})
+            dump.update({'charts': charts})
             return json.dumps(dump)
         else:
             response = requests.request(
                     method='POST',
                     url=self.base_url + self.endpoint,
                     params=request_param,
-                    data=json.dumps(chart_options),
+                    data=json.dumps(charts),
                     headers={'X-SF-Token': self.api_token,
                              'Content-Type': 'application/json'})
             response.raise_for_status()
