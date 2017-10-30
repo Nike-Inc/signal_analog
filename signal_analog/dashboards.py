@@ -32,16 +32,16 @@ class Dashboard(Resource):
         chart_options = [chart.options for chart in self.options['charts']]
 
         if dry_run is True:
-                dump = dict(self.options)
-                dump.update({'charts': chart_options})
-                return json.dumps(dump)
+            dump = dict(self.options)
+            dump.update({'charts': chart_options})
+            return json.dumps(dump)
         else:
-                response = requests.request(
-                        method='POST',
-                        url=self.base_url + self.endpoint,
-                        params=request_param,
-                        data=json.dumps(chart_options),
-                        headers={'X-SF-Token': self.api_token,
-                                 'Content-Type': 'application/json'})
-                response.raise_for_status()
-                return response.json()
+            response = requests.request(
+                    method='POST',
+                    url=self.base_url + self.endpoint,
+                    params=request_param,
+                    data=json.dumps(chart_options),
+                    headers={'X-SF-Token': self.api_token,
+                             'Content-Type': 'application/json'})
+            response.raise_for_status()
+            return response.json()
