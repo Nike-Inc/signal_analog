@@ -1,4 +1,5 @@
 import json
+
 import requests
 
 from signal_analog.resources import Resource
@@ -29,7 +30,8 @@ class Dashboard(Resource):
         See: https://developers.signalfx.com/v2/reference#dashboardsimple
         """
         request_param = {'name': self.options.get('name', None)}
-        chart_options = [chart.options for chart in self.options['charts']]
+        chart_options = [{**chart.options, **chart.chart_options}
+                         for chart in self.options['charts']]
 
         if dry_run is True:
                 dump = dict(self.options)
