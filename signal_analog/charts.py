@@ -37,6 +37,16 @@ class Chart(Resource):
         self.options.update({'programText': str(program)})
         return self
 
+    def create(self, dry_run=False):
+        # We want to make sure Chart options are passed
+        # before creating resources in SignalFx
+        curr_chart_opts = self.options.get('options', {})
+        curr_chart_opts.update(self.chart_options)
+        self.options.update({
+            'options': curr_chart_opts
+        })
+        return super(Chart, self).create(dry_run=dry_run)
+
 
 class UnitPrefix(Enum):
     """Enum for unit prefix types in TimeSeriesCharts."""
@@ -172,25 +182,25 @@ class PublishLabelOptions(ChartOption):
         }
 
 
-class TimeSeriesChart(Chart):
-    """A time series chart."""
+class DisplayOptionsMixin(object):
+    """A mixin for chart types that share display option builders.
 
-    def __init__(self):
-        super(TimeSeriesChart, self).__init__()
-        self.chart_options = {'type': 'TimeSeriesChart'}
-
-    def with_unit_prefix(self, prefix):
-        """Add a unit prefix to this chart."""
-        util.is_valid(prefix)
-        util.in_given_enum(prefix, UnitPrefix)
-        self.chart_options.update({'unitPrefix': prefix.value})
-        return self
+    The assumption is made that all classes using this mixin have
+    a member dict called 'chart_options'.
+    """
 
     def with_color_by(self, color_by):
         """Determine how timeseries are colored in this chart."""
         util.is_valid(color_by)
         util.in_given_enum(color_by, ColorBy)
         self.chart_options.update({'colorBy': color_by.value})
+        return self
+
+    def with_unit_prefix(self, prefix):
+        """Add a unit prefix to this chart."""
+        util.is_valid(prefix)
+        util.in_given_enum(prefix, UnitPrefix)
+        self.chart_options.update({'unitPrefix': prefix.value})
         return self
 
     def with_program_options(
@@ -222,6 +232,21 @@ class TimeSeriesChart(Chart):
         }
         self.chart_options.update({'programOptions': program_opts})
         return self
+
+    def with_publish_label_options(self, publish_opts):
+        """Plot-level customization, associated with a publish statement."""
+        util.is_valid(publish_opts)
+        self.chart_options.update(
+            {'PublishLabelOptions': publish_opts.to_dict()})
+        return self
+
+
+class TimeSeriesChart(Chart, DisplayOptionsMixin):
+    """A time series chart."""
+
+    def __init__(self):
+        super(TimeSeriesChart, self).__init__()
+        self.chart_options = {'type': 'TimeSeriesChart'}
 
     def with_time_config_relative(self, range):
         """Options to set the relative view window into the given chart.
@@ -325,13 +350,6 @@ class TimeSeriesChart(Chart):
         self.chart_options.update({'defaultPlotType': plot_type.value})
         return self
 
-    def with_publish_label_options(self, publish_opts):
-        """Plot-level customization, associated with a publish statement."""
-        util.is_valid(publish_opts)
-        self.chart_options.update(
-            {'PublishLabelOptions': publish_opts.to_dict()})
-        return self
-
     def with_axis_precision(self, num):
         """Force a specific number of significant digits in the y-axis."""
         util.is_valid(num)
@@ -348,12 +366,46 @@ class TimeSeriesChart(Chart):
         self.chart_options.update({'onChartLegendOptions': opts})
         return self
 
-    def create(self):
-        # We want to make sure TimeSeriesChart options are passed
-        # before creating resources in SignalFx
-        curr_chart_opts = self.options.get('options', {})
-        curr_chart_opts.update(self.chart_options)
-        self.options.update({
-            'options': curr_chart_opts
-        })
-        return super(TimeSeriesChart, self).create()
+
+class SingleValueChart(Chart, DisplayOptionsMixin):
+
+    def __init__(self):
+        super(SingleValueChart, self).__init__()
+        self.chart_options = {'type': 'SingleValue'}
+
+    def with_refresh_interval(self, interval):
+        """How often (in milliseconds) to refresh the values of the list."""
+        util.is_valid(interval)
+        self.chart_options.update({'refreshInterval': interval})
+        return self
+
+    def with_maximum_precision(self, precision):
+        """The maximum precision to for values displayed in the list."""
+        util.is_valid(precision)
+        self.chart_options.update({'maximumPrecision': precision})
+        return self
+
+    def with_timestamp_hidden(self, hidden=False):
+        """Whether to hide the timestamp in the chart."""
+        self.chart_options.update({'timestampHidden': hidden})
+        return self
+
+    def with_sparkline_hidden(self, hidden=True):
+        """Whether to show a trend line below the current value."""
+        self.chart_options.update({'showSparkLine': hidden})
+        return self
+
+    def with_colorscale(self, thresholds, inverted=False):
+        """Values for each color in the range.
+
+        Arguments:
+            thresholds: The thresholds to set for the color range being used.
+            inverted: If false, values are red if they are above
+                      the highest specified value. If true, values are red if
+                      they are below the lowest specified value.
+        """
+        util.is_valid(thresholds)
+        thresholds.sort(reverse=True)
+        opts = {'thresholds': thresholds, 'inverted': inverted}
+        self.chart_options.update({'colorScale': opts})
+        return self
