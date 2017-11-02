@@ -2,7 +2,8 @@ import pytest
 
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
-                                 PublishLabelOptions, PaletteColor
+                                 PublishLabelOptions, PaletteColor,\
+                                 SingleValueChart
 from signal_analog.flow import Data
 
 
@@ -199,3 +200,35 @@ def test_ts_chart_with_legend_options():
     chart = TimeSeriesChart()\
         .with_chart_legend_options('foo', show_legend=True)
     assert chart.chart_options['onChartLegendOptions'] == opts
+
+
+def test_sv_chart_with_refresh_interval():
+    chart = SingleValueChart().with_refresh_interval(5)
+    assert chart.chart_options['refreshInterval'] == 5
+
+
+def test_sv_chart_with_maximum_precision():
+    chart = SingleValueChart().with_maximum_precision(6)
+    assert chart.chart_options['maximumPrecision'] == 6
+
+
+def test_sv_chart_with_timestamp_hidden():
+    chart = SingleValueChart().with_timestamp_hidden()
+    assert chart.chart_options['timestampHidden'] is False
+
+    chart.with_timestamp_hidden(hidden=True)
+    assert chart.chart_options['timestampHidden'] is True
+
+
+def test_sv_chart_with_sparkline():
+    chart = SingleValueChart().with_sparkline_hidden()
+    assert chart.chart_options['showSparkLine'] is True
+
+    chart.with_sparkline_hidden(hidden=False)
+    assert chart.chart_options['showSparkLine'] is False
+
+
+def test_sv_chart_with_colorscale():
+    opts = {'thresholds': [300, 200, 100], 'inverted': True}
+    chart = SingleValueChart().with_colorscale([300, 200, 100], inverted=True)
+    assert chart.chart_options['colorScale'] == opts
