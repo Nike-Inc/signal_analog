@@ -198,7 +198,7 @@ class StrArg(object):
             raise Exception("Arg cannot be None.")
         self.arg = arg
     def __str__(self):
-        return "\"" + self.arg + "\""
+        return "\"" + str(self.arg) + "\""
 class KWArg(object):
     def __init__(self, keyword, arg):
         if not keyword:
