@@ -293,8 +293,8 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
     def with_legend_options(self, field_opts):
         """Options for the behavior of this chart's legend."""
         util.is_valid(field_opts)
-        opts = list(map(lambda x: x.to_dict(), field_opts))
-        self.chart_options.update({'fields': opts})
+        opts = {'fields': list(map(lambda x: x.to_dict(), field_opts))}
+        self.chart_options.update({'legendOptions': opts})
         return self
 
     def show_event_lines(self, boolean):
@@ -340,7 +340,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
 
     def stack_chart(self, boolean):
         """Should area/bar charts in the visualization be stacked."""
-        self.chart_options.update({'stack': str(boolean).lower()})
+        self.chart_options.update({'stacked': str(boolean).lower()})
         return self
 
     def with_default_plot_type(self, plot_type):
