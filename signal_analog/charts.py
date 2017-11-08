@@ -1,6 +1,7 @@
 """Chart objects representable in the SignalFX API."""
 
 from enum import Enum
+from copy import deepcopy
 
 from signal_analog.resources import Resource
 import signal_analog.util as util
@@ -37,14 +38,29 @@ class Chart(Resource):
         self.options.update({'programText': str(program)})
         return self
 
-    def create(self, dry_run=False):
+    def __update_chart_options__(self):
         # We want to make sure Chart options are passed
         # before creating resources in SignalFx
-        curr_chart_opts = self.options.get('options', {})
+        curr_chart_opts = self.options.get('options', {}).copy()
         curr_chart_opts.update(self.chart_options)
         self.options.update({
             'options': curr_chart_opts
         })
+        return self.options.copy()
+
+    def to_dict(self):
+        curr_chart_opts = deepcopy(self.options.get('options', {}))
+        curr_chart_opts.update(self.chart_options)
+
+        chart_opts_copy = deepcopy(self.options)
+        chart_opts_copy.update({
+            'options': curr_chart_opts
+        })
+
+        return chart_opts_copy
+
+    def create(self, dry_run=False):
+        self.options = self.to_dict()
         return super(Chart, self).create(dry_run=dry_run)
 
 
