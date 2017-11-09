@@ -1,6 +1,7 @@
 """Chart objects representable in the SignalFX API."""
 
 from enum import Enum
+from copy import deepcopy
 
 from signal_analog.resources import Resource
 import signal_analog.util as util
@@ -37,14 +38,19 @@ class Chart(Resource):
         self.options.update({'programText': str(program)})
         return self
 
-    def create(self, dry_run=False):
-        # We want to make sure Chart options are passed
-        # before creating resources in SignalFx
-        curr_chart_opts = self.options.get('options', {})
+    def to_dict(self):
+        curr_chart_opts = deepcopy(self.options.get('options', {}))
         curr_chart_opts.update(self.chart_options)
-        self.options.update({
+
+        chart_opts_copy = deepcopy(self.options)
+        chart_opts_copy.update({
             'options': curr_chart_opts
         })
+
+        return chart_opts_copy
+
+    def create(self, dry_run=False):
+        self.options = self.to_dict()
         return super(Chart, self).create(dry_run=dry_run)
 
 
@@ -293,8 +299,8 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
     def with_legend_options(self, field_opts):
         """Options for the behavior of this chart's legend."""
         util.is_valid(field_opts)
-        opts = list(map(lambda x: x.to_dict(), field_opts))
-        self.chart_options.update({'fields': opts})
+        opts = {'fields': list(map(lambda x: x.to_dict(), field_opts))}
+        self.chart_options.update({'legendOptions': opts})
         return self
 
     def show_event_lines(self, boolean):
@@ -340,7 +346,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
 
     def stack_chart(self, boolean):
         """Should area/bar charts in the visualization be stacked."""
-        self.chart_options.update({'stack': str(boolean).lower()})
+        self.chart_options.update({'stacked': str(boolean).lower()})
         return self
 
     def with_default_plot_type(self, plot_type):
