@@ -6,12 +6,6 @@ from signal_analog.resources import Resource
 import signal_analog.util as util
 
 
-def merge_dicts(options1, options2):
-    combined = options1.copy()
-    combined.update(options2)
-    return combined
-
-
 class Dashboard(Resource):
     def __init__(self):
         """Base representation of a dashboard in SignalFx."""
@@ -36,8 +30,7 @@ class Dashboard(Resource):
         See: https://developers.signalfx.com/v2/reference#dashboardsimple
         """
         request_param = {'name': self.options.get('name', None)}
-        charts = [merge_dicts(chart.options, chart.chart_options)
-                  for chart in self.options['charts']]
+        charts = list(map(lambda c: c.to_dict(), self.options['charts']))
 
         if dry_run is True:
             dump = dict(self.options)
