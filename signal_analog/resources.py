@@ -88,8 +88,12 @@ class Resource(object):
                 }
             )
 
-            # Throw an exception if we received a non-2xx response.
-            response.raise_for_status()
+            try:
+                # Throw an exception if we received a non-2xx response.
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as error:
+                # Tell the user exactly what went wrong according to SignalFx
+                raise RuntimeError(error.response.text)
 
             # Otherwise, return our status code
             return response.json()
