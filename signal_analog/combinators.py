@@ -20,8 +20,17 @@ class NAryCombinator(object):
         self.stack = ns
 
     def __str__(self):
+        args = []
+        for item in self.stack:
+            # Ensure that combining different combinators results in the
+            # correct order of operations.
+            if isinstance(item, NAryCombinator):
+                args.append("(" + str(item) + ")")
+            else:
+                args.append(str(item))
+
         combinator = " {0} ".format(self.operator)
-        return combinator.join(map(str, self.stack))
+        return combinator.join(args)
 
 
 class And(NAryCombinator):
