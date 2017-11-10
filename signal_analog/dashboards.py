@@ -51,5 +51,10 @@ class Dashboard(Resource):
                     data=json.dumps(charts),
                     headers={'X-SF-Token': self.api_token,
                              'Content-Type': 'application/json'})
-            response.raise_for_status()
+            try:
+                response.raise_for_status()
+            except requests.exceptions.HTTPError as error:
+                # Tell the user exactly what went wrong according to SignalFx
+                raise RuntimeError(error.response.text)
+
             return response.json()
