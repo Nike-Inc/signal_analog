@@ -202,7 +202,7 @@ class StrArg(object):
         if isinstance(self.arg, Number):
             return str(self.arg)
         else:
-            return "\"" + self.arg + "\""
+            return "\"" + str(self.arg) + "\""
 class KWArg(object):
     def __init__(self, keyword, arg):
         if not keyword:
