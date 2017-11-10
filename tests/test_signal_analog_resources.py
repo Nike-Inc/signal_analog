@@ -93,7 +93,7 @@ def test_resource_create_error():
                 resource = Resource().with_api_token('test')
                 resource.options = {'opt': 'val'}
 
-                with pytest.raises(HTTPError):
+                with pytest.raises(RuntimeError):
                         resource.create()
 
 
