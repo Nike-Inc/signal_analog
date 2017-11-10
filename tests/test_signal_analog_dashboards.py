@@ -57,6 +57,7 @@ def test_dashboard_create():
     assert 'name' in result_dict
     assert len(result_dict['charts']) == 2
     assert result_dict['name'] == dashboard_name
-    assert result_dict['charts'][0]['defaultPlotType'] == PlotType.area_chart.value
-    assert result_dict['charts'][1][
-               'defaultPlotType'] == PlotType.line_chart.value
+    assert result_dict['charts'][0]['options']['defaultPlotType']\
+        == PlotType.area_chart.value
+    assert result_dict['charts'][1]['options']['defaultPlotType']\
+        == PlotType.line_chart.value
