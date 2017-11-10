@@ -79,7 +79,7 @@ def test_ts_chart_show_event_lines():
 
 def test_ts_chart_stack_chart():
     chart = TimeSeriesChart().stack_chart(False)
-    assert chart.chart_options['stack'] == 'false'
+    assert chart.chart_options['stacked'] == 'false'
 
 
 def test_ts_chart_with_axis_precision():
@@ -166,15 +166,17 @@ def test_ts_chart_with_wrong_chart_options():
 
 
 def test_ts_chart_with_field_options():
-    opt = FieldOption('foo')
-    chart = TimeSeriesChart().with_legend_options([opt])
-    assert chart.chart_options['fields'] == [opt.to_dict()]
+    field_opt = FieldOption('foo')
+    opt = {'fields': [field_opt.to_dict()]}
+    chart = TimeSeriesChart().with_legend_options([field_opt])
+    assert chart.chart_options['legendOptions'] == opt
 
 
 def test_ts_chart_with_field_options_disabled():
-    opt = FieldOption('bar', enabled=False)
-    chart = TimeSeriesChart().with_legend_options([opt])
-    assert chart.chart_options['fields'] == [opt.to_dict()]
+    field_opt = FieldOption('bar', enabled=False)
+    opt = {'fields': [field_opt.to_dict()]}
+    chart = TimeSeriesChart().with_legend_options([field_opt])
+    assert chart.chart_options['legendOptions'] == opt
 
 
 def test_ts_chart_with_publish_label_options():
