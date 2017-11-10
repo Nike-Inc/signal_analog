@@ -5,7 +5,7 @@ from hypothesis.strategies import one_of, just, none, lists
 import pytest
 
 import signal_analog.combinators as comb
-from .generators import *
+from .generators import ascii, flows
 
 
 @given(one_of(none(), just("")))
@@ -27,6 +27,7 @@ def test_binary_combinator_and(f, ff):
     """And combinator should always intersperse 'and' in the elements."""
     assert str(comb.And(f, ff)) == "{0} and {1}".format(str(f), str(ff))
 
+
 @given(flows(), flows())
 def test_binary_combinator_or(f, ff):
     """Or combinator should always intersperse 'or' in the elements."""
@@ -37,3 +38,10 @@ def test_binary_combinator_or(f, ff):
 def test_combinator_not(expr):
     """Not combinator should always prefix 'not' to its expression."""
     assert str(comb.Not(expr)) == "not {0}".format(str(expr))
+
+
+@given(flows(), flows())
+def test_mixed_combinators(f, ff):
+    """Mixed combinators should preserve order of operations."""
+    assert str(comb.And(comb.Not(f), comb.Or(f, ff))) == \
+        "not {0} and ({0} or {1})".format(str(f), str(ff))
