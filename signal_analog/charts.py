@@ -123,7 +123,7 @@ class AxisOption(ChartOption):
             low_watermark: a line to draw as a low watermark
         """
         for arg in [min, max, label, high_watermark, low_watermark]:
-            if not arg:
+            if arg is None:
                 raise ValueError("{0} cannot be empty".format(arg))
 
         if max < min:
@@ -239,11 +239,11 @@ class DisplayOptionsMixin(object):
         self.chart_options.update({'programOptions': program_opts})
         return self
 
-    def with_publish_label_options(self, publish_opts):
+    def with_publish_label_options(self, *publish_opts):
         """Plot-level customization, associated with a publish statement."""
         util.is_valid(publish_opts)
-        self.chart_options.update(
-            {'PublishLabelOptions': publish_opts.to_dict()})
+        opt = list(map(lambda o: o.to_dict(), publish_opts))
+        self.chart_options.update({'publishLabelOptions': opt})
         return self
 
 
