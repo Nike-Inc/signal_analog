@@ -184,7 +184,7 @@ def test_ts_chart_with_publish_label_options():
         'somelabel', 0, PaletteColor.mountain_green, PlotType.area_chart, 'foo'
     )
     chart = TimeSeriesChart().with_publish_label_options(opts)
-    assert chart.chart_options['PublishLabelOptions'] == opts.to_dict()
+    assert chart.chart_options['publishLabelOptions'] == [opts.to_dict()]
 
 
 def test_publish_label_options_invalid_y_axis():
