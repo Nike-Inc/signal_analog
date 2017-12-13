@@ -63,6 +63,9 @@ coverage: ## check code coverage quickly with the default Python
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
+activity_diagrams: ## generate PNGs of activity uml diagrams
+	@plantuml docs/activity/*.puml
+
 docs: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/$(MODULE_NAME).rst
 	rm -f docs/modules.rst

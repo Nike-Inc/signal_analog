@@ -24,10 +24,11 @@ For more information about the above concepts consult the
 
   - Provides bindings for the SignalFlow DSL
   - Provides abstractions for building Charts
+  - Provides abstractions for building Dashboards
 
 ### Planned Features <a name="planned-features"></a>
 
-  - High-level constructs for building Dashboards and Detectors
+  - High-level constructs for building Detectors
 
 ## Installation <a name="installation"></a>
 
@@ -37,7 +38,6 @@ Add `signal_analog` to the requirements file in your project:
 # requirements.txt
 # ... your other dependencies
 signal_analog
-# ... your other dependencies
 ```
 
 Then run the following command to update your environment:
@@ -57,8 +57,7 @@ following documentation for more info:
 ### Building Charts with `signal_analog` <a name="charts"></a>
 
 `signal_analog` provides constructs for building charts in the
-`signal_analog.charts` module. As of version `0.3.0` only a subset of the
-`TimeSeriesChart` api is supported.
+`signal_analog.charts` module.
 
 Consult the [upstream documentation][charts] for more information on the
 Chart API.
@@ -230,6 +229,11 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
 
 Consult the [docs here for more info about contributing](CONTRIBUTING.md).
 
+Activity diagrams for this project are located in the `docs/activity` directory
+and can be generated locally by running the `make activity_diagrams` task in
+the root of the project. If you don't have `plantuml` installed you can do
+so via Homebrew (`brew install plantuml`).
+
 ## Credits <a name="credits"></a>
 
 This package was created with
@@ -238,6 +242,6 @@ This package was created with
 project template.
 
 [upstream documentation]: https://developers.signalfx.com/docs/signalflow-overview
-[charts]: https://developers.signalfx.com/reference#chart-model
+[charts]: https://developers.signalfx.com/reference#charts-overview-1
 [sfx-contact]: https://confluence.nike.com/x/GlHiCQ
 [Terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
