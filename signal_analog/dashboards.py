@@ -9,10 +9,20 @@ from signal_analog.errors import DashboardMatchNotFoundError, \
 
 
 class Dashboard(Resource):
-    def __init__(self):
-        """Base representation of a dashboard in SignalFx."""
+    def __init__(self, session=None):
+        """Base representation of a dashboard in SignalFx.
+
+        Arguments:
+            session: optional session harness for making API requests. Mostly
+                     used in testing scenarios.
+        """
         super(Dashboard, self).__init__(endpoint='/dashboard/simple')
         self.options = {'charts': []}
+
+        if session:
+            self.session_handler = session
+        else:
+            self.session_handler = requests.Session()
 
     def with_name(self, name):
         """Sets dashboard's name."""
@@ -81,7 +91,7 @@ class Dashboard(Resource):
             msg = 'Cannot search for existing dashboards without a name!'
             raise ValueError(msg)
 
-        response = requests.get(
+        response = self.session_handler.get(
             url=self.base_url + '/dashboard',
             params={'name': name},
             headers={
@@ -113,7 +123,7 @@ class Dashboard(Resource):
             raise e  # Rethrow the error to the user
         # Otherwise this is perfectly fine, create the dashboard!
         except DashboardMatchNotFoundError:
-            response = requests.request(
+            response = self.session_handler.request(
                     method='POST',
                     url=self.base_url + self.endpoint,
                     params=request_param,
