@@ -76,7 +76,7 @@ class Dashboard(Resource):
     def __get_existing_dashboards__(self):
         """Get a list of matches (total and partial) for the given dashboard.
         """
-        name = self.options.get('name', None)
+        name = self.__get__('name')
         if not name:
             msg = 'Cannot search for existing dashboards without a name!'
             raise ValueError(msg)
@@ -97,7 +97,7 @@ class Dashboard(Resource):
 
         See: https://developers.signalfx.com/v2/reference#dashboardsimple
         """
-        request_param = {'name': self.options.get('name', None)}
+        request_param = {'name': self.__get__('name', None)}
         charts = list(map(lambda c: c.to_dict(), self.options['charts']))
 
         if dry_run is True:

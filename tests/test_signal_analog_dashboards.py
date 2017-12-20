@@ -1,7 +1,10 @@
 import json
+import pytest
 
 from signal_analog.charts import TimeSeriesChart, PlotType
 from signal_analog.dashboards import Dashboard
+from signal_analog.errors import DashboardMatchNotFoundError, \
+        DashboardHasMultipleExactMatchesError, DashboardAlreadyExistsError
 
 
 def test_dashboard_init():
@@ -61,3 +64,90 @@ def test_dashboard_create():
         == PlotType.area_chart.value
     assert result_dict['charts'][1]['options']['defaultPlotType']\
         == PlotType.line_chart.value
+
+
+def test_dashboard_get_valid():
+    dash = Dashboard().with_name('foo')
+    assert dash.__get__('name') == 'foo'
+
+
+def test_dashboard_get_default():
+    dash = Dashboard()
+    assert dash.__get__('dne', 1) == 1
+
+
+def test_dashboard_get_invalid():
+    dash = Dashboard()
+    assert dash.__get__('dne') is None
+
+
+def test_dashboard_mult_match_invalid():
+    dash = Dashboard()
+    res = dash.__has_multiple_matches__('foo', [{'name': 'foo'}])
+    assert res is False
+
+
+def test_dashboard_mult_match_valid():
+    dash = Dashboard()
+    res = dash.__has_multiple_matches__(
+        'foo', [{'name': 'foo'}, {'name': 'foo'}])
+    assert res is True
+
+
+def test_find_match_empty():
+    dash = Dashboard()
+    with pytest.raises(DashboardMatchNotFoundError):
+        dash.__find_existing_match__({'count': 0})
+
+
+def test_find_match_exact():
+    response = {
+        'count': 1,
+        'results': [
+            {
+                'name': 'foo'
+            }
+        ]
+    }
+
+    dash = Dashboard().with_name('foo')
+    with pytest.raises(DashboardAlreadyExistsError):
+        dash.__find_existing_match__(response)
+
+
+def test_find_match_duplicate_matches():
+    response = {
+        'count': 1,
+        'results': [
+            {
+                'name': 'foo'
+            },
+            {
+                'name': 'foo'
+            }
+        ]
+    }
+    dash = Dashboard().with_name('foo')
+    with pytest.raises(DashboardHasMultipleExactMatchesError):
+        dash.__find_existing_match__(response)
+
+
+def test_find_match_none():
+    response = {
+        'count': 1,
+        'results': [
+            {
+                'name': 'bar'
+            }
+        ]
+    }
+
+    dash = Dashboard().with_name('foo')
+    with pytest.raises(DashboardMatchNotFoundError):
+        dash.__find_existing_match__(response)
+
+
+def test_get_existing_dashboards():
+    """Make sure we don't make network requests if we don't have a name."""
+    with pytest.raises(ValueError):
+        Dashboard().__get_existing_dashboards__()
