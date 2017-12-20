@@ -9,6 +9,9 @@ language, and Chart/Dashboard models.
 For more information about the above concepts consult the
 [upstream documentation].
 
+If you're looking for pre-built dashboards for existing application frameworks
+or tools then please consult the ***REMOVED*** documentation.
+
 ## TOC
 
   - [Features](#features)
@@ -311,3 +314,4 @@ project template.
 [sfx-contact]: https://confluence.nike.com/x/GlHiCQ
 [terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
 [dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
+***REMOVED***: https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
