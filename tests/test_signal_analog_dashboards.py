@@ -1,10 +1,24 @@
 import json
 import pytest
+from betamax_serializers import pretty_json
+import betamax
+import requests
 
+from signal_analog.flow import Data
 from signal_analog.charts import TimeSeriesChart, PlotType
 from signal_analog.dashboards import Dashboard
 from signal_analog.errors import DashboardMatchNotFoundError, \
-        DashboardHasMultipleExactMatchesError, DashboardAlreadyExistsError
+        DashboardHasMultipleExactMatchesError, DashboardAlreadyExistsError, \
+        SignalAnalogError
+
+# Global config. This will store all recorded requests in the 'mocks' dir
+with betamax.Betamax.configure() as config:
+    betamax.Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
+    config.cassette_library_dir = 'tests/mocks'
+
+# Don't get in the habit of doing this, but it simplifies testing
+global_session = requests.Session()
+global_recorder = betamax.Betamax(global_session)
 
 
 def test_dashboard_init():
@@ -147,7 +161,49 @@ def test_find_match_none():
         dash.__find_existing_match__(response)
 
 
-def test_get_existing_dashboards():
+def test_get_existing_dashboards_no_name():
     """Make sure we don't make network requests if we don't have a name."""
     with pytest.raises(ValueError):
         Dashboard().__get_existing_dashboards__()
+
+
+def test_get_existing_dashboards():
+    with global_recorder.use_cassette('get_existing_dashboards',
+                                      serialize_with='prettyjson'):
+        name = 'Riposte Template Dashboard'
+
+        resp = Dashboard(session=global_session)\
+            .with_name('Riposte Template Dashboard')\
+            .with_api_token('foo')\
+            .__get_existing_dashboards__()
+
+        assert resp['count'] > 0
+        for r in resp['results']:
+            assert name in r['name']
+
+
+@pytest.mark.parametrize('input',
+                         ['Shoeadmin Application Dashboard',
+                          'Riposte Template Dashboard'])
+def test_create_signal_analog_error(input):
+    """Test the cases we expect to fail."""
+    with global_recorder.use_cassette(input.lower().replace(' ', '_'),
+                                      serialize_with='prettyjson'):
+        with pytest.raises(SignalAnalogError):
+            Dashboard(session=global_session)\
+                    .with_name(input)\
+                    .with_api_token('foo')\
+                    .create()
+
+
+def test_create_success():
+    program = Data('cpu.utilization').publish()
+    chart = TimeSeriesChart().with_name('lol').with_program(program)
+
+    with global_recorder.use_cassette('create_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(chart)\
+            .create()
