@@ -1,5 +1,7 @@
 """Methods useful throughout the signal_analog project."""
 
+from collections import Counter
+
 
 def in_given_enum(value, enum):
     """Determines if the given value is in the given enum. Raises ValueError
@@ -26,3 +28,7 @@ def is_valid(value, error_message=None):
             raise ValueError(error_message)
         else:
             raise ValueError()
+
+
+def find_duplicates(xs):
+    return [item for item, count in Counter(xs).items() if count > 1]
