@@ -16,3 +16,5 @@ requests
 hypothesis
 requests-mock
 enum34
+betamax
+betamax_serializers
