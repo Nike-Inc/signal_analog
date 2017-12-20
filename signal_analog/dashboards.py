@@ -4,6 +4,8 @@ import requests
 
 from signal_analog.resources import Resource
 import signal_analog.util as util
+from signal_analog.errors import DashboardMatchNotFoundError, \
+        DashboardHasMultipleExactMatchesError, DashboardAlreadyExistsError
 
 
 class Dashboard(Resource):
@@ -22,6 +24,43 @@ class Dashboard(Resource):
         for chart in charts:
                 self.options['charts'].append(chart)
         return self
+
+    def __get__(self, name, default=None):
+        return self.options.get(name, default)
+
+    def __has_multiple_matches__(self, dashboard_name, dashboards):
+        dashboard_names = list(map(lambda x: x.get('name'), dashboards))
+        return dashboard_name in util.find_duplicates(dashboard_names)
+
+    def __find_existing_match__(self, query_result):
+        name = self.__get__('name', '')
+        if not query_result.get('count'):
+            raise DashboardMatchNotFoundError(name)
+
+        results = query_result.get('results', [])
+        for dashboard in results:
+            if name == dashboard.get('name'):
+                if self.__has_multiple_matches__(name, results):
+                    raise DashboardHasMultipleExactMatchesError(name)
+                raise DashboardAlreadyExistsError(name)
+
+        raise DashboardMatchNotFoundError(self.__get__('name'))
+
+    def __get_existing_dashboards__(self):
+        name = self.options.get('name', None)
+        if not name:
+            msg = 'Cannot search for existing dashboards without a name!'
+            raise ValueError(msg)
+
+        response = requests.get(
+            url=self.base_url + '/dashboard',
+            params={'name': name},
+            headers={
+                'X-SF-Token': self.api_token,
+                'Content-Type': 'application/json'
+            }
+        )
+        return response.json()
 
     def create(self, dry_run=False):
         """Creates a Signalfx dashboard using the /dashboard/simple helper
