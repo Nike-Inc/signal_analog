@@ -26,13 +26,40 @@ class Dashboard(Resource):
         return self
 
     def __get__(self, name, default=None):
+        """Internal helper for sourcing top-level options from this
+        Dashbord."""
         return self.options.get(name, default)
 
     def __has_multiple_matches__(self, dashboard_name, dashboards):
+        """Determine if the current dashboard has multiple exact matches.
+
+        Arguments:
+            dashboard_name: the name of the dashboard to check
+            dashboards: a collection of dashboard objects to search
+
+        Returns:
+            True if multiple exact matches are found, false otherwise.
+        """
         dashboard_names = list(map(lambda x: x.get('name'), dashboards))
         return dashboard_name in util.find_duplicates(dashboard_names)
 
     def __find_existing_match__(self, query_result):
+        """Attempt to find a matching dashboard given a Sfx API result.
+
+        Arguments:
+            query_result: the API response from SignalFx for this Dashboard.
+
+        Returns:
+            None.
+
+        Raises:
+            DashboardMatchNotFoundError:
+                if a single exact match couldn't be found in the SignalFx API.
+            DashboardAlreadyExistsError:
+                if a single exact match is found in the SignalFx API.
+            DashboardHasMultipleExactMatchesError:
+                if multiple exact matches were found in the SignalFx API.
+        """
         name = self.__get__('name', '')
         if not query_result.get('count'):
             raise DashboardMatchNotFoundError(name)
@@ -47,6 +74,8 @@ class Dashboard(Resource):
         raise DashboardMatchNotFoundError(self.__get__('name'))
 
     def __get_existing_dashboards__(self):
+        """Get a list of matches (total and partial) for the given dashboard.
+        """
         name = self.options.get('name', None)
         if not name:
             msg = 'Cannot search for existing dashboards without a name!'
