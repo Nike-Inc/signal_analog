@@ -104,7 +104,15 @@ class Dashboard(Resource):
             dump = dict(self.options)
             dump.update({'charts': charts})
             return json.dumps(dump)
-        else:
+
+        try:
+            query_result = self.__get_existing_dashboards__()
+            self.__find_existing_match__(query_result)
+        except (DashboardAlreadyExistsError,
+                DashboardHasMultipleExactMatchesError) as e:
+            raise e  # Rethrow the error to the user
+        # Otherwise this is perfectly fine, create the dashboard!
+        except DashboardMatchNotFoundError:
             response = requests.request(
                     method='POST',
                     url=self.base_url + self.endpoint,
