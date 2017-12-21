@@ -1,5 +1,10 @@
 # History
 
+## 0.12.0 (2017-12-21)
+
+  * Dashboard resources have learned how to check for themselves in the
+  SignalFx API, and will no longer create themselves if an exact match is found
+
 ## 0.3.0 (2017-09-25)
 
   * Adds support for base Resource object. Will be used for Chart/Dashboard
