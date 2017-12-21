@@ -9,28 +9,36 @@ language, and Chart/Dashboard models.
 For more information about the above concepts consult the
 [upstream documentation].
 
+If you're looking for pre-built dashboards for existing application frameworks
+or tools then please consult the ***REMOVED*** documentation.
+
 ## TOC
 
   - [Features](#features)
       - [Planned Features](#planned-features)
   - [Installation](#installation)
   - [Usage](#usage)
-      - [Building Charts with `signal_analog`](#charts)
+      - [Building Charts](#charts)
+      - [Building Dashboards](#dashboards)
+          - [A note on Dashboard names](#dashboard-names)
       - [Talking to the SignalFlow API Directly](#signalflow)
   - [Contributing](#contributing)
   - [Credits](#credits)
 
-## Features <a name="features"></a>
+<a name="features"></a>
+## Features
 
   - Provides bindings for the SignalFlow DSL
   - Provides abstractions for building Charts
   - Provides abstractions for building Dashboards
 
-### Planned Features <a name="planned-features"></a>
+<a name="planned-features"></a>
+### Planned Features
 
   - High-level constructs for building Detectors
 
-## Installation <a name="installation"></a>
+<a name="installation"></a>
+## Installation
 
 Add `signal_analog` to the requirements file in your project:
 
@@ -52,9 +60,11 @@ following documentation for more info:
 
 ***REMOVED***
 
-## Usage <a name="usage"></a>
+<a name="usage"></a>
+## Usage
 
-### Building Charts with `signal_analog` <a name="charts"></a>
+<a name="charts"></a>
+### Building Charts
 
 `signal_analog` provides constructs for building charts in the
 `signal_analog.charts` module.
@@ -180,7 +190,63 @@ From this point forward we can see our chart in the SignalFx UI by navigating
 to https://app.signalfx.com/#/chart/v2/\<chart\_id\>, where `chart_id` is
 the `id` field from our chart response.
 
-### Talking to the SignalFlow API Directly <a name="signalflow"></a>
+<a name="dashboards"></a>
+### Building Dashboards
+
+`signal_analog` provides constructs for building charts in the
+`signal_analog.dashboards` module.
+
+Consult the [upstream documentation][dashboards] for more information on the
+Dashboard API.
+
+Building on the examples described in the previous section, we'd now like to
+build a dashboard containing our memory chart.
+
+We start with the humble `Dashboard` object:
+
+```python
+from signal_analog.dashboards import Dashboard
+
+dash = Dashboard()
+```
+
+Many of the same methods for charts are available on dashboards as well, so
+let's give our dashboard a memorable name and configure it's API token:
+
+```python
+
+dash.with_name('My Little Dashboard: Metrics are Magic')\
+    .with_api_token('my-api-token')
+```
+
+See the [note below](#dashboard-names) for caveats on naming dashboards.
+
+Our final task will be to add charts to our dashboard and create it in the API!
+
+```python
+response = dash.with_charts(memory_chart).create()
+```
+
+At this point one of two things will happen:
+
+  - We receive some sort of error from the SignalFx API and an exception
+  is thrown
+  - We successfully created the dashboard, in which case the JSON response is
+  returned as a dictionary.
+
+<a name="dashboard-names"></a>
+#### A note on Dashboard names
+
+`signal_analog` assumes that dashboard names are unique in SignalFx. While at
+the time of this writing uniqueness is _not_ enforced by the `v2` API, this
+convention _is_ enforced by this library.
+
+We make this assumption so that we avoid easily creating duplicate dashboards
+and makes updating existing resources easier without having to manage extra
+state outside of the SignalFx API.
+
+<a name="signalflow"></a>
+### Talking to the SignalFlow API Directly
 
 If you need to process SignalFx data outside of their walled garden it may be
 useful to call the SignalFlow API directly. Note that you may incur time
@@ -225,7 +291,8 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
             print('{0}: {1}'.format(msg.timestamp_ms, msg.properties))
 ```
 
-## Contributing <a name="contributing"></a>
+<a name="contributing"></a>
+## Contributing
 
 Consult the [docs here for more info about contributing](CONTRIBUTING.md).
 
@@ -234,7 +301,8 @@ and can be generated locally by running the `make activity_diagrams` task in
 the root of the project. If you don't have `plantuml` installed you can do
 so via Homebrew (`brew install plantuml`).
 
-## Credits <a name="credits"></a>
+<a name="credits"></a>
+## Credits
 
 This package was created with
 [Cookiecutter](https://github.com/audreyr/cookiecutter) and the
@@ -244,4 +312,6 @@ project template.
 [upstream documentation]: https://developers.signalfx.com/docs/signalflow-overview
 [charts]: https://developers.signalfx.com/reference#charts-overview-1
 [sfx-contact]: https://confluence.nike.com/x/GlHiCQ
-[Terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
+[terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
+[dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
+***REMOVED***: https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
