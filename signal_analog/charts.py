@@ -72,7 +72,6 @@ class PlotType(Enum):
     area_chart = "AreaChart"
     column_chart = "ColumnChart"
     histogram = "Histogram"
-    list = "List"
 
 class PaletteColor(Enum):
     """All available colors for use in charts.
