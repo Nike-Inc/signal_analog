@@ -73,7 +73,6 @@ class PlotType(Enum):
     column_chart = "ColumnChart"
     histogram = "Histogram"
 
-
 class PaletteColor(Enum):
     """All available colors for use in charts.
 
@@ -415,3 +414,22 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
         opts = {'thresholds': thresholds, 'inverted': inverted}
         self.chart_options.update({'colorScale': opts})
         return self
+
+class ListChart(Chart, DisplayOptionsMixin):
+
+    def __init__(self):
+        super(ListChart, self).__init__()
+        self.chart_options = {'type': 'List'}
+
+    def with_refresh_interval(self, interval):
+        """How often (in milliseconds) to refresh the values of the list."""
+        util.is_valid(interval)
+        self.chart_options.update({'refreshInterval': interval})
+        return self
+
+    def with_maximum_precision(self, precision):
+        """The maximum precision to for values displayed in the list."""
+        util.is_valid(precision)
+        self.chart_options.update({'maximumPrecision': precision})
+        return self
+

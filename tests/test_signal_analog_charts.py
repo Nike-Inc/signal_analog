@@ -3,7 +3,7 @@ import pytest
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
                                  PublishLabelOptions, PaletteColor,\
-                                 SingleValueChart
+                                 SingleValueChart, ListChart
 from signal_analog.flow import Data
 
 
@@ -234,3 +234,14 @@ def test_sv_chart_with_colorscale():
     opts = {'thresholds': [300, 200, 100], 'inverted': True}
     chart = SingleValueChart().with_colorscale([300, 200, 100], inverted=True)
     assert chart.chart_options['colorScale'] == opts
+
+
+def test_list_chart_with_refresh_interval():
+    chart = ListChart().with_refresh_interval(5)
+    assert chart.chart_options['refreshInterval'] == 5
+
+
+def test_list_chart_with_maximum_precision():
+    chart = ListChart().with_maximum_precision(1)
+    assert chart.chart_options['maximumPrecision'] == 1
+

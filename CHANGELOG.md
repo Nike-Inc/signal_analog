@@ -1,5 +1,10 @@
 # History
 
+## 0.14.0 (2018-01-04)
+
+  * Added List Chart style
+      * Added by Jeremy Hicks
+
 ## 0.13.0 (2018-01-04)
 
   * Dashboard resources have learned how to force create themselves in the
