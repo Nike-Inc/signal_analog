@@ -73,7 +73,6 @@ class PlotType(Enum):
     column_chart = "ColumnChart"
     histogram = "Histogram"
 
-
 class PaletteColor(Enum):
     """All available colors for use in charts.
 
@@ -416,7 +415,6 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
         self.chart_options.update({'colorScale': opts})
         return self
 
-
 class ListChart(Chart, DisplayOptionsMixin):
 
     def __init__(self):
@@ -434,3 +432,4 @@ class ListChart(Chart, DisplayOptionsMixin):
         util.is_valid(precision)
         self.chart_options.update({'maximumPrecision': precision})
         return self
+
