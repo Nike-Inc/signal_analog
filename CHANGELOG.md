@@ -1,6 +1,6 @@
 # History
 
-## 0.13.0 (2017-01-04)
+## 0.13.0 (2018-01-04)
 
   * Added List Chart style
 
