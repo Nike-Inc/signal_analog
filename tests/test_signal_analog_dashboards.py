@@ -207,3 +207,22 @@ def test_create_success():
             .with_api_token('foo')\
             .with_charts(chart)\
             .create()
+
+
+def test_create_force_success():
+    program = Data('cpu.utilization').publish()
+    chart = TimeSeriesChart().with_name('lol').with_program(program)
+    dashboard = Dashboard(session=global_session)\
+        .with_name('testy mctesterson')\
+        .with_api_token('foo')\
+        .with_charts(chart)\
+
+    with global_recorder.use_cassette('create_success_force',
+                                      serialize_with='prettyjson'):
+        # Create our first dashboard
+        dashboard.create()
+        with pytest.raises(SignalAnalogError):
+            # Verify that we can't create it again
+            dashboard.create()
+        # Force the dashboard to create itself again
+        dashboard.create(force=True)
