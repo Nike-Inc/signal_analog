@@ -18,3 +18,4 @@ requests-mock
 enum34
 betamax
 betamax_serializers
+click

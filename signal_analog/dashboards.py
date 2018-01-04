@@ -6,6 +6,7 @@ from signal_analog.resources import Resource
 import signal_analog.util as util
 from signal_analog.errors import DashboardMatchNotFoundError, \
         DashboardHasMultipleExactMatchesError, DashboardAlreadyExistsError
+import click
 
 
 class Dashboard(Resource):
@@ -101,13 +102,30 @@ class Dashboard(Resource):
         )
         return response.json()
 
-    def create(self, dry_run=False):
+    def __create_resource__(self):
+        charts = list(map(lambda c: c.to_dict(), self.options['charts']))
+
+        response = self.session_handler.request(
+                method='POST',
+                url=self.base_url + self.endpoint,
+                params={'name': self.__get__('name')},
+                data=json.dumps(charts),
+                headers={'X-SF-Token': self.api_token,
+                         'Content-Type': 'application/json'})
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            # Tell the user exactly what went wrong according to SignalFx
+            raise RuntimeError(error.response.text)
+
+        return response.json()
+
+    def create(self, dry_run=False, force=False, interactive=False):
         """Creates a Signalfx dashboard using the /dashboard/simple helper
         endpoint. A list of chart models is required.
 
         See: https://developers.signalfx.com/v2/reference#dashboardsimple
         """
-        request_param = {'name': self.__get__('name', None)}
         charts = list(map(lambda c: c.to_dict(), self.options['charts']))
 
         if dry_run is True:
@@ -120,20 +138,18 @@ class Dashboard(Resource):
             self.__find_existing_match__(query_result)
         except (DashboardAlreadyExistsError,
                 DashboardHasMultipleExactMatchesError) as e:
-            raise e  # Rethrow the error to the user
+            if not force and not interactive:
+                # Rethrow error to user if we're not force creating things
+                raise e
+            elif interactive:
+                if click.confirm("A Dashboard with the name \"%s\" already exists. "
+                                 "Do you want to update the existing dashboard?" % self.__get__('name')):
+                    return self.__create_resource__()
+                else:
+                    raise DashboardAlreadyExistsError(self.__get__('name'))
+
         # Otherwise this is perfectly fine, create the dashboard!
         except DashboardMatchNotFoundError:
-            response = self.session_handler.request(
-                    method='POST',
-                    url=self.base_url + self.endpoint,
-                    params=request_param,
-                    data=json.dumps(charts),
-                    headers={'X-SF-Token': self.api_token,
-                             'Content-Type': 'application/json'})
-            try:
-                response.raise_for_status()
-            except requests.exceptions.HTTPError as error:
-                # Tell the user exactly what went wrong according to SignalFx
-                raise RuntimeError(error.response.text)
+            pass
 
-            return response.json()
+        return self.__create_resource__()
