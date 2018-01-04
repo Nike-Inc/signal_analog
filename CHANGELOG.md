@@ -1,5 +1,9 @@
 # History
 
+## 0.13.0 (2017-01-04)
+
+  * Added List Chart style
+
 ## 0.12.0 (2017-12-21)
 
   * Dashboard resources have learned how to check for themselves in the
