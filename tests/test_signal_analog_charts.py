@@ -3,7 +3,7 @@ import pytest
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
                                  PublishLabelOptions, PaletteColor,\
-                                 SingleValueChart, ListChart
+                                 SingleValueChart
 from signal_analog.flow import Data
 
 
