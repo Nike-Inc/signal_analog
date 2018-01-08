@@ -64,7 +64,7 @@ class ColorBy(Enum):
     """Enum for types of coloring options in TimeSeriesCharts."""
     dimension = "Dimension"
     metric = "Metric"
-
+    scale = "Scale"
 
 class PlotType(Enum):
     """The default plot display style for the visualization."""
