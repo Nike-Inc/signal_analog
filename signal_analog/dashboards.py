@@ -38,7 +38,7 @@ class Dashboard(Resource):
 
     def __get__(self, name, default=None):
         """Internal helper for sourcing top-level options from this
-        Dashbord."""
+        Dashboard."""
         return self.options.get(name, default)
 
     def __has_multiple_matches__(self, dashboard_name, dashboards):
@@ -71,6 +71,22 @@ class Dashboard(Resource):
             DashboardHasMultipleExactMatchesError:
                 if multiple exact matches were found in the SignalFx API.
         """
+        results = self.__filter_matches__(query_result)
+
+        if len(results) == 1:
+            return results
+
+        raise DashboardMatchNotFoundError(self.__get__('name'))
+
+    def __filter_matches__(self, query_result):
+        """Attempt to find a matching dashboard given a Sfx API result.
+
+        Arguments:
+            query_result: the API response from SignalFx for this Dashboard.
+
+        Returns:
+            None.
+        """
         name = self.__get__('name', '')
         if not query_result.get('count'):
             raise DashboardMatchNotFoundError(name)
@@ -80,7 +96,7 @@ class Dashboard(Resource):
             if name == dashboard.get('name'):
                 if self.__has_multiple_matches__(name, results):
                     raise DashboardHasMultipleExactMatchesError(name)
-                raise DashboardAlreadyExistsError(name)
+                return dashboard
 
         raise DashboardMatchNotFoundError(self.__get__('name'))
 
@@ -106,12 +122,38 @@ class Dashboard(Resource):
         charts = list(map(lambda c: c.to_dict(), self.options['charts']))
 
         response = self.session_handler.request(
-                method='POST',
-                url=self.base_url + self.endpoint,
-                params={'name': self.__get__('name')},
-                data=json.dumps(charts),
-                headers={'X-SF-Token': self.api_token,
-                         'Content-Type': 'application/json'})
+            method='POST',
+            url=self.base_url + self.endpoint,
+            params={'name': self.__get__('name')},
+            data=json.dumps(charts),
+            headers={'X-SF-Token': self.api_token,
+                     'Content-Type': 'application/json'})
+        try:
+            response.raise_for_status()
+        except requests.exceptions.HTTPError as error:
+            # Tell the user exactly what went wrong according to SignalFx
+            raise RuntimeError(error.response.text)
+
+        return response.json()
+
+    def __update_resource__(self, data, name, description):
+        # charts = list(map(lambda c: c.to_dict(), self.options['charts']))
+
+        if name:
+            data.update({
+                'name': name
+            })
+        if description:
+            data.update({
+                'description': description
+            })
+        response = self.session_handler.request(
+            method='PUT',
+            url=self.base_url + '/dashboard/' + data['id'],
+            # params={'id': data['id']},
+            data=json.dumps(data),
+            headers={'X-SF-Token': self.api_token,
+                     'Content-Type': 'application/json'})
         try:
             response.raise_for_status()
         except requests.exceptions.HTTPError as error:
@@ -143,7 +185,7 @@ class Dashboard(Resource):
                 raise e
             elif interactive:
                 if click.confirm("A Dashboard with the name \"%s\" already exists. "
-                                 "Do you want to update the existing dashboard?" % self.__get__('name')):
+                                 "Do you want to create a new dashboard?" % self.__get__('name')):
                     return self.__create_resource__()
                 else:
                     raise DashboardAlreadyExistsError(self.__get__('name'))
@@ -153,3 +195,29 @@ class Dashboard(Resource):
             pass
 
         return self.__create_resource__()
+
+    def update(self, name=None, description=None, dry_run=False):
+        """Updates a Signalfx dashboard using the /dashboard/_id_ helper
+        endpoint. A list of chart models is required.
+
+        See: https://developers.signalfx.com/v2/reference#update-dashboard
+        """
+        charts = list(map(lambda c: c.to_dict(), self.options['charts']))
+
+        if dry_run is True:
+            dump = dict(self.options)
+            if name:
+                dump.update({'name': name})
+            if description:
+                dump.update({'description': description})
+            dump.update({'charts': charts})
+            return json.dumps(dump)
+
+        try:
+            query_result = self.__get_existing_dashboards__()
+            self.__find_existing_match__(query_result)
+
+        except DashboardMatchNotFoundError:
+            pass
+
+        return self.__update_resource__(self.__filter_matches__(query_result), name, description)
