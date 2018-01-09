@@ -67,6 +67,14 @@ class ColorBy(Enum):
     scale = "Scale"
 
 
+class SortBy(Enum):
+    """Enum for sorting by values in ListCharts."""
+    value_desc = "-value"
+    value_asc = "+value"
+    metric_desc = "-metric"
+    metric_asc = "+metric"
+
+
 class PlotType(Enum):
     """The default plot display style for the visualization."""
     line_chart = "LineChart"
@@ -201,6 +209,13 @@ class DisplayOptionsMixin(object):
         util.is_valid(color_by)
         util.in_given_enum(color_by, ColorBy)
         self.chart_options.update({'colorBy': color_by.value})
+        return self
+
+    def with_sort_by(self, sort_by):
+        """Determine how values are sorted."""
+        util.is_valid(sort_by)
+        util.in_given_enum(sort_by, SortBy)
+        self.chart_options.update({'sortBy': sort_by.value})
         return self
 
     def with_unit_prefix(self, prefix):
