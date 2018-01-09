@@ -64,6 +64,7 @@ class ColorBy(Enum):
     """Enum for types of coloring options in TimeSeriesCharts."""
     dimension = "Dimension"
     metric = "Metric"
+    scale = "Scale"
 
 
 class PlotType(Enum):
@@ -72,6 +73,7 @@ class PlotType(Enum):
     area_chart = "AreaChart"
     column_chart = "ColumnChart"
     histogram = "Histogram"
+
 
 class PaletteColor(Enum):
     """All available colors for use in charts.
@@ -415,6 +417,7 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
         self.chart_options.update({'colorScale': opts})
         return self
 
+
 class ListChart(Chart, DisplayOptionsMixin):
 
     def __init__(self):
@@ -432,4 +435,3 @@ class ListChart(Chart, DisplayOptionsMixin):
         util.is_valid(precision)
         self.chart_options.update({'maximumPrecision': precision})
         return self
-
