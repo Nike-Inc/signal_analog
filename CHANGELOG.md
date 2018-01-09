@@ -1,5 +1,21 @@
 # History
 
+## 0.15.0 (2018-01-08)
+
+  * Added "Scale" to ColorBy class for coloring thresholds in SingleValueChart
+      * Added by Jeremy Hicks 
+
+## 0.14.0 (2018-01-04)
+
+  * Added List Chart style
+      * Added by Jeremy Hicks
+
+## 0.13.0 (2018-01-04)
+
+  * Dashboard resources have learned how to force create themselves in the
+  SignalFx API regardless of a pre-existing match (this behavior is disabled
+  by default).
+
 ## 0.12.0 (2017-12-21)
 
   * Dashboard resources have learned how to check for themselves in the
