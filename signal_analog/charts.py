@@ -71,8 +71,6 @@ class SortBy(Enum):
     """Enum for sorting by values in ListCharts."""
     value_desc = "-value"
     value_asc = "+value"
-    metric_desc = "-metric"
-    metric_asc = "+metric"
 
 
 class PlotType(Enum):
