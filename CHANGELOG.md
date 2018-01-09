@@ -1,5 +1,10 @@
 # History
 
+## 0.15.0 (2018-01-08)
+
+  * Added "Scale" to ColorBy class for coloring thresholds in SingleValueChart
+      * Added by Jeremy Hicks 
+
 ## 0.14.0 (2018-01-04)
 
   * Added List Chart style
