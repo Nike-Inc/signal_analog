@@ -1,5 +1,11 @@
 # History
 
+## 0.16.0 (2018-01-09)
+
+  * Dashboard resources have learned to interactively prompt the user if the user wants to
+   create a new dashboard if there is a pre-existing match (this behavior is disabled
+      by default). 
+  * Added "Update Dashboard" functionality where a user can update the properties of a dashboard(only name and description for now)
 ## 0.15.0 (2018-01-08)
 
   * Added "Scale" to ColorBy class for coloring thresholds in SingleValueChart
