@@ -3,7 +3,7 @@ import pytest
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
                                  PublishLabelOptions, PaletteColor,\
-                                 SingleValueChart, ListChart
+                                 SingleValueChart, ListChart, SortBy
 from signal_analog.flow import Data
 
 
@@ -245,3 +245,8 @@ def test_list_chart_with_maximum_precision():
     chart = ListChart().with_maximum_precision(1)
     assert chart.chart_options['maximumPrecision'] == 1
 
+
+@pytest.mark.parametrize("sort_by", SortBy)
+def test_list_chart_with_sort_by(sort_by):
+    chart = ListChart().with_sort_by(sort_by)
+    assert chart.chart_options['sortBy'] == sort_by.value

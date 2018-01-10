@@ -136,7 +136,6 @@ class Dashboard(Resource):
         return response.json()
 
     def __update_resource__(self, data, name, description):
-        # charts = list(map(lambda c: c.to_dict(), self.options['charts']))
 
         if name:
             data.update({
@@ -149,7 +148,6 @@ class Dashboard(Resource):
         response = self.session_handler.request(
             method='PUT',
             url=self.base_url + '/dashboard/' + data['id'],
-            # params={'id': data['id']},
             data=json.dumps(data),
             headers={'X-SF-Token': self.api_token,
                      'Content-Type': 'application/json'})
@@ -183,8 +181,8 @@ class Dashboard(Resource):
                 # Rethrow error to user if we're not force creating things
                 raise e
             elif interactive:
-                if click.confirm("A Dashboard with the name \"%s\" already exists. "
-                                 "Do you want to create a new dashboard?" % self.__get__('name')):
+                if click.confirm("A Dashboard with the name \"{0}\" already exists. "
+                                 "Do you want to create a new dashboard?" .format(self.__get__('name'))):
                     return self.__create_resource__()
                 else:
                     raise DashboardAlreadyExistsError(self.__get__('name'))

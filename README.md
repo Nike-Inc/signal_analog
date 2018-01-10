@@ -20,8 +20,8 @@ or tools then please consult the ***REMOVED*** documentation.
   - [Usage](#usage)
       - [Building Charts](#charts)
       - [Building Dashboards](#dashboards)
-      - [Updating Dashboards](#dashboards)
           - [A note on Dashboard names](#dashboard-names)
+      - [Updating Dashboards](#dashboards-updates)          
       - [Talking to the SignalFlow API Directly](#signalflow)
   - [Contributing](#contributing)
   - [Credits](#credits)
@@ -246,9 +246,12 @@ We make this assumption so that we avoid easily creating duplicate dashboards
 and makes updating existing resources easier without having to manage extra
 state outside of the SignalFx API.
 
-<a name="dashboards"></a>
+<a name="dashboards-updates"></a>
 ### Updating Dashboards
 Once you have dashboard created, you can update the properties like name and descriptions of a dashboard
+    
+**Note**: For now, you can only update the dashboard name and description and *not* charts. 
+Updating charts is coming next and you can track that work [here](https://jira.nike.com/browse/SIP-1035) 
 
 ```python
 dash.update(name='updated_dashboard_name', description='updated_dashboard_description')
