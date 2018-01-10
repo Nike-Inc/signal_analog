@@ -72,9 +72,8 @@ class Dashboard(Resource):
                 if multiple exact matches were found in the SignalFx API.
         """
         results = self.__filter_matches__(query_result)
-
-        if len(results) == 1:
-            return results
+        if results:
+            raise DashboardAlreadyExistsError(self.__get__('name'))
 
         raise DashboardMatchNotFoundError(self.__get__('name'))
 
@@ -216,6 +215,9 @@ class Dashboard(Resource):
         try:
             query_result = self.__get_existing_dashboards__()
             self.__find_existing_match__(query_result)
+
+        except DashboardAlreadyExistsError:
+            return self.__update_resource__(self.__filter_matches__(query_result), name, description)
 
         except DashboardMatchNotFoundError:
             pass

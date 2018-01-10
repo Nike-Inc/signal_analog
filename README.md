@@ -20,6 +20,7 @@ or tools then please consult the ***REMOVED*** documentation.
   - [Usage](#usage)
       - [Building Charts](#charts)
       - [Building Dashboards](#dashboards)
+      - [Updating Dashboards](#dashboards)
           - [A note on Dashboard names](#dashboard-names)
       - [Talking to the SignalFlow API Directly](#signalflow)
   - [Contributing](#contributing)
@@ -244,6 +245,20 @@ convention _is_ enforced by this library.
 We make this assumption so that we avoid easily creating duplicate dashboards
 and makes updating existing resources easier without having to manage extra
 state outside of the SignalFx API.
+
+<a name="dashboards"></a>
+### Updating Dashboards
+Once you have dashboard created, you can update the properties like name and descriptions of a dashboard
+
+```python
+dash.update(name='updated_dashboard_name', description='updated_dashboard_description')
+```
+At this point one of two things will happen:
+
+  - We receive some sort of error from the SignalFx API and an exception
+  is thrown
+  - We successfully updated the dashboard, in which case the JSON response is
+  returned as a dictionary with the updated properties.
 
 <a name="signalflow"></a>
 ### Talking to the SignalFlow API Directly
