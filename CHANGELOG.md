@@ -1,5 +1,10 @@
 # History
 
+## 0.16.0 (2018-01-10)
+  * Added the ability to sort a list chart by value ascending/descending
+      * Added by Jeremy Hicks
+
+
 ## 0.15.0 (2018-01-08)
 
   * Added "Scale" to ColorBy class for coloring thresholds in SingleValueChart
