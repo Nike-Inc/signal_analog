@@ -247,6 +247,7 @@ def test_create_interactive_success(confirm):
         # Force the dashboard to create itself again
         dashboard.create(interactive=True)
 
+
 @patch('click.confirm')
 def test_create_interactive_failure(confirm):
     confirm.__getitem__.return_value = 'n'
@@ -264,3 +265,36 @@ def test_create_interactive_failure(confirm):
             # Verify that we can't create it again
             dashboard.create()
             dashboard.create(interactive=True)
+
+
+def test_dashboard_update_success():
+    program = Data('cpu.utilization').publish()
+    chart = TimeSeriesChart().with_name('lol').with_program(program)
+
+    with global_recorder.use_cassette('dashboard_update_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(chart) \
+            .create() \
+            .update(name='updated_dashboard_name', description='updated_dashboard_description')
+
+
+def test_dashboard_update_failure():
+    program = Data('cpu.utilization').publish()
+    chart = TimeSeriesChart().with_name('lol').with_program(program)
+
+    dashboard = Dashboard(session=global_session) \
+        .with_name('testy mctesterson') \
+        .with_api_token('foo') \
+        .with_charts(chart)
+    with global_recorder.use_cassette('dashboard_update_failure',
+                                      serialize_with='prettyjson'):
+        # Just to make sure there are multiple dashboards exists, create a new dashboard with the same name
+        dashboard.create(force=True)
+        dashboard.create(force=True)
+
+        with pytest.raises(SignalAnalogError):
+            # Verify that we can't update when multiple dashboards exist
+            dashboard.update(name='updated_dashboard_name', description='updated_dashboard_description')
