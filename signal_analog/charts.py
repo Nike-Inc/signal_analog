@@ -448,3 +448,23 @@ class ListChart(Chart, DisplayOptionsMixin):
         util.is_valid(precision)
         self.chart_options.update({'maximumPrecision': precision})
         return self
+
+
+class HeatmapChart(Chart, DisplayOptionsMixin):
+
+    def __init__(self):
+        super(HeatmapChart, self).__init__()
+        self.chart_options = {'type': 'Heatmap'}
+
+    def with_colorscale(self, thresholds):
+        """Values for each color in the range.
+
+        Arguments:
+            thresholds: The thresholds to set for the color range being used.
+        """
+        util.is_valid(thresholds)
+        thresholds.sort(reverse=True)
+        opts = {'thresholds': thresholds}
+        self.chart_options.update({'colorScale': opts})
+        return self
+
