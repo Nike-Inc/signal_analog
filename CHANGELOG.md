@@ -1,9 +1,12 @@
 # History
 
+## 0.17.0 (2018-01-11)
+  * Added Heatmap Chart style
+     * Added by Jeremy Hicks
+
 ## 0.16.0 (2018-01-10)
   * Added the ability to sort a list chart by value ascending/descending
       * Added by Jeremy Hicks
-
 
 ## 0.15.0 (2018-01-08)
 
