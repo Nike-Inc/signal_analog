@@ -11,7 +11,7 @@ class SignalAnalogConfig(object):
 pass_config = click.make_pass_decorator(SignalAnalogConfig, ensure=True)
 
 
-def invoke(resource, action, api_key, force=None, interactive=None):
+def invoke(resource, action, api_key, **kwargs):
     """Attempt to invoke the provided action on each resource.
 
     Returns:
@@ -24,7 +24,7 @@ def invoke(resource, action, api_key, force=None, interactive=None):
         click.echo('You dun goofed')
         click.exit()
 
-    return action_fn(force=force, interactive=interactive)
+    return action_fn(**kwargs)
 
 
 class CliBuilder(object):
@@ -55,9 +55,13 @@ class CliBuilder(object):
                 click.echo(invoke(resource, 'create', ctx.api_key, force=force, interactive=interactive))
 
         @cli.command()
+        @click.option('--name', type=str, nargs=1, help='New Dashboard name')
+        @click.option('--description', type=str, nargs=1, help='New Dashboard description')
         @pass_config
-        def update(ctx):
-            raise NotImplementedError('lol')
+        def update(ctx, name, description):
+            click.echo('update')
+            for resource in ctx.resources:
+                click.echo(invoke(resource, 'update', ctx.api_key, name=name, description=description))
 
         @cli.command()
         @pass_config
