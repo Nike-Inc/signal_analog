@@ -1,11 +1,15 @@
 # History
 
-## 0.17.0 (2018-01-10)
+## 0.18.0 (2018-01-11)
 
   * Dashboard resources have learned to interactively prompt the user if the user wants to
    create a new dashboard if there is a pre-existing match (this behavior is disabled
       by default). 
   * Added "Update Dashboard" functionality where a user can update the properties of a dashboard(only name and description for now)
+
+## 0.17.0 (2018-01-11)
+  * Added Heatmap Chart style
+     * Added by Jeremy Hicks
 
 ## 0.16.0 (2018-01-10)
   * Added the ability to sort a list chart by value ascending/descending

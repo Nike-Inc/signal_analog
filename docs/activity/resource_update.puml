@@ -1,11 +1,11 @@
 @startuml
 start
-  :Dashboard::update(dry_run?, interactive?);
+  :Resource::update(dry_run?, interactive?);
   if (dry_run?) then (yes)
-    :Return request to caller;
+    #SpringGreen:return request to caller;
     stop
   else (no)
-    #Orange:**GET** /v2/dashboard?name=dashboard-name>
+    #Orange:**GET** /v2/<resource>?name=resource-name>
     note right
       All API calls imply contact with
       ""https://api.signalfx.com""
@@ -16,8 +16,9 @@ start
     end note
     if (found results?) then (yes)
       if (exact match?) then (yes)
-        :get dashboard id from match;
-        #Orange:**PUT** /v2/dashboard/<id> >
+        :get resource id from match;
+        :resource specific update logic;
+        #Orange:**PUT** /v2/<resource>/<id> >
         #SpringGreen:return object to caller;
         stop
       else (no)
@@ -25,8 +26,9 @@ start
           partition («post-mvp») {
             :prompt user selection from partial matches;
             if (selection made?) then (yes)
-              :get dashboard id from match;
-              #Orange:**PUT** /v2/dashboard/<id> >
+              :get resource id from match;
+              :resource specific update logic;
+              #Orange:**PUT** /v2/<resource>/<id> >
               #SpringGreen:return object to caller;
               stop
             else (no)
@@ -38,7 +40,7 @@ start
           #OrangeRed:raise InvalidMatchError;
           note right
             We wan't to avoid clobbering existing
-            dashboards if we haven't found an
+            resource if we haven't found an
             exact match and we're in a
             non-interactive environment.
           end note
