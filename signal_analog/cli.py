@@ -21,8 +21,9 @@ def invoke(resource, action, api_key, **kwargs):
     try:
         action_fn = getattr(res, action)
     except AttributeError:
-        click.echo('You dun goofed')
-        click.exit()
+        msg = "Attempted to execute unsupported action '{0}' on resource '{1}'."
+        click.echo(msg.format(action, resource.__get__('name')))
+        exit()
 
     return action_fn(**kwargs)
 
@@ -46,8 +47,8 @@ class CliBuilder(object):
             ctx.api_key = api_key
 
         @cli.command()
-        @click.option('-f', '--force', type=bool, is_flag=True, default=False, help='Force the creation of a new dashboard')
-        @click.option('-i', '--interactive', type=bool, is_flag=True, default=False, help='Interactive mode of creating a new dashboard')
+        @click.option('-f', '--force', type=bool, is_flag=True, default=False, help='Force the creation of new resources')
+        @click.option('-i', '--interactive', type=bool, is_flag=True, default=False, help='Interactive mode of creating new resources')
         @pass_config
         def create(ctx, force, interactive):
             click.echo('create')
@@ -66,11 +67,7 @@ class CliBuilder(object):
         @cli.command()
         @pass_config
         def delete(ctx):
-            raise NotImplementedError('lol')
-
-        @cli.command()
-        @pass_config
-        def read(ctx):
-            raise NotImplementedError('lol')
+            for resource in ctx.resources:
+                click.echo(invoke(resource, 'delete', ctx.api_key))
 
         return cli
