@@ -21,6 +21,7 @@ or tools then please consult the [signal\_analog\_patterns] documentation.
       - [Building Charts](#charts)
       - [Building Dashboards](#dashboards)
           - [A note on Dashboard names](#dashboard-names)
+      - [Updating Dashboards](#dashboards-updates)          
       - [Talking to the SignalFlow API Directly](#signalflow)
   - [Contributing](#contributing)
   - [Credits](#credits)
@@ -244,6 +245,23 @@ convention _is_ enforced by this library.
 We make this assumption so that we avoid easily creating duplicate dashboards
 and makes updating existing resources easier without having to manage extra
 state outside of the SignalFx API.
+
+<a name="dashboards-updates"></a>
+### Updating Dashboards
+Once you have dashboard created, you can update the properties like name and descriptions of a dashboard
+    
+**Note**: For now, you can only update the dashboard name and description and *not* charts. 
+Updating charts is coming next and you can track that work [here](https://jira.nike.com/browse/SIP-1035) 
+
+```python
+dash.update(name='updated_dashboard_name', description='updated_dashboard_description')
+```
+At this point one of two things will happen:
+
+  - We receive some sort of error from the SignalFx API and an exception
+  is thrown
+  - We successfully updated the dashboard, in which case the JSON response is
+  returned as a dictionary with the updated properties.
 
 <a name="signalflow"></a>
 ### Talking to the SignalFlow API Directly
