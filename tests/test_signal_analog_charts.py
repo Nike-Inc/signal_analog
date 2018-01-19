@@ -3,7 +3,8 @@ import pytest
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
                                  PublishLabelOptions, PaletteColor,\
-                                 SingleValueChart, ListChart, SortBy
+                                 SingleValueChart, ListChart, SortBy,\
+                                 HeatmapChart                                 
 from signal_analog.flow import Data
 
 
@@ -250,3 +251,13 @@ def test_list_chart_with_maximum_precision():
 def test_list_chart_with_sort_by(sort_by):
     chart = ListChart().with_sort_by(sort_by)
     assert chart.chart_options['sortBy'] == sort_by.value
+
+
+def test_hm_chart_init():
+    assert HeatmapChart().chart_options['type'] == 'Heatmap'
+
+
+def test_hm_chart_with_colorscale():
+    opts = {'thresholds': [70, 50]}
+    chart = HeatmapChart().with_colorscale([70, 50])
+    assert chart.chart_options['colorScale'] == opts
