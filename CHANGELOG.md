@@ -1,5 +1,9 @@
 # History
 
+## 0.19.0 (2018-01-19)
+
+  *Added CLI builder to create and update dashboard resources
+
 ## 0.18.0 (2018-01-11)
 
   * Dashboard resources have learned to interactively prompt the user if the user wants to
