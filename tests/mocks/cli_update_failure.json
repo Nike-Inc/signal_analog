@@ -1,0 +1,67 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2018-01-19T00:30:41",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboard?name=testy+mctesterson"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 2,\n  \"results\" : [ {\n    \"chartDensity\" : \"DEFAULT\",\n    \"charts\" : [ {\n      \"chartId\" : \"DT3PnJ2AYAA\",\n      \"column\" : 0,\n      \"height\" : 1,\n      \"row\" : 0,\n      \"width\" : 6\n    } ],\n    \"created\" : 1516321686018,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"customProperties\" : null,\n    \"description\" : \"\",\n    \"discoveryOptions\" : null,\n    \"eventOverlays\" : null,\n    \"filters\" : {\n      \"sources\" : null,\n      \"time\" : null,\n      \"variables\" : null\n    },\n    \"groupId\" : \"DT3PnSJAcAA\",\n    \"id\" : \"DT3PnV7AgEg\",\n    \"lastUpdated\" : 1516321686632,\n    \"lastUpdatedBy\" : null,\n    \"locked\" : false,\n    \"maxDelayOverride\" : null,\n    \"name\" : \"testy mctesterson\",\n    \"selectedEventOverlays\" : null,\n    \"tags\" : null\n  }, {\n    \"chartDensity\" : \"DEFAULT\",\n    \"charts\" : [ {\n      \"chartId\" : \"DT3HS2eAgAA\",\n      \"column\" : 0,\n      \"height\" : 1,\n      \"row\" : 0,\n      \"width\" : 6\n    } ],\n    \"created\" : 1516319436747,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"customProperties\" : null,\n    \"description\" : \"updated_dashboard_description\",\n    \"discoveryOptions\" : null,\n    \"eventOverlays\" : null,\n    \"filters\" : {\n      \"sources\" : null,\n      \"time\" : null,\n      \"variables\" : null\n    },\n    \"groupId\" : \"DT3HTHbAYAA\",\n    \"id\" : \"DT3HTH-AcAA\",\n    \"lastUpdated\" : 1516321662121,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"locked\" : false,\n    \"maxDelayOverride\" : -1,\n    \"name\" : \"testy mctesterson\",\n    \"selectedEventOverlays\" : null,\n    \"tags\" : null\n  } ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "1485"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Fri, 19 Jan 2018 00:30:41 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard?name=testy+mctesterson"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}
