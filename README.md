@@ -350,6 +350,13 @@ Assuming we called this `dashboards.py` we could run it in one of two ways:
   - Pass the script in to the Python executor
       - `python dashboards.py --api-key mykey update`
 
+If you want to know about the available actions you can take with your new
+CLI you can always the `--help` command.
+
+```shell
+./dashboards.py --help
+```
+
 This gives you the following features:
   - Consistent resource management
       - All resources passed to the CLI builder can be updated with one
