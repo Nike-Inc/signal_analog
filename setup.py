@@ -31,7 +31,11 @@ test_requirements = [
 
 setup(
     name='signal_analog',
+<<<<<<< HEAD
     version='0.17.0',
+=======
+    version='0.18.0',
+>>>>>>> 167c94948ccfe08bf94e5ed7e74d56e7c1f1dee2
     description="Troposphere-like library for building and composing SignalFx SignalFlow programs.",
     long_description=readme + '\n\n' + history,
     author="Fernando Freire",
