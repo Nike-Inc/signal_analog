@@ -21,8 +21,9 @@ or tools then please consult the [signal\_analog\_patterns] documentation.
       - [Building Charts](#charts)
       - [Building Dashboards](#dashboards)
           - [A note on Dashboard names](#dashboard-names)
-      - [Updating Dashboards](#dashboards-updates)          
+      - [Updating Dashboards](#dashboards-updates)
       - [Talking to the SignalFlow API Directly](#signalflow)
+      - [Creating a CLI for your resources](#cli-builder)
   - [Contributing](#contributing)
   - [Credits](#credits)
 
@@ -314,7 +315,7 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
 
 `signal_analog` provides builders for fully featured command line clients that
 can manage sets of resources. These clients make handling resource updates
-more consistent and provide additional features such as Cerberus integration.
+more consistent and provide additional.
 
 #### Simple CLI integration
 
@@ -360,11 +361,6 @@ This gives you the following features:
       - This also provides a way to supply keys for users who don't want to
       store them in source control (that's you! don't store your keys in
       source control)
-
-#### Adding Cerberus integration to your CLI
-
-We can also tell the CLI builder that we want to source our credentials from
-Cerberus instead.
 
 <a name="contributing"></a>
 ## Contributing
