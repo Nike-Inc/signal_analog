@@ -66,6 +66,12 @@ class CliBuilder(object):
 
         @cli.command()
         @pass_config
+        def read(ctx):
+            for resource in ctx.resources:
+                click.echo(invoke(resource, 'read', ctx.api_key))
+
+        @cli.command()
+        @pass_config
         def delete(ctx):
             for resource in ctx.resources:
                 click.echo(invoke(resource, 'delete', ctx.api_key))
