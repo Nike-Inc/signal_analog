@@ -52,9 +52,11 @@ lint: ## check style with flake8
 	flake8 $(MODULE_NAME)
 
 test: ## run tests quickly with the default Python
+	LC_ALL=en_US.utf-8 LANG=en_US.utf-8 \
 	py.test --ignore=lib --hypothesis-show-statistics
 
 test-all: ## run tests on every Python version with tox
+	LC_ALL=en_US.utf-8 LANG=en_US.utf-8 \
 	tox
 
 coverage: ## check code coverage quickly with the default Python
