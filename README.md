@@ -21,8 +21,9 @@ or tools then please consult the ***REMOVED*** documentation.
       - [Building Charts](#charts)
       - [Building Dashboards](#dashboards)
           - [A note on Dashboard names](#dashboard-names)
-      - [Updating Dashboards](#dashboards-updates)          
+      - [Updating Dashboards](#dashboards-updates)
       - [Talking to the SignalFlow API Directly](#signalflow)
+      - [Creating a CLI for your resources](#cli-builder)
   - [Contributing](#contributing)
   - [Credits](#credits)
 
@@ -308,6 +309,65 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
         if isinstance(msg, signalfx.signalflow.messages.EventMessage):
             print('{0}: {1}'.format(msg.timestamp_ms, msg.properties))
 ```
+
+<a name="cli-builder"></a>
+### Creating a CLI for your resources
+
+`signal_analog` provides builders for fully featured command line clients that
+can manage sets of resources. These clients make handling resource updates
+more consistent and provide additional.
+
+#### Simple CLI integration
+
+Integrating with the CLI is as simple as importing the builder and passing
+it your resources. Let's consider an example where we want to update two
+existing dashboards:
+
+```python
+#!/usr/bin/env python
+
+# ^ It's always good to include a "hashbang" so that your terminal knows
+# how to run your script.
+
+# For more info on the patterns library check out the source here:
+# https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
+from ***REMOVED***.riposte.dashboard import RiposteDashboard
+from signal_analog.cli import CliBuilder
+
+***REMOVED*** = RiposteDashboard('***REMOVED***', env='test')
+***REMOVED*** = RiposteDashboard('***REMOVED***', env='test')
+
+if __name__ == '__main__':
+  cli = CliBuilder().with_resources(***REMOVED***, ***REMOVED***).build()
+  cli()
+```
+
+Assuming we called this `dashboards.py` we could run it in one of two ways:
+
+  - Give the script execution rights and run it directly
+  (typically `chmod +x dashboards.py`)
+      - `./dashboards.py --api-key mykey update`
+  - Pass the script in to the Python executor
+      - `python dashboards.py --api-key mykey update`
+
+If you want to know about the available actions you can take with your new
+CLI you can always the `--help` command.
+
+```shell
+./dashboards.py --help
+```
+
+This gives you the following features:
+  - Consistent resource management
+      - All resources passed to the CLI builder can be updated with one
+      `update` invocation, rather than calling the `update()` method on each
+      resource indvidually
+  - API key handling for all resources
+      - Rather than duplicating your API key for each resource, you can instead
+      invoke the CLI with an API key
+      - This also provides a way to supply keys for users who don't want to
+      store them in source control (that's you! don't store your keys in
+      source control)
 
 <a name="contributing"></a>
 ## Contributing
