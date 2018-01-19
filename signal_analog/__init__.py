@@ -4,5 +4,5 @@
 
 __author__ = """Fernando Freire"""
 __email__ = '***REMOVED***'
-__version__ = '0.18.0'
+__version__ = '0.19.0'
 
