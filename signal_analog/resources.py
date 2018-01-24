@@ -65,12 +65,12 @@ class Resource(object):
         self.__set_api_token__(token)
         return self
 
-    def __stateful_action__(self, action, endpoint, update_fn,
+    def __action__(self, action, endpoint, update_fn,
                     params=None, dry_run=False, interactive=False, force=False):
         """Perform a stateful HTTP action against the SignalFx API.
 
         Arguments:
-            action: the stateful action to take
+            action: the action to take
             update_fn: callback allowing modification of the payload before
                        sending to SignalFx.
             dry_run: When true, this resource prints its configured state
@@ -89,11 +89,10 @@ class Resource(object):
         util.is_valid(self.options)
 
         if dry_run:
-            return self.options
-
-        if not action or action.lower() not in ['post', 'put']:
-            msg = '{0} is not a supported stateful action.'
-            raise ValueError(msg.format(action))
+            opts = dict(self.options)
+            if self.options.get('charts', []):
+                opts.update({'charts': util.flatten_charts(self.options)})
+            return opts
 
         util.is_valid(self.api_token)
 
@@ -115,21 +114,7 @@ class Resource(object):
 
         return response.json()
 
-    def create(self, dry_run=False):
-        """Create this resource in the SignalFx API.
-
-        Arguments:
-            dry_run: Boolean indicator for a dry-run. When true, this resource
-                     will print its configured state and not actually call the
-                     SignalFX API.  Default is false.
-
-        Returns:
-            The JSON response if successful, None otherwise. For exceptional
-            (400-500) responses an exception will be raised.
-            When dry_run is true, exception is not raised when API key is
-            missing.
-        """
-
-        id = lambda x: x
-        return self.__stateful_action__('post', self.endpoint, id,
-            dry_run=dry_run)
+    def create(self, dry_run=False, interactive=False, force=False):
+        """Default implementation for resource creation."""
+        return self.__action__('post', self.endpoint, lambda x: x,
+            params=None, dry_run=dry_run, interactive=interactive, force=force)
