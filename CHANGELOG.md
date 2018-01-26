@@ -1,5 +1,9 @@
 # History
 
+## 0.19.1 (2018-01-26)
+
+  *Added click to setup.py
+
 ## 0.19.0 (2018-01-19)
 
   *Added CLI builder to create and update dashboard resources
