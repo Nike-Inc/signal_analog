@@ -16,7 +16,8 @@ requirements = [
     'six',
     'enum34',
     # all other modules
-    'requests'
+    'requests',
+    'click'
 ]
 
 setup_requirements = [
