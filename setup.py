@@ -16,7 +16,8 @@ requirements = [
     'six',
     'enum34',
     # all other modules
-    'requests'
+    'requests',
+    'click'
 ]
 
 setup_requirements = [
@@ -31,7 +32,7 @@ test_requirements = [
 
 setup(
     name='signal_analog',
-    version='0.19.0',
+    version='0.19.1',
     description="Troposphere-like library for building and composing SignalFx SignalFlow programs.",
     long_description=readme + '\n\n' + history,
     author="Fernando Freire",
