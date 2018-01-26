@@ -68,15 +68,14 @@ def test_dashboard_create():
     dashboard.with_charts(chart1, chart2)
     dashboard.with_name(dashboard_name)
     result = dashboard.create(dry_run=True)
-    result_dict = json.loads(result)
 
-    assert 'charts' in result_dict
-    assert 'name' in result_dict
-    assert len(result_dict['charts']) == 2
-    assert result_dict['name'] == dashboard_name
-    assert result_dict['charts'][0]['options']['defaultPlotType']\
+    assert 'charts' in result
+    assert 'name' in result
+    assert len(result['charts']) == 2
+    assert result['name'] == dashboard_name
+    assert result['charts'][0]['options']['defaultPlotType'] \
         == PlotType.area_chart.value
-    assert result_dict['charts'][1]['options']['defaultPlotType']\
+    assert result['charts'][1]['options']['defaultPlotType'] \
         == PlotType.line_chart.value
 
 
@@ -273,12 +272,14 @@ def test_dashboard_update_success():
 
     with global_recorder.use_cassette('dashboard_update_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session) \
+        dashboard = Dashboard(session=global_session) \
             .with_name('testy mctesterson') \
-            .with_api_token('foo') \
-            .with_charts(chart) \
-            .create() \
-            .update(name='updated_dashboard_name', description='updated_dashboard_description')
+            .with_api_token('***REMOVED***') \
+            .with_charts(chart)
+
+        dashboard.create()
+        dashboard.update(name='updated_dashboard_name',
+            description='updated_dashboard_description')
 
 
 def test_dashboard_update_failure():

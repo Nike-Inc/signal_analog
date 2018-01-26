@@ -467,4 +467,3 @@ class HeatmapChart(Chart, DisplayOptionsMixin):
         opts = {'thresholds': thresholds}
         self.chart_options.update({'colorScale': opts})
         return self
-

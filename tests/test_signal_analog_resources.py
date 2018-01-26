@@ -99,14 +99,14 @@ def test_resource_create_error():
 
 def test_resource_create_dry_run():
         with requests_mock.Mocker() as mock:
-                expected = json.dumps({'opt': 'val'})
+                expected = {'opt': 'val'}
 
                 mock.register_uri(
                         'POST', __SIGNALFX_API_ENDPOINT__ + '/', json=expected
                 )
 
                 resource = Resource().with_api_token('test')
-                resource.options = {'opt': 'val'}
+                resource.options = expected
 
                 response = resource.create(dry_run=True)
 
