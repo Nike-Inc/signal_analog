@@ -7,8 +7,8 @@ from mock import patch
 from signal_analog.flow import Data
 from signal_analog.charts import TimeSeriesChart, PlotType
 from signal_analog.dashboards import Dashboard
-from signal_analog.errors import DashboardMatchNotFoundError, \
-        DashboardHasMultipleExactMatchesError, DashboardAlreadyExistsError, \
+from signal_analog.errors import ResourceMatchNotFoundError, \
+        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError, \
         SignalAnalogError
 
 # Global config. This will store all recorded requests in the 'mocks' dir
@@ -23,7 +23,7 @@ global_recorder = betamax.Betamax(global_session)
 
 def test_dashboard_init():
     dashboard = Dashboard()
-    assert dashboard.endpoint == '/dashboard/simple'
+    assert dashboard.endpoint == '/dashboard'
     assert dashboard.options == {'charts': []}
 
 
@@ -109,7 +109,7 @@ def test_dashboard_mult_match_valid():
 
 def test_find_match_empty():
     dash = Dashboard()
-    with pytest.raises(DashboardMatchNotFoundError):
+    with pytest.raises(ResourceMatchNotFoundError):
         dash.__find_existing_match__({'count': 0})
 
 
@@ -124,7 +124,7 @@ def test_find_match_exact():
     }
 
     dash = Dashboard().with_name('foo')
-    with pytest.raises(DashboardAlreadyExistsError):
+    with pytest.raises(ResourceAlreadyExistsError):
         dash.__find_existing_match__(response)
 
 
@@ -141,7 +141,7 @@ def test_find_match_duplicate_matches():
         ]
     }
     dash = Dashboard().with_name('foo')
-    with pytest.raises(DashboardHasMultipleExactMatchesError):
+    with pytest.raises(ResourceHasMultipleExactMatchesError):
         dash.__find_existing_match__(response)
 
 
@@ -156,29 +156,8 @@ def test_find_match_none():
     }
 
     dash = Dashboard().with_name('foo')
-    with pytest.raises(DashboardMatchNotFoundError):
+    with pytest.raises(ResourceMatchNotFoundError):
         dash.__find_existing_match__(response)
-
-
-def test_get_existing_dashboards_no_name():
-    """Make sure we don't make network requests if we don't have a name."""
-    with pytest.raises(ValueError):
-        Dashboard().__get_existing_dashboards__()
-
-
-def test_get_existing_dashboards():
-    with global_recorder.use_cassette('get_existing_dashboards',
-                                      serialize_with='prettyjson'):
-        name = 'Riposte Template Dashboard'
-
-        resp = Dashboard(session=global_session)\
-            .with_name('Riposte Template Dashboard')\
-            .with_api_token('foo')\
-            .__get_existing_dashboards__()
-
-        assert resp['count'] > 0
-        for r in resp['results']:
-            assert name in r['name']
 
 
 @pytest.mark.parametrize('input',
@@ -274,7 +253,7 @@ def test_dashboard_update_success():
                                       serialize_with='prettyjson'):
         dashboard = Dashboard(session=global_session) \
             .with_name('testy mctesterson') \
-            .with_api_token('***REMOVED***') \
+            .with_api_token('foo') \
             .with_charts(chart)
 
         dashboard.create()

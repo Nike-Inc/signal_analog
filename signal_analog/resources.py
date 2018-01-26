@@ -1,6 +1,8 @@
 import requests
 import json
 import signal_analog.util as util
+from signal_analog.errors import ResourceMatchNotFoundError, \
+        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 
 __SIGNALFX_API_ENDPOINT__ = 'https://api.signalfx.com/v2'
 
@@ -114,7 +116,86 @@ class Resource(object):
 
         return response.json()
 
+
+    def __get__(self, name, default=None):
+        """Internal helper for sourcing top-level options from this resource."""
+        return self.options.get(name, default)
+
+    def __find_existing_resources__(self):
+        """ Get a list of matches (total and partial) for the given dashboard.
+        """
+        name = self.__get__('name')
+        if not name:
+            msg = 'Cannot search for existing dashboards without a name!'
+            raise ValueError(msg)
+
+        return self.__action__(
+            'get', self.endpoint, lambda x: None, params={'name': name})
+
+    def __has_multiple_matches__(self, dashboard_name, dashboards):
+        """Determine if the current dashboard has multiple exact matches.
+
+        Arguments:
+            dashboard_name: the name of the dashboard to check
+            dashboards: a collection of dashboard objects to search
+
+        Returns:
+            True if multiple exact matches are found, false otherwise.
+        """
+        dashboard_names = list(map(lambda x: x.get('name'), dashboards))
+        return dashboard_name in util.find_duplicates(dashboard_names)
+
+    def __find_existing_match__(self, query_result):
+        """Attempt to find a matching dashboard given a Sfx API result.
+
+        Arguments:
+            query_result: the API response from SignalFx for this Dashboard.
+
+        Returns:
+            None.
+
+        Raises:
+            ResourceMatchNotFoundError:
+                if a single exact match couldn't be found in the SignalFx API.
+            ResourceAlreadyExistsError:
+                if a single exact match is found in the SignalFx API.
+            ResourceHasMultipleExactMatchesError:
+                if multiple exact matches were found in the SignalFx API.
+        """
+        results = self.__filter_matches__(query_result)
+        if results:
+            raise ResourceAlreadyExistsError(self.__get__('name'))
+
+        raise ResourceMatchNotFoundError(self.__get__('name'))
+
+    def __filter_matches__(self, query_result):
+        """Attempt to find a matching dashboard given a Sfx API result.
+
+        Arguments:
+            query_result: the API response from SignalFx for this Dashboard.
+
+        Returns:
+            None.
+        """
+        name = self.__get__('name', '')
+        if not query_result.get('count'):
+            raise ResourceMatchNotFoundError(name)
+
+        results = query_result.get('results', [])
+        for dashboard in results:
+            if name == dashboard.get('name'):
+                if self.__has_multiple_matches__(name, results):
+                    raise ResourceHasMultipleExactMatchesError(name)
+                return dashboard
+
+        raise ResourceMatchNotFoundError(self.__get__('name'))
+
     def create(self, dry_run=False, interactive=False, force=False):
         """Default implementation for resource creation."""
         return self.__action__('post', self.endpoint, lambda x: x,
-            params=None, dry_run=dry_run, interactive=interactive, force=force)
+            dry_run=dry_run, interactive=interactive, force=force)
+
+    def update(self, dry_run=False):
+        """Default implementation for resource creation."""
+        return self.__action__('put', self.endpoint, lambda x: x,
+            dry_run=dry_run)
