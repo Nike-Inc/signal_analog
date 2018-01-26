@@ -107,44 +107,11 @@ class Dashboard(Resource):
             msg = 'Cannot search for existing dashboards without a name!'
             raise ValueError(msg)
 
-        response = self.session_handler.get(
-            url=self.base_url + '/dashboard',
-            params={'name': name},
-            headers={
-                'X-SF-Token': self.api_token,
-                'Content-Type': 'application/json'
-            }
-        )
-        return response.json()
+        return self.__action__(
+            'get', '/dashboard', lambda x: None, params={'name': name})
 
-    def __create_resource__(self):
-        charts = list(map(lambda c: c.to_dict(), self.options['charts']))
+    def __update_resource__(self, data):
 
-        response = self.session_handler.request(
-            method='POST',
-            url=self.base_url + self.endpoint,
-            params={'name': self.__get__('name')},
-            data=json.dumps(charts),
-            headers={'X-SF-Token': self.api_token,
-                     'Content-Type': 'application/json'})
-        try:
-            response.raise_for_status()
-        except requests.exceptions.HTTPError as error:
-            # Tell the user exactly what went wrong according to SignalFx
-            raise RuntimeError(error.response.text)
-
-        return response.json()
-
-    def __update_resource__(self, data, name, description):
-
-        if name:
-            data.update({
-                'name': name
-            })
-        if description:
-            data.update({
-                'description': description
-            })
         response = self.session_handler.request(
             method='PUT',
             url=self.base_url + '/dashboard/' + data['id'],
@@ -165,33 +132,29 @@ class Dashboard(Resource):
 
         See: https://developers.signalfx.com/v2/reference#dashboardsimple
         """
-        charts = list(map(lambda c: c.to_dict(), self.options['charts']))
+        def create_helper(opts):
+            try:
+                query_result = self.__get_existing_dashboards__()
+                self.__find_existing_match__(query_result)
+            except (DashboardAlreadyExistsError,
+                    DashboardHasMultipleExactMatchesError) as e:
+                if not force and not interactive:
+                    # Rethrow error to user if we're not force creating things
+                    raise e
+                elif interactive:
+                    msg = 'A dashboard with the name "{0}" already exists. ' + \
+                          'Do you want to create a new dashboard?'
+                    if click.confirm(msg.format(self.__get__('name'))):
+                        return util.flatten_charts(self.options)
+                    else:
+                        raise DashboardAlreadyExistsError(self.__get__('name'))
+            # Otherwise this is perfectly fine, create the dashboard!
+            except DashboardMatchNotFoundError:
+                return util.flatten_charts(self.options)
 
-        if dry_run is True:
-            dump = dict(self.options)
-            dump.update({'charts': charts})
-            return json.dumps(dump)
-
-        try:
-            query_result = self.__get_existing_dashboards__()
-            self.__find_existing_match__(query_result)
-        except (DashboardAlreadyExistsError,
-                DashboardHasMultipleExactMatchesError) as e:
-            if not force and not interactive:
-                # Rethrow error to user if we're not force creating things
-                raise e
-            elif interactive:
-                if click.confirm("A Dashboard with the name \"{0}\" already exists. "
-                                 "Do you want to create a new dashboard?" .format(self.__get__('name'))):
-                    return self.__create_resource__()
-                else:
-                    raise DashboardAlreadyExistsError(self.__get__('name'))
-
-        # Otherwise this is perfectly fine, create the dashboard!
-        except DashboardMatchNotFoundError:
-            pass
-
-        return self.__create_resource__()
+        return self.__action__('post', self.endpoint, create_helper,
+            params={'name': self.__get__('name')}, dry_run=dry_run,
+            interactive=interactive, force=force)
 
     def update(self, name=None, description=None, dry_run=False):
         """Updates a Signalfx dashboard using the /dashboard/_id_ helper
@@ -199,25 +162,33 @@ class Dashboard(Resource):
 
         See: https://developers.signalfx.com/v2/reference#update-dashboard
         """
-        charts = list(map(lambda c: c.to_dict(), self.options['charts']))
 
-        if dry_run is True:
-            dump = dict(self.options)
-            if name:
-                dump.update({'name': name})
-            if description:
-                dump.update({'description': description})
-            dump.update({'charts': charts})
-            return json.dumps(dump)
+        updated_opts = dict(self.options)
+        if name:
+            updated_opts.update({'name': name})
+        if description:
+            updated_opts.update({'description': description})
+        updated_opts.update({'charts': util.flatten_charts(self.options)})
+
+        # Let's override dry-run behavior here since it differs from the defualt
+        # implementation.
+        if dry_run:
+            return updated_opts
+
+        query_result = self.__get_existing_dashboards__()
 
         try:
-            query_result = self.__get_existing_dashboards__()
             self.__find_existing_match__(query_result)
 
         except DashboardAlreadyExistsError:
-            return self.__update_resource__(self.__filter_matches__(query_result), name, description)
+            dashboard = self.__filter_matches__(query_result)
 
+            if name:
+                dashboard.update({'name': name})
+            if description:
+                dashboard.update({'description': description})
+
+            return self.__action__('put', '/dashboard/' + dashboard['id'],
+                lambda x: dashboard)
         except DashboardMatchNotFoundError:
-            pass
-
-        return self.__update_resource__(self.__filter_matches__(query_result), name, description)
+            return self.create(dry_run=dry_run)
