@@ -118,7 +118,7 @@ def test_cli_update_success():
         cli = CliBuilder().with_resources(dashboard).build()
 
         runner = CliRunner()
-        result = runner.invoke(cli, args=['--api-key', 'foo', 'update',
+        result = runner.invoke(cli, args=['--api-key', '***REMOVED***', 'update',
                                           '--description', 'updated_dashboard_description'])
         assert result.exit_code == 0
 

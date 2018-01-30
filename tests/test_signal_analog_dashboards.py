@@ -247,7 +247,8 @@ def test_create_interactive_failure(confirm):
 
 def test_dashboard_update_success():
     program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
+    chart = TimeSeriesChart(session=global_session)\
+        .with_name('lol').with_program(program)
 
     with global_recorder.use_cassette('dashboard_update_success',
                                       serialize_with='prettyjson'):
