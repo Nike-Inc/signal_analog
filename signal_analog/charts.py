@@ -4,6 +4,8 @@ from enum import Enum
 from copy import deepcopy
 
 from signal_analog.resources import Resource
+from signal_analog.errors import ResourceMatchNotFoundError, \
+        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import signal_analog.util as util
 
 
@@ -50,9 +52,50 @@ class Chart(Resource):
         return chart_opts_copy
 
     def create(self, dry_run=False):
+        """Create a chart in the SignalFx API.
+
+        See: https://developers.signalfx.com/v2/reference#create-chart
+        """
         self.options = self.to_dict()
         return super(Chart, self).create(dry_run=dry_run)
 
+    def update(self, name=None, description=None, dry_run=False):
+        """Update a chart in the SignalFx API.
+
+        WARNING: Users are strongly discouraged from updating charts outside
+        of a Dashboard. Due to the nature of how charts are created in the
+        SignalFx API it is much more difficult to determine which is the right
+        chart to update. Updating charts via dashboards is the better way to go.
+
+        See: https://developers.signalfx.com/v2/reference#update-chart
+        """
+
+        updated_opts = dict(self.options)
+        if name:
+            updated_opts.update({'name': name})
+        if description:
+            updated_opts.update({'name': name})
+
+        if dry_run:
+            return updated_opts
+
+        query_result = self.__find_existing_resources__()
+
+        try:
+            self.__find_existing_match__(query_result)
+
+        except ResourceAlreadyExistsError:
+            chart = self.__filter_matches__(query_result)
+
+            if name:
+                chart.update({'name': name})
+            if description:
+                chart.update({'description': description})
+
+            return self.__action__('put', self.endpoint + '/' + chart['id'],
+                lambda x: chart)
+        except ResourceMatchNotFoundError:
+            return self.create(dry_run=dry_run)
 
 class UnitPrefix(Enum):
     """Enum for unit prefix types in TimeSeriesCharts."""

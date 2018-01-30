@@ -1,4 +1,5 @@
 import click
+import json
 
 
 class SignalAnalogConfig(object):
@@ -9,6 +10,11 @@ class SignalAnalogConfig(object):
 
 
 pass_config = click.make_pass_decorator(SignalAnalogConfig, ensure=True)
+
+
+def pp_json(dictionary):
+    """Pretty print a dictionary as JSON."""
+    click.echo(json.dumps(dictionary, indent=2))
 
 
 def invoke(resource, action, api_key, **kwargs):
@@ -56,8 +62,9 @@ class CliBuilder(object):
         @pass_config
         def create(ctx, force, interactive, dry_run):
             for resource in ctx.resources:
-                click.echo(invoke(resource, 'create', ctx.api_key,
-                    force=force, interactive=interactive, dry_run=dry_run))
+                res = invoke(resource, 'create', ctx.api_key,
+                    force=force, interactive=interactive, dry_run=dry_run)
+                pp_json(res)
 
         @cli.command()
         @click.option('--name', type=str, nargs=1, help='New Dashboard name')
@@ -68,8 +75,9 @@ class CliBuilder(object):
         @pass_config
         def update(ctx, name, description, dry_run):
             for resource in ctx.resources:
-                click.echo(invoke(resource, 'update', ctx.api_key,
-                    name=name, description=description, dry_run=dry_run))
+                res = invoke(resource, 'update', ctx.api_key,
+                    name=name, description=description, dry_run=dry_run)
+                pp_json(res)
 
         @cli.command()
         @pass_config
