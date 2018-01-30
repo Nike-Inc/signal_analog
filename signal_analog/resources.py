@@ -88,8 +88,6 @@ class Resource(object):
             Raises:
                 HTTPError: when a network exception ocurred
         """
-        util.is_valid(self.options)
-
         if dry_run:
             opts = dict(self.options)
             if self.options.get('charts', []):
@@ -110,11 +108,14 @@ class Resource(object):
 
         try:
             response.raise_for_status()
+            return response.json()
         except requests.exceptions.HTTPError as error:
             # Tell the user exactly what went wrong according to SignalFX
             raise RuntimeError(error.response.text)
-
-        return response.json()
+        except json.decoder.JSONDecodeError:
+            # Some responses from the API don't return anything, in these
+            # situations we shouldn't either
+            return None
 
 
     def __get__(self, name, default=None):
