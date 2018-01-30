@@ -8,6 +8,52 @@ from signal_analog.errors import ResourceMatchNotFoundError, \
 import click
 
 
+class DashboardGroup(Resource):
+    """Representation of a Dashboard Group in SignalFx:
+
+    See: https://developers.signalfx.com/v2/reference#dashboard-groups-overview
+    """
+
+    def __init__(self, session=None):
+        """Initialize a dashboard group.
+
+        Arguments:
+            session: optional session harness for making API requests. Mostly
+                     used in testing scenarios.
+        """
+        super(DashboardGroup, self).__init__(
+            endpoint='/dashboardgroup', session=session)
+        self.options = {'dashboards': []}
+
+    def with_name(self, name):
+        """Set this dashboard group's name."""
+        util.is_valid(name)
+        self.options.update({'name': name})
+        return self
+
+    def with_dashboards(self, *dashboards):
+        """Adds the given dashboards to this DashboardGroup.
+
+        Note: each call to with_dashboards replaces any previous dashboards
+              configured for this group.
+
+        Arguments:
+            *dashboards: one or more dashboard objects to add.
+        """
+        raise NotImplementedError('Implemented as part of SIP-1064')
+
+    def with_teams(self, *team_id):
+        """Adds the given team ids to this dashboard.
+
+        Note: each call to with_dashboards replaces any previous dashboards
+              configured for this group.
+
+        Arguments:
+            *team_id: one or more team ids to add to this dashboard group.
+        """
+        raise NotImplementedError('Implemented as part of SIP-1065')
+
+
 class Dashboard(Resource):
     def __init__(self, session=None):
         """Base representation of a dashboard in SignalFx.
@@ -20,7 +66,7 @@ class Dashboard(Resource):
         self.options = {'charts': []}
 
     def with_name(self, name):
-        """Sets dashboard's name."""
+        """Set this dashboard's name."""
         util.is_valid(name)
         self.options.update({'name': name})
         return self
@@ -173,7 +219,7 @@ class Dashboard(Resource):
             # https://jira.nike.com/browse/SIP-1062
             try:
                 return self.__action__('put', '/dashboard/' + dashboard['id'],
-                        lambda x: dashboard)
+                                       lambda x: dashboard)
             except RuntimeError:
                 msg = """
 WARNING: signal_analog has caught a potentially fatal runtime error when
