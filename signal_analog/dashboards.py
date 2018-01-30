@@ -1,5 +1,3 @@
-import json
-import requests
 from copy import deepcopy
 
 from signal_analog.charts import Chart
@@ -48,7 +46,7 @@ class Dashboard(Resource):
                     # Rethrow error to user if we're not force creating things
                     raise e
                 elif interactive:
-                    msg = 'A dashboard with the name "{0}" already exists. ' + \
+                    msg = 'A dashboard with the name "{0}" already exists. ' +\
                           'Do you want to create a new dashboard?'
                     if click.confirm(msg.format(self.__get__('name'))):
                         return util.flatten_charts(opts)
@@ -60,24 +58,27 @@ class Dashboard(Resource):
 
             return util.flatten_charts(opts)
 
-        return self.__action__('post', self.endpoint + '/simple', create_helper,
-            params={'name': self.__get__('name')}, dry_run=dry_run,
-            interactive=interactive, force=force)
+        return self.__action__('post', self.endpoint + '/simple',
+                               create_helper,
+                               params={'name': self.__get__('name')},
+                               dry_run=dry_run, interactive=interactive,
+                               force=force)
 
     def __update_child_resources__(self, chart_state):
         """Update child resources for this dashboard.
         """
         state = deepcopy(chart_state)
 
-        # Dashboard state can get really screwy sometimes. In certain situations
-        # a stale Chart object can be in the Dashboard config _without_ a valid
-        # id. Let's be nice and clean that up; makes it easier for us to
-        # update Dashboards too.
+        # Dashboard state can get really screwy sometimes. In certain
+        # situations a stale Chart object can be in the Dashboard config
+        # _without_ a valid id. Let's be nice and clean that up; makes it
+        # easier for us to update Dashboards too.
         for chart in state:
             if chart['chartId'] is None:
                 state.remove(chart)
 
         remote_chart_ids = list(map(lambda x: x['chartId'], state))
+
         def get_config_helper(id):
             res = Chart(session=self.session_handler)\
                 .with_api_token(self.api_token).with_id(id).read()
@@ -136,8 +137,8 @@ class Dashboard(Resource):
             updated_opts.update({'description': description})
         updated_opts.update({'charts': util.flatten_charts(self.options)})
 
-        # Let's override dry-run behavior here since it differs from the defualt
-        # implementation.
+        # Let's override dry-run behavior here since it differs from the
+        # defualt implementation.
         if dry_run:
             return updated_opts
 
