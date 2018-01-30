@@ -16,6 +16,10 @@ class Chart(Resource):
         super(Chart, self).__init__(endpoint='/chart', session=session)
         self.options = {}
 
+    def __str__(self):
+        s = "{0}(options={1})"
+        return s.format(self.__class__.__name__, self.options)
+
     def with_name(self, name):
         """The name to give this chart."""
         util.is_valid(name)

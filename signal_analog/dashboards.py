@@ -79,7 +79,8 @@ class Dashboard(Resource):
 
         remote_chart_ids = list(map(lambda x: x['chartId'], state))
         def get_config_helper(id):
-            res = Chart().with_api_token(self.api_token).with_id(id).read()
+            res = Chart(session=self.session_handler)\
+                .with_api_token(self.api_token).with_id(id).read()
             return {'id': id, 'name': res['name']}
         remote_charts = list(map(get_config_helper, remote_chart_ids))
 
