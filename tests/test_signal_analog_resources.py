@@ -1,10 +1,23 @@
 import pytest
 import requests_mock
 from requests.exceptions import HTTPError
+import betamax
+from betamax_serializers import pretty_json
+import requests
 
 from signal_analog.resources import Resource, __SIGNALFX_API_ENDPOINT__
+from signal_analog.dashboards import Dashboard
 import signal_analog.util as util
 import json
+
+# Global config. This will store all recorded requests in the 'mocks' dir
+with betamax.Betamax.configure() as config:
+    betamax.Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
+    config.cassette_library_dir = 'tests/mocks'
+
+# Don't get in the habit of doing this, but it simplifies testing
+global_session = requests.Session()
+global_recorder = betamax.Betamax(global_session)
 
 bad_str_inputs = [None, ""]
 
@@ -111,3 +124,23 @@ def test_resource_create_dry_run():
                 response = resource.create(dry_run=True)
 
                 assert response == expected
+
+def test_find_existing_resources_no_name():
+    """Make sure we don't make network requests if we don't have a name."""
+    with pytest.raises(ValueError):
+        Dashboard().__find_existing_resources__()
+
+
+def test_find_existing_resources():
+    with global_recorder.use_cassette('get_existing_dashboards',
+                                      serialize_with='prettyjson'):
+        name = 'Riposte Template Dashboard'
+
+        resp = Dashboard(session=global_session)\
+            .with_name('Riposte Template Dashboard')\
+            .with_api_token('foo')\
+            .__find_existing_resources__()
+
+        assert resp['count'] > 0
+        for r in resp['results']:
+            assert name in r['name']
