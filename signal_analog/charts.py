@@ -4,15 +4,21 @@ from enum import Enum
 from copy import deepcopy
 
 from signal_analog.resources import Resource
+from signal_analog.errors import ResourceMatchNotFoundError, \
+        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import signal_analog.util as util
 
 
 class Chart(Resource):
     """Base representation of a chart in SignalFx."""
 
-    def __init__(self):
-        super(Chart, self).__init__(endpoint='/chart')
+    def __init__(self, session=None):
+        super(Chart, self).__init__(endpoint='/chart', session=session)
         self.options = {}
+
+    def __str__(self):
+        s = "{0}(options={1})"
+        return s.format(self.__class__.__name__, self.options)
 
     def with_name(self, name):
         """The name to give this chart."""
@@ -24,6 +30,15 @@ class Chart(Resource):
         """The description to attach to this chart."""
         util.is_valid(description)
         self.options.update({'description': description})
+        return self
+
+    def with_id(self, id):
+        """The unique identifier for this chart.
+
+        Useful when updating/deleting charts.
+        """
+        util.is_valid(id)
+        self.options.update({'id': id})
         return self
 
     def with_program(self, program):
@@ -49,10 +64,71 @@ class Chart(Resource):
 
         return chart_opts_copy
 
+    def delete(self):
+        """Delete the given resource in the SignalFx API.
+        """
+        return self.__action__('delete',
+            self.endpoint + '/' + self.__get__('id'), lambda x: None)
+
+    def read(self):
+        """Attempt to find the given chart in SignalFx.
+
+        Your chances are much higher if you provide the chart id via
+        'with_id'. Otherwise, we will attempt to do a best effort to search for
+        your chart based on name.
+        """
+        if self.__get__('id'):
+            return self.__action__('get',
+                self.endpoint + '/' + self.__get__('id'), lambda x: None)
+        else:
+            return self.__action__('get', self.endpoint, lambda x: None,
+                params={'name': self.__get__('name')})
+
     def create(self, dry_run=False):
+        """Create a chart in the SignalFx API.
+
+        See: https://developers.signalfx.com/v2/reference#create-chart
+        """
         self.options = self.to_dict()
         return super(Chart, self).create(dry_run=dry_run)
 
+    def update(self, name=None, description=None, dry_run=False):
+        """Update a chart in the SignalFx API.
+
+        WARNING: Users are strongly discouraged from updating charts outside
+        of a Dashboard. Due to the nature of how charts are created in the
+        SignalFx API it is much more difficult to determine which is the right
+        chart to update. Updating charts via dashboards is the better way to go.
+
+        See: https://developers.signalfx.com/v2/reference#update-chart
+        """
+
+        updated_opts = dict(self.options)
+        if name:
+            updated_opts.update({'name': name})
+        if description:
+            updated_opts.update({'name': name})
+
+        if dry_run:
+            return updated_opts
+
+        query_result = self.__find_existing_resources__()
+
+        try:
+            self.__find_existing_match__(query_result)
+
+        except ResourceAlreadyExistsError:
+            chart = self.__filter_matches__(query_result)
+
+            if name:
+                chart.update({'name': name})
+            if description:
+                chart.update({'description': description})
+
+            return self.__action__('put', self.endpoint + '/' + chart['id'],
+                lambda x: chart)
+        except ResourceMatchNotFoundError:
+            return self.create(dry_run=dry_run)
 
 class UnitPrefix(Enum):
     """Enum for unit prefix types in TimeSeriesCharts."""
@@ -264,8 +340,8 @@ class DisplayOptionsMixin(object):
 class TimeSeriesChart(Chart, DisplayOptionsMixin):
     """A time series chart."""
 
-    def __init__(self):
-        super(TimeSeriesChart, self).__init__()
+    def __init__(self, session=None):
+        super(TimeSeriesChart, self).__init__(session=session)
         self.chart_options = {'type': 'TimeSeriesChart'}
 
     def with_time_config_relative(self, range):
@@ -389,8 +465,8 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
 
 class SingleValueChart(Chart, DisplayOptionsMixin):
 
-    def __init__(self):
-        super(SingleValueChart, self).__init__()
+    def __init__(self, session=None):
+        super(SingleValueChart, self).__init__(session=session)
         self.chart_options = {'type': 'SingleValue'}
 
     def with_refresh_interval(self, interval):
@@ -433,8 +509,8 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
 
 class ListChart(Chart, DisplayOptionsMixin):
 
-    def __init__(self):
-        super(ListChart, self).__init__()
+    def __init__(self, session=None):
+        super(ListChart, self).__init__(session=session)
         self.chart_options = {'type': 'List'}
 
     def with_refresh_interval(self, interval):
@@ -452,8 +528,8 @@ class ListChart(Chart, DisplayOptionsMixin):
 
 class HeatmapChart(Chart, DisplayOptionsMixin):
 
-    def __init__(self):
-        super(HeatmapChart, self).__init__()
+    def __init__(self, session=None):
+        super(HeatmapChart, self).__init__(session=session)
         self.chart_options = {'type': 'Heatmap'}
 
     def with_colorscale(self, thresholds):
@@ -467,4 +543,3 @@ class HeatmapChart(Chart, DisplayOptionsMixin):
         opts = {'thresholds': thresholds}
         self.chart_options.update({'colorScale': opts})
         return self
-
