@@ -1,5 +1,7 @@
 """Methods useful throughout the signal_analog project."""
 
+import click
+import json
 from collections import Counter
 
 
@@ -32,3 +34,20 @@ def is_valid(value, error_message=None):
 
 def find_duplicates(xs):
     return [item for item, count in Counter(xs).items() if count > 1]
+
+
+def flatten_charts(opts):
+    """Given an options object, return a list of JSON-serialized chart objects.
+
+    Arguments:
+        opts: a Resource chart object
+
+    Returns:
+        A list of charts serialized as JSON objects.
+    """
+    return list(map(lambda c: c.to_dict(), opts.get('charts', [])))
+
+
+def pp_json(dictionary):
+    """Pretty print a dictionary as JSON."""
+    click.echo(json.dumps(dictionary, indent=2))

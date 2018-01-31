@@ -100,9 +100,9 @@ class Function(object):
         """Apply a lambda function to a stream.map(mapfn)Returns reference to the input  object."""
         self.call_stack.append(Map(by=by, over=over))
         return self
-    def publish(self, by=None, over=None):
+    def publish(self, label=None):
         """Publish the output of a stream so that it is visible outside of a computation.publish(label=None)Returns reference to the input  object."""
-        self.call_stack.append(Publish(by=by, over=over))
+        self.call_stack.append(Publish(label=label))
         return self
     def timeshift(self, by=None, over=None):
         """Timeshift the datapoints for a stream, offset by a specified time period e.g. 1 week (1w), to enable comparison of time series with its own past behavior.timeshift(offset)Returns reference to the input stream object."""
@@ -214,7 +214,7 @@ class KWArg(object):
         if isinstance(self.arg, string_types):
             str_arg = "\"" + self.arg + "\""
         elif isinstance(self.arg, Number):
-            return str(self.arg)
+            str_arg = str(self.arg)
         return "%s=%s" % (self.keyword, str_arg)
 class VarStrArg(object):
     def __init__(self, args):
@@ -363,10 +363,10 @@ class Map(StreamMethod):
         super(Map, self).__init__("map")
         self.args = [KWArg("by", by), KWArg("over", over)]
 class Publish(StreamMethod):
-    def __init__(self, by=None, over=None):
+    def __init__(self, label=None):
         """Publish the output of a stream so that it is visible outside of a computation.publish(label=None)Returns reference to the input  object."""
         super(Publish, self).__init__("publish")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [KWArg("label", label)]
 class Timeshift(StreamMethod):
     def __init__(self, by=None, over=None):
         """Timeshift the datapoints for a stream, offset by a specified time period e.g. 1 week (1w), to enable comparison of time series with its own past behavior.timeshift(offset)Returns reference to the input stream object."""

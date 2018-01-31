@@ -1,6 +1,14 @@
 import requests
 import json
 import signal_analog.util as util
+from signal_analog.errors import ResourceMatchNotFoundError, \
+        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
+
+# py2/3 compatability hack so that we can consistently handle JSON errors.
+try:
+    from json.decoder import JSONDecodeError
+except ImportError:
+    JSONDecodeError = ValueError
 
 __SIGNALFX_API_ENDPOINT__ = 'https://api.signalfx.com/v2'
 
@@ -8,7 +16,7 @@ __SIGNALFX_API_ENDPOINT__ = 'https://api.signalfx.com/v2'
 class Resource(object):
 
     def __init__(self, base_url=__SIGNALFX_API_ENDPOINT__, endpoint='/',
-                 api_token=None):
+                 api_token=None, session=None):
         """Encapsulation for resources that can exist in the SignalFx API.
 
         This version of the Resource class does not manage any state with the
@@ -21,6 +29,8 @@ class Resource(object):
             base_url: the base endpoint to use when talking to SignalFx
             endpoint: the particular endpoint to hit for this resource
             api_token: the api token to authenticate requests with
+            session: optional session harness for making API requests. Mostly
+                     used in test scenarios.
         """
 
         # Users may want to provide this via the `with_*` builder instead of
@@ -28,6 +38,11 @@ class Resource(object):
         # don't pass one in at this point.
         if api_token is not None:
             self.__set_api_token__(api_token)
+
+        if session:
+            self.session_handler = session
+        else:
+            self.session_handler = requests.Session()
 
         self.__set_endpoint__(endpoint)
         self.__set_base_url__(base_url)
@@ -58,44 +73,136 @@ class Resource(object):
         self.__set_api_token__(token)
         return self
 
-    def create(self, dry_run=False):
-        """Create this resource in the SignalFx API.
+    def __action__(self, action, endpoint, update_fn,
+                    params=None, dry_run=False, interactive=False, force=False):
+        """Perform a stateful HTTP action against the SignalFx API.
 
         Arguments:
-            dry_run: Boolean indicator for a dry-run. When true, this resource
-                     will print its configured state and not actually call the
-                     SignalFX API.  Default is false.
+            action: the action to take
+            update_fn: callback allowing modification of the payload before
+                       sending to SignalFx.
+            dry_run: When true, this resource prints its configured state
+                     without calling SignalFx.
+            interactive: When true, this resource asks the caller which version
+                         resource to modify.
+            force: When true, this resource modifies itself in SignalFx
+                   disregarding previous SignalFx state.
+
+            Returns:
+                The JSON response if successful.
+
+            Raises:
+                HTTPError: when a network exception ocurred
+        """
+        if dry_run:
+            opts = dict(self.options)
+            if self.options.get('charts', []):
+                opts.update({'charts': util.flatten_charts(self.options)})
+            return opts
+
+        util.is_valid(self.api_token)
+
+        response = self.session_handler.request(
+            action,
+            url=self.base_url + endpoint,
+            params=params,
+            json=update_fn(self.options),
+            headers={
+                'X-SF-Token': self.api_token,
+                'Content-Type': 'application/json'
+            })
+
+        try:
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.HTTPError as error:
+            # Tell the user exactly what went wrong according to SignalFX
+            raise RuntimeError(error.response.text)
+        except JSONDecodeError:
+            # Some responses from the API don't return anything, in these
+            # situations we shouldn't either
+            return None
+
+
+    def __get__(self, name, default=None):
+        """Internal helper for sourcing top-level options from this resource."""
+        return self.options.get(name, default)
+
+    def __find_existing_resources__(self):
+        """ Get a list of matches (total and partial) for the given dashboard.
+        """
+        name = self.__get__('name')
+        if not name:
+            msg = 'Cannot search for existing dashboards without a name!'
+            raise ValueError(msg)
+
+        return self.__action__(
+            'get', self.endpoint, lambda x: None, params={'name': name})
+
+    def __has_multiple_matches__(self, dashboard_name, dashboards):
+        """Determine if the current dashboard has multiple exact matches.
+
+        Arguments:
+            dashboard_name: the name of the dashboard to check
+            dashboards: a collection of dashboard objects to search
 
         Returns:
-            The JSON response if successful, None otherwise. For exceptional
-            (400-500) responses an exception will be raised.
-            When dry_run is true, exception is not raised when API key is
-            missing.
+            True if multiple exact matches are found, false otherwise.
         """
+        dashboard_names = list(map(lambda x: x.get('name'), dashboards))
+        return dashboard_name in util.find_duplicates(dashboard_names)
 
-        util.is_valid(self.options)
+    def __find_existing_match__(self, query_result):
+        """Attempt to find a matching dashboard given a Sfx API result.
 
-        if dry_run is False:
-            # TODO figure out better abstraction for validating pre_conditions
-            util.is_valid(self.api_token)
+        Arguments:
+            query_result: the API response from SignalFx for this Dashboard.
 
-            response = requests.post(
-                url=self.base_url + self.endpoint,
-                data=json.dumps(self.options),
-                headers={
-                    'X-SF-Token': self.api_token,
-                    'Content-Type': 'application/json'
-                }
-            )
+        Returns:
+            None.
 
-            try:
-                # Throw an exception if we received a non-2xx response.
-                response.raise_for_status()
-            except requests.exceptions.HTTPError as error:
-                # Tell the user exactly what went wrong according to SignalFx
-                raise RuntimeError(error.response.text)
+        Raises:
+            ResourceMatchNotFoundError:
+                if a single exact match couldn't be found in the SignalFx API.
+            ResourceAlreadyExistsError:
+                if a single exact match is found in the SignalFx API.
+            ResourceHasMultipleExactMatchesError:
+                if multiple exact matches were found in the SignalFx API.
+        """
+        results = self.__filter_matches__(query_result)
+        if results:
+            raise ResourceAlreadyExistsError(self.__get__('name'))
 
-            # Otherwise, return our status code
-            return response.json()
-        else:
-            return json.dumps(self.options)
+        raise ResourceMatchNotFoundError(self.__get__('name'))
+
+    def __filter_matches__(self, query_result):
+        """Attempt to find a matching dashboard given a Sfx API result.
+
+        Arguments:
+            query_result: the API response from SignalFx for this Dashboard.
+
+        Returns:
+            None.
+        """
+        name = self.__get__('name', '')
+        if not query_result.get('count'):
+            raise ResourceMatchNotFoundError(name)
+
+        results = query_result.get('results', [])
+        for dashboard in results:
+            if name == dashboard.get('name'):
+                if self.__has_multiple_matches__(name, results):
+                    raise ResourceHasMultipleExactMatchesError(name)
+                return dashboard
+
+        raise ResourceMatchNotFoundError(self.__get__('name'))
+
+    def create(self, dry_run=False, interactive=False, force=False):
+        """Default implementation for resource creation."""
+        return self.__action__('post', self.endpoint, lambda x: x,
+            dry_run=dry_run, interactive=interactive, force=force)
+
+    def update(self, dry_run=False):
+        """Default implementation for resource creation."""
+        return self.__action__('put', self.endpoint, lambda x: x,
+            dry_run=dry_run)
