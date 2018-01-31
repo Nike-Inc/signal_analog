@@ -1,0 +1,38 @@
+@startuml
+start
+  :Keystone Parameters:path_to_script, cerberus path, cli_command;
+  if (required parameters provided?) then (yes)
+    :Create new signal analog CLI Keystone Job ;
+    if (Job Successful?) then (no)
+        partition Failure {
+            if (Invalid API key provided?) then (yes)
+                #OrangeRed: raise InvalidAPIKeyError;
+                #Orange: Notify the user via Slack/Email;
+                stop
+            elseif (Empty API Key Provided?) then (yes)
+                #OrangeRed:raise EmptyAPIKeyProvidedError;
+                #Orange: Notify the user via Slack/Email;
+                stop
+            elseif (Dashboard Already Exists?) then (yes)
+                #OrangeRed:raise DashboardAlreadyExistsError;
+                #Orange: Notify the user via Slack/Email;
+                stop
+            elseif (Invalid Option Provided?) then (yes)
+                #OrangeRed:raise Error: no such option:;
+                #Orange: Notify the user via Slack/Email;
+                stop
+            else (no)
+                #OrangeRed:raise UnexpectedError;
+                #Orange: Notify the user via Slack/Email;
+                stop
+            endif
+            }
+    else (yes)
+        #Lime: Dashboard resources should have been created/updated;
+        stop
+    endif
+  else (no)
+    #OrangeRed: raise RequiredFieldsMissingError;
+      stop
+  endif
+@enduml
