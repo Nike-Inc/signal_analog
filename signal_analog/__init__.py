@@ -5,4 +5,3 @@
 __author__ = """Fernando Freire"""
 __email__ = 'Lst-nike.plus.platform.sharedinfrastructure@nike.com'
 __version__ = '0.20.0'
-
