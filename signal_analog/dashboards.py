@@ -1,5 +1,3 @@
-import json
-import requests
 from copy import deepcopy
 
 from signal_analog.charts import Chart
@@ -8,6 +6,52 @@ import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import click
+
+
+class DashboardGroup(Resource):
+    """Representation of a Dashboard Group in SignalFx:
+
+    See: https://developers.signalfx.com/v2/reference#dashboard-groups-overview
+    """
+
+    def __init__(self, session=None):
+        """Initialize a dashboard group.
+
+        Arguments:
+            session: optional session harness for making API requests. Mostly
+                     used in testing scenarios.
+        """
+        super(DashboardGroup, self).__init__(
+            endpoint='/dashboardgroup', session=session)
+        self.options = {'dashboards': []}
+
+    def with_name(self, name):
+        """Set this dashboard group's name."""
+        util.is_valid(name)
+        self.options.update({'name': name})
+        return self
+
+    def with_dashboards(self, *dashboards):
+        """Adds the given dashboards to this DashboardGroup.
+
+        Note: each call to with_dashboards replaces any previous dashboards
+              configured for this group.
+
+        Arguments:
+            *dashboards: one or more dashboard objects to add.
+        """
+        raise NotImplementedError('Implemented as part of SIP-1064')
+
+    def with_teams(self, *team_id):
+        """Adds the given team ids to this dashboard.
+
+        Note: each call to with_dashboards replaces any previous dashboards
+              configured for this group.
+
+        Arguments:
+            *team_id: one or more team ids to add to this dashboard group.
+        """
+        raise NotImplementedError('Implemented as part of SIP-1065')
 
 
 class Dashboard(Resource):
@@ -22,7 +66,7 @@ class Dashboard(Resource):
         self.options = {'charts': []}
 
     def with_name(self, name):
-        """Sets dashboard's name."""
+        """Set this dashboard's name."""
         util.is_valid(name)
         self.options.update({'name': name})
         return self
@@ -48,7 +92,7 @@ class Dashboard(Resource):
                     # Rethrow error to user if we're not force creating things
                     raise e
                 elif interactive:
-                    msg = 'A dashboard with the name "{0}" already exists. ' + \
+                    msg = 'A dashboard with the name "{0}" already exists. ' +\
                           'Do you want to create a new dashboard?'
                     if click.confirm(msg.format(self.__get__('name'))):
                         return util.flatten_charts(opts)
@@ -60,24 +104,27 @@ class Dashboard(Resource):
 
             return util.flatten_charts(opts)
 
-        return self.__action__('post', self.endpoint + '/simple', create_helper,
-            params={'name': self.__get__('name')}, dry_run=dry_run,
-            interactive=interactive, force=force)
+        return self.__action__('post', self.endpoint + '/simple',
+                               create_helper,
+                               params={'name': self.__get__('name')},
+                               dry_run=dry_run, interactive=interactive,
+                               force=force)
 
     def __update_child_resources__(self, chart_state):
         """Update child resources for this dashboard.
         """
         state = deepcopy(chart_state)
 
-        # Dashboard state can get really screwy sometimes. In certain situations
-        # a stale Chart object can be in the Dashboard config _without_ a valid
-        # id. Let's be nice and clean that up; makes it easier for us to
-        # update Dashboards too.
+        # Dashboard state can get really screwy sometimes. In certain
+        # situations a stale Chart object can be in the Dashboard config
+        # _without_ a valid id. Let's be nice and clean that up; makes it
+        # easier for us to update Dashboards too.
         for chart in state:
             if chart['chartId'] is None:
                 state.remove(chart)
 
         remote_chart_ids = list(map(lambda x: x['chartId'], state))
+
         def get_config_helper(id):
             res = Chart(session=self.session_handler)\
                 .with_api_token(self.api_token).with_id(id).read()
@@ -136,8 +183,8 @@ class Dashboard(Resource):
             updated_opts.update({'description': description})
         updated_opts.update({'charts': util.flatten_charts(self.options)})
 
-        # Let's override dry-run behavior here since it differs from the defualt
-        # implementation.
+        # Let's override dry-run behavior here since it differs from the
+        # defualt implementation.
         if dry_run:
             return updated_opts
 
@@ -172,7 +219,7 @@ class Dashboard(Resource):
             # https://jira.nike.com/browse/SIP-1062
             try:
                 return self.__action__('put', '/dashboard/' + dashboard['id'],
-                        lambda x: dashboard)
+                                       lambda x: dashboard)
             except RuntimeError:
                 msg = """
 WARNING: signal_analog has caught a potentially fatal runtime error when
