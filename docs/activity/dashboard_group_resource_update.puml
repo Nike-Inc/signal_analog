@@ -1,0 +1,45 @@
+@startuml
+start
+  :""Dashboard Group::update(dry_run?, force?, interactive?)"";
+  if (dry_run?) then (yes)
+    :return request to caller;
+    stop
+  else (no)
+    #Orange:**GET** /v2/dashboardgroups?name=dashboardGroupName>
+    note right
+      All API calls imply contact with
+      ""https://api.signalfx.com""
+
+      Each network call also implies
+      error handling for network/api
+      related errors.
+    end note
+    if (found results?) then (yes)
+      if (exact match?) then (yes)
+        if (force?) then (yes)
+          : Get Dashboard Group Id;
+          #Orange:**PUT** /v2/dashboardgroup/<id> >
+          stop
+        elseif (interactive?) then (yes)
+          if (confirm resource update?) then (yes)
+            : Get Dashboard Group Id;
+            #Orange: **PUT** /v2/dashboardgroup/<id> >
+            stop
+          else (no)
+            #OrangeRed: raise ResourceAlreadyExistsError;
+            stop
+          endif
+        else (no)
+          #OrangeRed:raise ResourceAlreadyExistsError;
+          stop
+        endif
+      else (no)
+        #Orange:**POST** /v2/dashboardgroup>
+        stop
+      endif
+    else (no)
+      #Orange:**POST** /v2/dashboardgroup>
+      stop
+    endif
+  endif
+@enduml
