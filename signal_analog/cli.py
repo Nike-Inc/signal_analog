@@ -1,4 +1,7 @@
 import click
+import json
+
+from signal_analog.util import pp_json
 
 
 class SignalAnalogConfig(object):
@@ -47,22 +50,31 @@ class CliBuilder(object):
             ctx.api_key = api_key
 
         @cli.command()
-        @click.option('-f', '--force', type=bool, is_flag=True, default=False, help='Force the creation of new resources')
-        @click.option('-i', '--interactive', type=bool, is_flag=True, default=False, help='Interactive mode of creating new resources')
+        @click.option('-f', '--force', type=bool, is_flag=True, default=False,
+            help='Force the creation of new resources')
+        @click.option('-i', '--interactive', type=bool, is_flag=True, default=False,
+            help='Interactive mode of creating new resources')
+        @click.option('-d', '--dry-run', type=bool, is_flag=True, default=False,
+            help='Print the configuration that would be sent to SignalFx')
         @pass_config
-        def create(ctx, force, interactive):
-            click.echo('create')
+        def create(ctx, force, interactive, dry_run):
             for resource in ctx.resources:
-                click.echo(invoke(resource, 'create', ctx.api_key, force=force, interactive=interactive))
+                res = invoke(resource, 'create', ctx.api_key,
+                    force=force, interactive=interactive, dry_run=dry_run)
+                pp_json(res)
 
         @cli.command()
         @click.option('--name', type=str, nargs=1, help='New Dashboard name')
-        @click.option('--description', type=str, nargs=1, help='New Dashboard description')
+        @click.option('--description', type=str, nargs=1,
+            help='New Dashboard description')
+        @click.option('-d', '--dry-run', type=bool, is_flag=True, default=False,
+            help='Print the configuration that would be sent to SignalFx')
         @pass_config
-        def update(ctx, name, description):
-            click.echo('update')
+        def update(ctx, name, description, dry_run):
             for resource in ctx.resources:
-                click.echo(invoke(resource, 'update', ctx.api_key, name=name, description=description))
+                res = invoke(resource, 'update', ctx.api_key,
+                    name=name, description=description, dry_run=dry_run)
+                pp_json(res)
 
         @cli.command()
         @pass_config
