@@ -7,8 +7,8 @@ from mock import patch
 from signal_analog.flow import Data
 from signal_analog.charts import TimeSeriesChart, PlotType
 from signal_analog.dashboards import Dashboard
-from signal_analog.errors import DashboardMatchNotFoundError, \
-        DashboardHasMultipleExactMatchesError, DashboardAlreadyExistsError, \
+from signal_analog.errors import ResourceMatchNotFoundError, \
+        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError, \
         SignalAnalogError
 
 # Global config. This will store all recorded requests in the 'mocks' dir
@@ -21,9 +21,16 @@ global_session = requests.Session()
 global_recorder = betamax.Betamax(global_session)
 
 
+def mk_chart(name):
+    program = Data('cpu.utilization').publish()
+    return TimeSeriesChart(session=global_session)\
+        .with_name(name)\
+        .with_program(program)
+
+
 def test_dashboard_init():
     dashboard = Dashboard()
-    assert dashboard.endpoint == '/dashboard/simple'
+    assert dashboard.endpoint == '/dashboard'
     assert dashboard.options == {'charts': []}
 
 
@@ -34,13 +41,8 @@ def test_dashboard_with_name():
 
 
 def test_dashboard_with_charts():
-    chart1 = TimeSeriesChart()
-    chart1.with_name('chart1')
-    chart1.with_program("data('requests.min').publish()")
-
-    chart2 = TimeSeriesChart()
-    chart2.with_name('chart2')
-    chart2.with_program("data('requests.min').publish()")
+    chart1 = mk_chart('chart1')
+    chart2 = mk_chart('chart2')
 
     expected_values = [chart1, chart2]
 
@@ -68,15 +70,14 @@ def test_dashboard_create():
     dashboard.with_charts(chart1, chart2)
     dashboard.with_name(dashboard_name)
     result = dashboard.create(dry_run=True)
-    result_dict = json.loads(result)
 
-    assert 'charts' in result_dict
-    assert 'name' in result_dict
-    assert len(result_dict['charts']) == 2
-    assert result_dict['name'] == dashboard_name
-    assert result_dict['charts'][0]['options']['defaultPlotType']\
+    assert 'charts' in result
+    assert 'name' in result
+    assert len(result['charts']) == 2
+    assert result['name'] == dashboard_name
+    assert result['charts'][0]['options']['defaultPlotType'] \
         == PlotType.area_chart.value
-    assert result_dict['charts'][1]['options']['defaultPlotType']\
+    assert result['charts'][1]['options']['defaultPlotType'] \
         == PlotType.line_chart.value
 
 
@@ -110,7 +111,7 @@ def test_dashboard_mult_match_valid():
 
 def test_find_match_empty():
     dash = Dashboard()
-    with pytest.raises(DashboardMatchNotFoundError):
+    with pytest.raises(ResourceMatchNotFoundError):
         dash.__find_existing_match__({'count': 0})
 
 
@@ -125,7 +126,7 @@ def test_find_match_exact():
     }
 
     dash = Dashboard().with_name('foo')
-    with pytest.raises(DashboardAlreadyExistsError):
+    with pytest.raises(ResourceAlreadyExistsError):
         dash.__find_existing_match__(response)
 
 
@@ -142,7 +143,7 @@ def test_find_match_duplicate_matches():
         ]
     }
     dash = Dashboard().with_name('foo')
-    with pytest.raises(DashboardHasMultipleExactMatchesError):
+    with pytest.raises(ResourceHasMultipleExactMatchesError):
         dash.__find_existing_match__(response)
 
 
@@ -157,29 +158,8 @@ def test_find_match_none():
     }
 
     dash = Dashboard().with_name('foo')
-    with pytest.raises(DashboardMatchNotFoundError):
+    with pytest.raises(ResourceMatchNotFoundError):
         dash.__find_existing_match__(response)
-
-
-def test_get_existing_dashboards_no_name():
-    """Make sure we don't make network requests if we don't have a name."""
-    with pytest.raises(ValueError):
-        Dashboard().__get_existing_dashboards__()
-
-
-def test_get_existing_dashboards():
-    with global_recorder.use_cassette('get_existing_dashboards',
-                                      serialize_with='prettyjson'):
-        name = 'Riposte Template Dashboard'
-
-        resp = Dashboard(session=global_session)\
-            .with_name('Riposte Template Dashboard')\
-            .with_api_token('foo')\
-            .__get_existing_dashboards__()
-
-        assert resp['count'] > 0
-        for r in resp['results']:
-            assert name in r['name']
 
 
 @pytest.mark.parametrize('input',
@@ -197,25 +177,20 @@ def test_create_signal_analog_error(input):
 
 
 def test_create_success():
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
-
     with global_recorder.use_cassette('create_success',
                                       serialize_with='prettyjson'):
         Dashboard(session=global_session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(chart)\
+            .with_charts(mk_chart('lol'))\
             .create()
 
 
 def test_create_force_success():
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
     dashboard = Dashboard(session=global_session)\
         .with_name('testy mctesterson')\
         .with_api_token('foo')\
-        .with_charts(chart)
+        .with_charts(mk_chart('lol'))
 
     with global_recorder.use_cassette('create_success_force',
                                       serialize_with='prettyjson'):
@@ -232,11 +207,10 @@ def test_create_force_success():
 def test_create_interactive_success(confirm):
     confirm.__getitem__.return_value = 'y'
     program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
     dashboard = Dashboard(session=global_session) \
         .with_name('testy mctesterson') \
         .with_api_token('foo') \
-        .with_charts(chart)
+        .with_charts(mk_chart('lol'))
     with global_recorder.use_cassette('create_success_interactive',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
@@ -251,12 +225,10 @@ def test_create_interactive_success(confirm):
 @patch('click.confirm')
 def test_create_interactive_failure(confirm):
     confirm.__getitem__.return_value = 'n'
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
     dashboard = Dashboard(session=global_session) \
         .with_name('testy mctesterson') \
         .with_api_token('foo') \
-        .with_charts(chart)
+        .with_charts(mk_chart('lol'))
     with global_recorder.use_cassette('create_failure_interactive',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
@@ -268,22 +240,20 @@ def test_create_interactive_failure(confirm):
 
 
 def test_dashboard_update_success():
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
-
     with global_recorder.use_cassette('dashboard_update_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session) \
+        dashboard = Dashboard(session=global_session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(chart) \
-            .create() \
-            .update(name='updated_dashboard_name', description='updated_dashboard_description')
+            .with_charts(mk_chart('lol'))
+
+        dashboard.create()
+        dashboard.update(name='updated_dashboard_name',
+            description='updated_dashboard_description')
 
 
 def test_dashboard_update_failure():
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
+    chart = mk_chart('lol')
 
     dashboard = Dashboard(session=global_session) \
         .with_name('testy mctesterson') \
@@ -298,3 +268,65 @@ def test_dashboard_update_failure():
         with pytest.raises(SignalAnalogError):
             # Verify that we can't update when multiple dashboards exist
             dashboard.update(name='updated_dashboard_name', description='updated_dashboard_description')
+
+
+def test_dashboard_update_child_chart():
+    chart = mk_chart('rawr')
+
+    dashboard = Dashboard(session=global_session)\
+        .with_name('foobarium')\
+        .with_api_token('foo')\
+        .with_charts(chart)
+
+    with global_recorder.use_cassette('dashboard_update_child_chart',
+                                      serialize_with='prettyjson'):
+        # We expect that updating the chart immediately shouldn't have
+        # any effect on the state of the chart.
+        dashboard.update()
+        resp = dashboard.update()
+
+        # We should only have one chart
+        assert len(resp['charts']) == 1
+
+
+def test_dashboard_create_child_chart():
+    chart = mk_chart('rawr')
+    chart2 = mk_chart('roar')
+
+    dashboard = Dashboard(session=global_session)\
+        .with_name('bariumfoo')\
+        .with_api_token('foo')\
+        .with_charts(chart)
+
+    with global_recorder.use_cassette('dashboard_create_child_chart',
+                                      serialize_with='prettyjson'):
+        resp = dashboard.create()
+        assert len(resp['charts']) == 1
+
+        # Simulate updating a configuration file.
+        dashboard.options['charts'].append(chart2)
+
+        resp_update = dashboard.update()
+        assert len(resp_update['charts']) == 2
+
+
+def test_dashboard_delete_child_chart():
+    chart = mk_chart('rawr')
+    chart2 = mk_chart('roar')
+
+    dashboard = Dashboard(session=global_session)\
+        .with_name('isley brothers')\
+        .with_api_token('foo')\
+        .with_charts(chart, chart2)
+
+    with global_recorder.use_cassette('dashboard_delete_child_chart',
+                                      serialize_with='prettyjson'):
+        resp = dashboard.create()
+        assert len(resp['charts']) == 2
+
+        # Simulate removing a chart from a user's config.
+        dashboard.options['charts'] = list(filter(
+            lambda x: x.options != chart2.options, dashboard.options['charts']))
+
+        resp_delete = dashboard.update()
+        assert resp_delete is None

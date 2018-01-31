@@ -1,0 +1,507 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2018-01-30T05:00:25",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 0,\n  \"results\" : [ ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "36"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 30 Jan 2018 05:00:24 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
+      }
+    },
+    {
+      "recorded_at": "2018-01-30T05:00:25",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "[{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}, {\"name\": \"roar\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}]"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "224"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=isley+brothers"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DUw3vuhAYAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  }, {\n    \"chartId\" : \"DUw3vwxAgAA\",\n    \"column\" : 6,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1517288425144,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DUw3vxeAcAA\",\n  \"id\" : \"DUw3vyXAYAA\",\n  \"lastUpdated\" : 1517288425144,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"isley brothers\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "749"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 30 Jan 2018 05:00:25 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard/simple?name=isley+brothers"
+      }
+    },
+    {
+      "recorded_at": "2018-01-30T05:00:30",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"chartDensity\" : \"DEFAULT\",\n    \"charts\" : [ {\n      \"chartId\" : \"DUw3vuhAYAA\",\n      \"column\" : 0,\n      \"height\" : 1,\n      \"row\" : 0,\n      \"width\" : 6\n    }, {\n      \"chartId\" : \"DUw3vwxAgAA\",\n      \"column\" : 6,\n      \"height\" : 1,\n      \"row\" : 0,\n      \"width\" : 6\n    } ],\n    \"created\" : 1517288425144,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"customProperties\" : null,\n    \"description\" : \"\",\n    \"discoveryOptions\" : null,\n    \"eventOverlays\" : null,\n    \"filters\" : {\n      \"sources\" : null,\n      \"time\" : null,\n      \"variables\" : null\n    },\n    \"groupId\" : \"DUw3vxeAcAA\",\n    \"id\" : \"DUw3vyXAYAA\",\n    \"lastUpdated\" : 1517288426154,\n    \"lastUpdatedBy\" : null,\n    \"locked\" : false,\n    \"maxDelayOverride\" : null,\n    \"name\" : \"isley brothers\",\n    \"selectedEventOverlays\" : null,\n    \"tags\" : null\n  } ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "856"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 30 Jan 2018 05:00:30 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
+      }
+    },
+    {
+      "recorded_at": "2018-01-30T05:00:30",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/chart/DUw3vuhAYAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"created\" : 1517288425107,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : { },\n  \"description\" : \"\",\n  \"id\" : \"DUw3vuhAYAA\",\n  \"lastUpdated\" : 1517288426588,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"rawr\",\n  \"options\" : {\n    \"areaChartOptions\" : null,\n    \"axes\" : null,\n    \"axisPrecision\" : null,\n    \"colorBy\" : \"Dimension\",\n    \"defaultPlotType\" : \"LineChart\",\n    \"legendOptions\" : null,\n    \"lineChartOptions\" : null,\n    \"onChartLegendOptions\" : null,\n    \"programOptions\" : null,\n    \"publishLabelOptions\" : null,\n    \"showEventLines\" : false,\n    \"stacked\" : false,\n    \"time\" : null,\n    \"type\" : \"TimeSeriesChart\",\n    \"unitPrefix\" : \"Metric\"\n  },\n  \"packageSpecifications\" : \"\",\n  \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n  \"tags\" : [ ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "780"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 30 Jan 2018 05:00:30 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/chart/DUw3vuhAYAA"
+      }
+    },
+    {
+      "recorded_at": "2018-01-30T05:00:30",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/chart/DUw3vwxAgAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"created\" : 1517288425117,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : { },\n  \"description\" : \"\",\n  \"id\" : \"DUw3vwxAgAA\",\n  \"lastUpdated\" : 1517288426414,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"roar\",\n  \"options\" : {\n    \"areaChartOptions\" : null,\n    \"axes\" : null,\n    \"axisPrecision\" : null,\n    \"colorBy\" : \"Dimension\",\n    \"defaultPlotType\" : \"LineChart\",\n    \"legendOptions\" : null,\n    \"lineChartOptions\" : null,\n    \"onChartLegendOptions\" : null,\n    \"programOptions\" : null,\n    \"publishLabelOptions\" : null,\n    \"showEventLines\" : false,\n    \"stacked\" : false,\n    \"time\" : null,\n    \"type\" : \"TimeSeriesChart\",\n    \"unitPrefix\" : \"Metric\"\n  },\n  \"packageSpecifications\" : \"\",\n  \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n  \"tags\" : [ ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "780"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 30 Jan 2018 05:00:30 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/chart/DUw3vwxAgAA"
+      }
+    },
+    {
+      "recorded_at": "2018-01-30T05:00:30",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"id\": \"DUw3vuhAYAA\", \"options\": {\"type\": \"TimeSeriesChart\"}}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "131"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://api.signalfx.com/v2/chart"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"created\" : 1517288430662,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : { },\n  \"description\" : \"\",\n  \"id\" : \"DUw3waeAgAA\",\n  \"lastUpdated\" : 1517288430662,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"rawr\",\n  \"options\" : {\n    \"areaChartOptions\" : null,\n    \"axes\" : null,\n    \"axisPrecision\" : null,\n    \"colorBy\" : \"Dimension\",\n    \"defaultPlotType\" : \"LineChart\",\n    \"legendOptions\" : null,\n    \"lineChartOptions\" : null,\n    \"onChartLegendOptions\" : null,\n    \"programOptions\" : null,\n    \"publishLabelOptions\" : null,\n    \"showEventLines\" : false,\n    \"stacked\" : false,\n    \"time\" : null,\n    \"type\" : \"TimeSeriesChart\",\n    \"unitPrefix\" : \"Metric\"\n  },\n  \"packageSpecifications\" : \"\",\n  \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n  \"tags\" : [ ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "780"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 30 Jan 2018 05:00:30 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/chart"
+      }
+    },
+    {
+      "recorded_at": "2018-01-30T05:00:30",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "DELETE",
+        "uri": "https://api.signalfx.com/v2/chart/DUw3vwxAgAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": ""
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Date": [
+            "Tue, 30 Jan 2018 05:00:30 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/chart/DUw3vwxAgAA"
+      }
+    },
+    {
+      "recorded_at": "2018-01-30T05:00:31",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"chartDensity\": \"DEFAULT\", \"charts\": [{\"chartId\": \"DUw3vuhAYAA\", \"column\": 0, \"height\": 1, \"row\": 0, \"width\": 6}, {\"chartId\": \"DUw3vwxAgAA\", \"column\": 6, \"height\": 1, \"row\": 0, \"width\": 6}], \"created\": 1517288425144, \"creator\": \"ClusPSzAYAA\", \"customProperties\": null, \"description\": \"\", \"discoveryOptions\": null, \"eventOverlays\": null, \"filters\": {\"sources\": null, \"time\": null, \"variables\": null}, \"groupId\": \"DUw3vxeAcAA\", \"id\": \"DUw3vyXAYAA\", \"lastUpdated\": 1517288426154, \"lastUpdatedBy\": null, \"locked\": false, \"maxDelayOverride\": null, \"name\": \"isley brothers\", \"selectedEventOverlays\": null, \"tags\": null}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "614"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "PUT",
+        "uri": "https://api.signalfx.com/v2/dashboard/DUw3vyXAYAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": ""
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Date": [
+            "Tue, 30 Jan 2018 05:00:30 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 500,
+          "message": "Request failed."
+        },
+        "url": "https://api.signalfx.com/v2/dashboard/DUw3vyXAYAA"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}

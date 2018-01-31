@@ -20,3 +20,4 @@ betamax
 betamax_serializers
 click
 mock
+pytest-xdist
