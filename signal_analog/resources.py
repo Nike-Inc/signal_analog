@@ -4,6 +4,12 @@ import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 
+# py2/3 compatability hack so that we can consistently handle JSON errors.
+try:
+    from json.decoder import JSONDecodeError
+except ImportError:
+    JSONDecodeError = ValueError
+
 __SIGNALFX_API_ENDPOINT__ = 'https://api.signalfx.com/v2'
 
 
@@ -88,8 +94,6 @@ class Resource(object):
             Raises:
                 HTTPError: when a network exception ocurred
         """
-        util.is_valid(self.options)
-
         if dry_run:
             opts = dict(self.options)
             if self.options.get('charts', []):
@@ -110,11 +114,14 @@ class Resource(object):
 
         try:
             response.raise_for_status()
+            return response.json()
         except requests.exceptions.HTTPError as error:
             # Tell the user exactly what went wrong according to SignalFX
             raise RuntimeError(error.response.text)
-
-        return response.json()
+        except JSONDecodeError:
+            # Some responses from the API don't return anything, in these
+            # situations we shouldn't either
+            return None
 
 
     def __get__(self, name, default=None):

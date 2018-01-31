@@ -21,6 +21,13 @@ global_session = requests.Session()
 global_recorder = betamax.Betamax(global_session)
 
 
+def mk_chart(name):
+    program = Data('cpu.utilization').publish()
+    return TimeSeriesChart(session=global_session)\
+        .with_name(name)\
+        .with_program(program)
+
+
 def test_dashboard_init():
     dashboard = Dashboard()
     assert dashboard.endpoint == '/dashboard'
@@ -34,13 +41,8 @@ def test_dashboard_with_name():
 
 
 def test_dashboard_with_charts():
-    chart1 = TimeSeriesChart()
-    chart1.with_name('chart1')
-    chart1.with_program("data('requests.min').publish()")
-
-    chart2 = TimeSeriesChart()
-    chart2.with_name('chart2')
-    chart2.with_program("data('requests.min').publish()")
+    chart1 = mk_chart('chart1')
+    chart2 = mk_chart('chart2')
 
     expected_values = [chart1, chart2]
 
@@ -175,25 +177,20 @@ def test_create_signal_analog_error(input):
 
 
 def test_create_success():
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
-
     with global_recorder.use_cassette('create_success',
                                       serialize_with='prettyjson'):
         Dashboard(session=global_session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(chart)\
+            .with_charts(mk_chart('lol'))\
             .create()
 
 
 def test_create_force_success():
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
     dashboard = Dashboard(session=global_session)\
         .with_name('testy mctesterson')\
         .with_api_token('foo')\
-        .with_charts(chart)
+        .with_charts(mk_chart('lol'))
 
     with global_recorder.use_cassette('create_success_force',
                                       serialize_with='prettyjson'):
@@ -210,11 +207,10 @@ def test_create_force_success():
 def test_create_interactive_success(confirm):
     confirm.__getitem__.return_value = 'y'
     program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
     dashboard = Dashboard(session=global_session) \
         .with_name('testy mctesterson') \
         .with_api_token('foo') \
-        .with_charts(chart)
+        .with_charts(mk_chart('lol'))
     with global_recorder.use_cassette('create_success_interactive',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
@@ -229,12 +225,10 @@ def test_create_interactive_success(confirm):
 @patch('click.confirm')
 def test_create_interactive_failure(confirm):
     confirm.__getitem__.return_value = 'n'
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
     dashboard = Dashboard(session=global_session) \
         .with_name('testy mctesterson') \
         .with_api_token('foo') \
-        .with_charts(chart)
+        .with_charts(mk_chart('lol'))
     with global_recorder.use_cassette('create_failure_interactive',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
@@ -246,15 +240,12 @@ def test_create_interactive_failure(confirm):
 
 
 def test_dashboard_update_success():
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
-
     with global_recorder.use_cassette('dashboard_update_success',
                                       serialize_with='prettyjson'):
         dashboard = Dashboard(session=global_session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(chart)
+            .with_charts(mk_chart('lol'))
 
         dashboard.create()
         dashboard.update(name='updated_dashboard_name',
@@ -262,8 +253,7 @@ def test_dashboard_update_success():
 
 
 def test_dashboard_update_failure():
-    program = Data('cpu.utilization').publish()
-    chart = TimeSeriesChart().with_name('lol').with_program(program)
+    chart = mk_chart('lol')
 
     dashboard = Dashboard(session=global_session) \
         .with_name('testy mctesterson') \
@@ -278,3 +268,65 @@ def test_dashboard_update_failure():
         with pytest.raises(SignalAnalogError):
             # Verify that we can't update when multiple dashboards exist
             dashboard.update(name='updated_dashboard_name', description='updated_dashboard_description')
+
+
+def test_dashboard_update_child_chart():
+    chart = mk_chart('rawr')
+
+    dashboard = Dashboard(session=global_session)\
+        .with_name('foobarium')\
+        .with_api_token('foo')\
+        .with_charts(chart)
+
+    with global_recorder.use_cassette('dashboard_update_child_chart',
+                                      serialize_with='prettyjson'):
+        # We expect that updating the chart immediately shouldn't have
+        # any effect on the state of the chart.
+        dashboard.update()
+        resp = dashboard.update()
+
+        # We should only have one chart
+        assert len(resp['charts']) == 1
+
+
+def test_dashboard_create_child_chart():
+    chart = mk_chart('rawr')
+    chart2 = mk_chart('roar')
+
+    dashboard = Dashboard(session=global_session)\
+        .with_name('bariumfoo')\
+        .with_api_token('foo')\
+        .with_charts(chart)
+
+    with global_recorder.use_cassette('dashboard_create_child_chart',
+                                      serialize_with='prettyjson'):
+        resp = dashboard.create()
+        assert len(resp['charts']) == 1
+
+        # Simulate updating a configuration file.
+        dashboard.options['charts'].append(chart2)
+
+        resp_update = dashboard.update()
+        assert len(resp_update['charts']) == 2
+
+
+def test_dashboard_delete_child_chart():
+    chart = mk_chart('rawr')
+    chart2 = mk_chart('roar')
+
+    dashboard = Dashboard(session=global_session)\
+        .with_name('isley brothers')\
+        .with_api_token('foo')\
+        .with_charts(chart, chart2)
+
+    with global_recorder.use_cassette('dashboard_delete_child_chart',
+                                      serialize_with='prettyjson'):
+        resp = dashboard.create()
+        assert len(resp['charts']) == 2
+
+        # Simulate removing a chart from a user's config.
+        dashboard.options['charts'] = list(filter(
+            lambda x: x.options != chart2.options, dashboard.options['charts']))
+
+        resp_delete = dashboard.update()
+        assert resp_delete is None
