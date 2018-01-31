@@ -72,16 +72,6 @@ def test_resource_with_api_token():
         assert resource.api_token == expected
 
 
-@pytest.mark.parametrize("api_token,options", [(None, {}), ("foo", {})])
-def test_resource_create_failing_preconds(api_token, options):
-        with pytest.raises(ValueError):
-                resource = Resource()
-                resource.api_token = api_token
-                resource.options = options
-
-                resource.create()
-
-
 def test_resource_create_happy_path():
         with requests_mock.Mocker() as mock:
                 expected = {'foo': 'bar'}

@@ -1,6 +1,8 @@
 import click
 import json
 
+from signal_analog.util import pp_json
+
 
 class SignalAnalogConfig(object):
 
@@ -10,11 +12,6 @@ class SignalAnalogConfig(object):
 
 
 pass_config = click.make_pass_decorator(SignalAnalogConfig, ensure=True)
-
-
-def pp_json(dictionary):
-    """Pretty print a dictionary as JSON."""
-    click.echo(json.dumps(dictionary, indent=2))
 
 
 def invoke(resource, action, api_key, **kwargs):
