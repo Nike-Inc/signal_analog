@@ -1,0 +1,29 @@
+@startuml
+start
+  :Dashboard Group::pre_update(signalfx_config, payload);
+  note right
+    All orange right arrows imply
+    error handling against the declared
+    exceptions for the method.
+  end note
+  #Orange:**GET** dashboard configuration for each dashboard id in signalfx_config >
+  :build set of dashboards to update;
+  note right
+    chart exists both in signalfx_config and local config
+  end note
+  :build set of dashboards to delete;
+  note right
+    chart exists in signalfx_config but **not** local config
+  end note
+  :build set of dashboards to create;
+  note right
+    chart does **not** exist in signalfx_config but **does** in local config
+  end note
+  repeat
+    :for each set of dashboards...;
+    :perform required state change on resource;
+    :update signalfx_config;
+  repeat while (more dashboards to process)
+  #SpringGreen:return modified signalfx_config;
+  stop
+@enduml
