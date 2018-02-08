@@ -16,6 +16,83 @@ from numbers import Number
 
 from six import string_types
 
+# Py 2/3 compatability hack to force `filter` to always return an iterator
+try:
+    from itertools import ifilter
+    filter = ifilter
+except ImportError:
+    pass
+
+
+
+class Program(object):
+    """Encapsulation of a SignalFlow program."""
+
+    def __init__(self, *statements):
+        """Initialize a new program, optionally with statements.
+
+        Raises:
+            ValueError: when any provided statement is found to not be a valid
+                        statement. See __valid_statement__ for more detail.
+        """
+        self.statements = []
+        for stmt in statements:
+            self.__valid_statement__(stmt)
+            self.statements.append(stmt)
+
+    def __valid_statement__(self, stmt):
+        """Type check the provided statement."""
+        if not stmt or not issubclass(stmt.__class__, Function):
+            msg = "Attempted to build a program with something other than " +\
+                   "SignalFlow statements. Received '{0}' but expected a " +\
+                   "{1}"
+            raise ValueError(msg.format(
+                stmt.__class__.__name__, Function.__name__))
+
+    def add_statements(self, *statements):
+        """Add a statement to this program.
+
+        Arguments:
+            statement: the statement to add
+
+        Raises:
+            ValueError: when any provided statement is found to not be a valid
+                        statement. See __valid_statement__ for more detail.
+
+        Returns:
+            None
+        """
+        for stmt in statements:
+            self.__valid_statement__(stmt)
+            self.statements.append(stmt)
+
+
+    def find_label(self, label):
+        """Find a statement in this program with the given label.
+
+        Note that any program that doesn't call `publish` will be ignored.
+
+        Arguments:
+            label: the label to search for.
+
+        Returns:
+            The first match for `label` in this program's statements. None if
+            a match cannot be found.
+        """
+        def label_predicate(x):
+            # Search the call stack for a publish call
+            for call in x.call_stack:
+                if isinstance(call, Publish):
+                    # Check that the label arg is equal to the label we're
+                    # searching for.
+                    return label == call.args[0].arg
+
+            # If we didn't a publish call let's ignore it.
+            return False
+
+        # Only return the first match from the filter iterator.
+        return next(filter(label_predicate, self.statements), None)
+
 
 class Function(object):
 
