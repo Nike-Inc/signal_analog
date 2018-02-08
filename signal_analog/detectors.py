@@ -1,5 +1,6 @@
 """Detector objects representable in the SignalFx API."""
 
+from enum import Enum
 import signal_analog.util as util
 from email_validator import validate_email
 
@@ -208,3 +209,107 @@ class TeamEmailNotification(Notification):
             'team': team_id
         }
 
+
+class Severity(Enum):
+    """Available severity levels for detector rules."""
+
+    Critical = "Critical"
+    Warning = "Warning"
+    Major = "Major"
+    Minor = "Minor"
+    Info = "Info"
+
+
+class Rule(object):
+    """Determines who/what is notified when a detector fires."""
+
+    def __init__(self):
+        """Initializes a new rule."""
+        self.options = {}
+
+    def for_label(self, label):
+        """A label matching a `detect` label within the program text."""
+        util.is_valid(label)
+        self.options.update({'detectLabel': label})
+        return self
+
+    def with_description(self, description):
+        """Human-readable description for this rule."""
+        util.is_valid(description)
+        self.options.update({'description': description})
+        return self
+
+    def with_severity(self, severity):
+        """Severity of the rule."""
+        util.in_given_enum(severity, Severity)
+        self.options.update({'severity': severity.value})
+        return self
+
+    def is_disabled(self, disabled=False):
+        """When true, notifications and events will not be generated for the
+           detect label. False by default.
+        """
+        self.options.update({'disabled': disabled})
+        return self
+
+    def with_notifications(self, *notifications):
+        """Determines where notifications will be sent when an incident occurs.
+        """
+        def yield_notifications(ns):
+            for n in ns:
+                if not issubclass(n.__class__, Notification):
+                    msg = "Rule notifications only accept Notification " + \
+                          "objects. Instead we got '{0}'"
+                    raise ValueError(msg.format(n.__class__.__name__))
+                else:
+                    yield n.options
+
+        to_add = list(yield_notifications(notifications))
+        self.options.update({'notifications': to_add})
+        return self
+
+    def with_parameterized_body(self, body):
+        """Custom notifiction message body for this rule when the alert is
+           triggeered.
+
+           Content can contain ASCII chars and is parsed as plain text. Quotes
+           can be escaped using a backslash, and new line characters are
+           indicated with "\\n"
+
+           Available variables can be found here:
+           https://docs.signalfx.com/en/latest/detect-alert/set-up-detectors.html#message-variables
+        """
+        util.is_valid(body)
+        self.options.update({'parameterizedBody': body})
+        return self
+
+    def with_parameterized_subject(self, subject):
+        """Custom notification message subject for this rule when an alert is
+        triggered.
+
+        See the documentation for `with_parameterized_body` for more detail.
+        """
+        util.is_valid(subject)
+        self.options.update({'parameterizedSubject': subject})
+        return self
+
+    def with_runbook_url(self, url):
+        """URL of the page to consult when an alert is triggered.
+
+        This can be used with custom notification messages. It can be
+        referenced using the {{runbookUrl}} template var.
+        """
+        util.is_valid(url)
+        self.options.update({'runbookUrl': url})
+        return self
+
+    def with_tip(self, tip):
+        """Plain text suggested first course of action, such as a command line
+        to execute.
+
+        This can be used with custom notification messages. It can be
+        referenced using the {{tip}} template var.
+        """
+        util.is_valid(tip)
+        self.options.update({'tip': tip})
+        return self
