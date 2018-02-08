@@ -1,5 +1,6 @@
 """Tests pertaining to the `signal_analog.detectors` module."""
 
+import re
 import pytest
 
 from email_validator import EmailNotValidError
@@ -8,7 +9,7 @@ from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
                                     ServiceNowNotification, \
                                     VictorOpsNotification, \
                                     WebhookNotification, TeamNotification, \
-                                    TeamEmailNotification
+                                    TeamEmailNotification, Rule, Severity
 
 
 def test_email_valid():
@@ -131,3 +132,77 @@ def test_team_invalid():
         TeamNotification('')
     with pytest.raises(ValueError):
         TeamEmailNotification('')
+
+
+def test_rule_init():
+    assert Rule().options == {}
+
+
+def test_rule_for_label():
+    expected = 'foo'
+    rule = Rule().for_label(expected)
+    assert rule.options['detectLabel'] == expected
+
+
+@pytest.mark.parametrize('method',
+    ['for_label', 'with_description', 'with_severity', 'with_notifications',
+     'with_parameterized_body', 'with_parameterized_subject',
+     'with_runbook_url', 'with_tip'])
+def test_rule_invalid(method):
+    with pytest.raises(ValueError):
+        rule = Rule()
+        fn = getattr(rule, method)
+        fn(None)
+
+
+def test_rule_with_description():
+    expected = 'foo'
+    rule = Rule().with_description(expected)
+    assert rule.options['description'] == expected
+
+
+def test_rule_with_severity():
+    expected = Severity.Critical
+    rule = Rule().with_severity(expected)
+    assert rule.options['severity'] == expected.value
+
+
+def test_rule_is_disabled_default():
+    assert Rule().is_disabled().options['disabled'] == False
+
+
+def test_rule_is_disabled():
+    assert Rule().is_disabled(disabled=True).options['disabled'] == True
+
+
+def test_rule_with_notifications_single():
+    expected = EmailNotification('foo@bar.com')
+    rule = Rule().with_notifications(expected)
+    assert rule.options['notifications'] == [expected.options]
+
+
+def test_rule_with_notifiations_multi():
+    expected = [EmailNotification('foo@bar.com'),
+                TeamNotification('lol')]
+    rule = Rule().with_notifications(*expected)
+
+    for n in rule.options['notifications']:
+        assert n in map(lambda x: x.options, expected)
+
+
+def mk_rule_fn(rule, name):
+    """Test helper for converting camelCase names to
+       underscore_function_names and returning a callable rule fn."""
+
+    parts = re.sub('(?!^)([A-Z][a-z]+)', r' \1', name).split()
+    parts.insert(0, 'with')
+    fn_name = '_'.join(map(lambda x: x.lower(), parts))
+    return getattr(rule, fn_name)
+
+@pytest.mark.parametrize('name',
+    ['parameterizedBody', 'parameterizedSubject', 'runbookUrl', 'tip'])
+def test_rule_stringy_things(name):
+    expected = 'foo'
+    rule = Rule()
+    fn = mk_rule_fn(rule, name)
+    assert fn('foo').options[name] == expected
