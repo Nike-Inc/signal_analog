@@ -123,7 +123,6 @@ class Resource(object):
             # situations we shouldn't either
             return None
 
-
     def __get__(self, name, default=None):
         """Internal helper for sourcing top-level options from this resource."""
         return self.options.get(name, default)
@@ -203,6 +202,21 @@ class Resource(object):
             dry_run=dry_run, interactive=interactive, force=force)
 
     def update(self, dry_run=False):
-        """Default implementation for resource creation."""
+        """Default implementation for resource updation."""
         return self.__action__('put', self.endpoint, lambda x: x,
+            dry_run=dry_run)
+
+    def read(self, resourceid, dry_run=False):
+        """Default implementation for resource reading."""
+        return self.__action__('get', self.endpoint, lambda x: x,
+            dry_run=dry_run)
+
+    def delete(self, resourceid, dry_run=False):
+        """Default implementation for resource deletion."""
+        return self.__action__('delete', self.endpoint, lambda x: x,
+            dry_run=dry_run)
+
+    def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
+        """Default implementation for resource cloning."""
+        return self.__action__('post', self.endpoint, lambda x: x,
             dry_run=dry_run)
