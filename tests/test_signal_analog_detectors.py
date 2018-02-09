@@ -4,13 +4,15 @@ import re
 import pytest
 
 from email_validator import EmailNotValidError
+from signal_analog.flow import Data, Program
 from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
                                     SlackNotification, HipChatNotification, \
                                     ServiceNowNotification, \
                                     VictorOpsNotification, \
                                     WebhookNotification, TeamNotification, \
                                     TeamEmailNotification, Rule, Severity, \
-                                    Time, TimeConfig, VisualizationOptions
+                                    Time, TimeConfig, VisualizationOptions, \
+                                    Detector
 
 
 def test_email_valid():
@@ -292,3 +294,57 @@ def test_show_data_markers_default():
 def test_show_data_markers():
     assert VisualizationOptions().show_data_markers(show_markers=True)\
         .options['showDataMarkers'] == True
+
+
+def test_detector_init():
+    assert Detector().options == {}
+    assert Detector().endpoint == '/detector'
+
+
+def test_detector_with_rules():
+    rule = Rule().with_notifications(EmailNotification('foo@bar.com'))
+    d = Detector().with_rules(rule)
+    assert d.options['rules'] == [rule.options]
+
+
+def test_detector_with_program():
+    program = Program(
+        Data('foo').publish(label='A'),
+        Data('bar').publish(label='B')
+    )
+    d = Detector().with_program(program)
+    assert d.options['programText'] == str(program)
+
+
+def test_detector_with_max_dely():
+    d = Detector().with_max_delay(900)
+    assert d.options['maxDelay'] == 900
+
+
+def test_detector_with_visualization_options():
+    opts = VisualizationOptions()\
+        .with_time_config(TimeConfig().with_type(Time.Absolute))
+    d = Detector().with_visualization_options(opts)
+    assert d.options['visualizationOptions'] == opts.options
+
+
+def test_detector_with_tags():
+    tags = ['foo', 'bar', 'baz']
+    d = Detector().with_tags(*tags)
+    assert d.options['tags'] == tags
+
+
+def test_detector_with_teams():
+    team_ids = ['team1', 'team2', 'team3']
+    d = Detector().with_teams(*team_ids)
+    assert d.options['teams'] == team_ids
+
+@pytest.mark.parametrize('method',
+    ['with_program', 'with_visualization_options'])
+def test_rule_invalid(method):
+    with pytest.raises(ValueError):
+        detector = Detector()
+        fn = getattr(detector, method)
+        fn(None)
+
+
