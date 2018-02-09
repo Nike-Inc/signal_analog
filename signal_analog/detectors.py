@@ -1,8 +1,13 @@
 """Detector objects representable in the SignalFx API."""
 
 from enum import Enum
+from signal_analog.resources import Resource
+from signal_analog.flow import Program
+from six import string_types
 import signal_analog.util as util
 from email_validator import validate_email
+from signal_analog.errors import ResourceMatchNotFoundError, \
+        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 
 
 class Notification(object):
@@ -255,17 +260,10 @@ class Rule(object):
     def with_notifications(self, *notifications):
         """Determines where notifications will be sent when an incident occurs.
         """
-        def yield_notifications(ns):
-            for n in ns:
-                if not issubclass(n.__class__, Notification):
-                    msg = "Rule notifications only accept Notification " + \
-                          "objects. Instead we got '{0}'"
-                    raise ValueError(msg.format(n.__class__.__name__))
-                else:
-                    yield n.options
-
-        to_add = list(yield_notifications(notifications))
-        self.options.update({'notifications': to_add})
+        util.check_collection(notifications, Notification)
+        self.options.update({
+            'notifications': list(map(lambda x: x.options, notifications))
+        })
         return self
 
     def with_parameterized_body(self, body):
@@ -393,3 +391,128 @@ class VisualizationOptions(object):
            visualization."""
         self.options.update({'showDataMarkers': show_markers})
         return self
+
+
+class Detector(Resource):
+    """Resource encapsulating Detectors in the SignalFx API.
+
+    A detector is a collection of rules that define who should be notified when
+    certain detect functions within SignalFlow fire alerts. Each rule maps a
+    detect label to a severity and a list of notifications. When the conditions
+    within the given detect function are fulfilled, notifications will be sent
+    to the destinations defined in the rule for that detect function.
+    """
+
+    def __init__(self, session=None):
+        super(Detector, self).__init__(endpoint='/detector', session=session)
+        self.options = {}
+
+    def with_rules(self, *rules):
+        util.check_collection(rules, Rule)
+        self.options.update({
+            'rules': list(map(lambda x: x.options, rules))
+        })
+        return self
+
+    def with_program(self, program):
+        if not issubclass(program.__class__, Program):
+            msg = 'Signal Analog Detectors only support Program objects, we' +\
+                   ' got a "{0}" instead.'
+            raise ValueError(msg.format(program.__class__.__name__))
+
+        self.options.update({
+            'programText': str(program)
+        })
+        return self
+
+    def with_max_delay(self, delay):
+        """Used to handle late datapoints."""
+        util.is_valid(delay)
+        self.options.update({'maxDelay': delay})
+        return self
+
+    def with_visualization_options(self, opts):
+        """Visualization opts to use when viewing the detector in SignalFx."""
+        if not issubclass(opts.__class__, VisualizationOptions):
+            msg = 'Got a "{0} when we were expecting a "{0}"'
+            raise ValueError(msg.format(
+                opts.__class__.__name__, VisualizationOptions.__name__))
+
+        self.options.update({'visualizationOptions': opts.options})
+        return self
+
+    def with_tags(self, *tags):
+        """Tags associated with the detector."""
+        util.check_collection(tags, string_types)
+        self.options.update({'tags': list(tags)})
+        return self
+
+    def with_teams(self, *team_ids):
+        """Team IDs to associate the detector to."""
+        util.check_collection(team_ids, string_types)
+        self.options.update({'teams': list(team_ids)})
+        return self
+
+    def create(self, dry_run=False, force=False, interactive=False):
+        """Creates a Detector in SignalFx.
+
+        See: https://developers.signalfx.com/v2/reference#detector
+        """
+
+        def create_helper(opts):
+            try:
+                query_result = self.__find_existing_resources__()
+                self.__find_existing_match__(query_result)
+            except (ResourceAlreadyExistsError,
+                    ResourceHasMultipleExactMatchesError) as e:
+                if not force and not interactive:
+                    # Rethrow error to user if we're not force creating things
+                    raise e
+                elif interactive:
+                    msg = 'A detector with the name "{0}" already exists. ' + \
+                          'Do you want to create a new detector?'
+                    if click.confirm(msg.format(self.__get__('name'))):
+                        return opts
+                    else:
+                        raise ResourceAlreadyExistsError(self.__get__('name'))
+            # Otherwise this is perfectly fine, create the dashboard!
+            except ResourceMatchNotFoundError:
+                pass
+
+            return opts
+
+        return self.__action__('post', self.endpoint, create_helper,
+            dry_run=dry_run, interactive=interactive, force=force)
+
+    def update(self, name=None, description=None, dry_run=False):
+        """Update a detector in the SignalFx API.
+
+        See: https://developers.signalfx.com/v2/reference#detectorid-2
+        """
+
+        updated_opts = dict(self.options)
+        if name:
+            updated_opts.update({'name': name})
+        if description:
+            updated_opts.update({'name': description})
+
+        if dry_run:
+            return updated_opts
+
+        query_result = self.__find_existing_resources__()
+
+        try:
+            self.__find_existing_match__(query_result)
+
+        except ResourceAlreadyExistsError:
+            detector = self.__filter_matches__(query_result)
+
+            if name:
+                detector.update({'name': name})
+            if description:
+                detector.update({'description': description})
+
+            return self.__action__('put', self.endpoint + '/' + detector['id'],
+                lambda x: detector)
+        except ResourceMatchNotFoundError:
+            return self.create(dry_run=dry_run)
