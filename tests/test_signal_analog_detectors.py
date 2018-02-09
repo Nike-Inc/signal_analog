@@ -9,7 +9,8 @@ from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
                                     ServiceNowNotification, \
                                     VictorOpsNotification, \
                                     WebhookNotification, TeamNotification, \
-                                    TeamEmailNotification, Rule, Severity
+                                    TeamEmailNotification, Rule, Severity, \
+                                    Time, TimeConfig, VisualizationOptions
 
 
 def test_email_valid():
@@ -206,3 +207,88 @@ def test_rule_stringy_things(name):
     rule = Rule()
     fn = mk_rule_fn(rule, name)
     assert fn('foo').options[name] == expected
+
+
+def test_time_config_init():
+    assert TimeConfig().options == {}
+
+
+def test_time_config_with_type():
+    expected = Time.Relative
+    config = TimeConfig().with_type(expected)
+    assert config.options['type'] == expected.value
+
+
+def test_time_config_with_type_invalid():
+    with pytest.raises(ValueError):
+        TimeConfig().with_type('lol')
+
+
+def test_time_config_add_millis():
+    expected = 100
+    config = TimeConfig().__add_millis__(expected, 'foo')
+    assert config.options['foo'] == expected
+
+
+def test_time_config_start_relative():
+    with pytest.raises(ValueError):
+        TimeConfig().with_type(Time.Relative).with_start(100)
+
+
+def test_time_config_end_relative():
+    with pytest.raises(ValueError):
+        TimeConfig().with_type(Time.Relative).with_end(100)
+
+def test_time_config_range_absolute():
+    with pytest.raises(ValueError):
+        TimeConfig().with_type(Time.Absolute).with_range(100)
+
+
+def test_time_config_absolute():
+    e_start = 100
+    e_end = 200
+
+    config = TimeConfig().with_start(e_start).with_end(e_end)
+    assert config.options['start'] == e_start
+    assert config.options['end'] == e_end
+
+    conf = TimeConfig().with_type(Time.Absolute)\
+        .with_start(e_start).with_end(e_end)
+    assert conf.options['start'] == e_start
+    assert conf.options['end'] == e_end
+
+
+def test_time_config_relative():
+    expected = 100
+
+    config = TimeConfig().with_range(expected)
+    assert config.options['range'] == expected
+
+    conf = TimeConfig().with_type(Time.Relative).with_range(expected)
+    assert config.options['range'] == expected
+
+
+def test_vis_opts_init():
+    assert VisualizationOptions().options == {}
+
+
+def test_vis_opts_time_config_invalid():
+    with pytest.raises(ValueError):
+        VisualizationOptions().with_time_config(None)
+
+
+def test_vis_opts_time_config():
+    conf = TimeConfig().with_type(Time.Relative).with_range(100)
+    opts = VisualizationOptions().with_time_config(conf)
+
+    assert opts.options['time'] == conf.options
+
+
+def test_show_data_markers_default():
+    assert VisualizationOptions()\
+        .show_data_markers().options['showDataMarkers'] == False
+
+
+def test_show_data_markers():
+    assert VisualizationOptions().show_data_markers(show_markers=True)\
+        .options['showDataMarkers'] == True
