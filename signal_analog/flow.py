@@ -24,7 +24,6 @@ except ImportError:
     pass
 
 
-
 class Program(object):
     """Encapsulation of a SignalFlow program."""
 
@@ -39,6 +38,9 @@ class Program(object):
         for stmt in statements:
             self.__valid_statement__(stmt)
             self.statements.append(stmt)
+
+    def __str__(self):
+        return '\n'.join(map(str, self.statements))
 
     def __valid_statement__(self, stmt):
         """Type check the provided statement."""
@@ -349,6 +351,16 @@ class StreamMethod(object):
         return "{0}({1})".format(self.name, str_args)
 
 
+class Arg(object):
+
+    def __init__(self, arg):
+        if not arg:
+            raise Exception("Arg cannot be None.")
+        self.arg = arg
+
+    def __str__(self):
+        return str(self.arg)
+
 class StrArg(object):
 
     def __init__(self, arg):
@@ -478,7 +490,7 @@ class Detect(Function):
         publish the events the  must be invoked on a stream.
         """
         super(Detect, self).__init__("detect")
-        self.args = [StrArg(on), KWArg("off", off), KWArg("mode", mode)]
+        self.args = [Arg(on), KWArg("off", off), KWArg("mode", mode)]
 
 
 class When(Function):
