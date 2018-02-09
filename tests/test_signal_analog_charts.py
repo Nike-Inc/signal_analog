@@ -4,7 +4,7 @@ from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
                                  PublishLabelOptions, PaletteColor,\
                                  SingleValueChart, ListChart, SortBy,\
-                                 HeatmapChart                                 
+                                 HeatmapChart
 from signal_analog.flow import Data
 
 
