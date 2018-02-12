@@ -242,11 +242,11 @@ class Resource(object):
                 self.endpoint + '/' + self.__get__('id'), lambda x: None)
         else:
             return self.__action__('get', self.endpoint, lambda x: None,
-                params={'name': self.__get__('name')})
+                params={'name': self.__get__('name')})['results'][0]
 
 
     def delete(self):
         """Delete the given resource in the SignalFx API.
         """
         return self.__action__('delete',
-            self.endpoint + '/' + self.__get__('id'), lambda x: None)
+            self.endpoint + '/' + self.read()['id'], lambda x: None)
