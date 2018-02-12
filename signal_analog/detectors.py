@@ -313,3 +313,83 @@ class Rule(object):
         util.is_valid(tip)
         self.options.update({'tip': tip})
         return self
+
+
+class Time(Enum):
+    Relative = "relative"
+    Absolute = "absolute"
+
+
+class TimeConfig(object):
+    """Controls the time span visualized for a detector."""
+
+    def __init__(self):
+        self.options = {}
+
+    def with_type(self, time_type):
+        """The type of time span defined."""
+        util.in_given_enum(time_type, Time)
+        self.options.update({'type': time_type.value})
+        return self
+
+    def __add_millis__(self, millis, key):
+        util.is_valid(millis)
+        self.options.update({key: millis})
+        return self
+
+    def with_range(self, millis):
+        """The time range _prior_ to now to visualize, in millis.
+
+        NOTE: only valid for Time.relative configs.
+
+        Example:
+            60000 would visualize the last 60 seconds.
+        """
+        if self.options.get('type', None) == Time.Absolute.value:
+            msg = 'A range can only be set on relative time configs.'
+            raise ValueError(msg)
+
+        return self.__add_millis__(millis, 'range')
+
+    def with_start(self, millis):
+        """Milliseconds since epoch to start a visualization.
+
+        NOTE: only valid for Time.absolute configs.
+        """
+        if self.options.get('type', None) == Time.Relative.value:
+            msg = 'A start time can only be set on absolute time configs.'
+            raise ValueError(msg)
+        return self.__add_millis__(millis, 'start')
+
+    def with_end(self, millis):
+        """Milliseconds since epoch to stop a visualization.
+
+        NOTE: only valid for Time.absolute configs.
+        """
+        if self.options.get('type', None) == Time.Relative.value:
+            msg = 'An end time can only be set on absolute time configs.'
+            raise ValueError(msg)
+        return self.__add_millis__(millis, 'end')
+
+
+class VisualizationOptions(object):
+    """Visualization options for detectors."""
+
+    def __init__(self):
+        self.options = {}
+
+    def with_time_config(self, config):
+        if not isinstance(config, TimeConfig):
+            msg = 'Attempting to set "{0}" to a time config for this ' +\
+                  'visualization when we expected a "{1}"'
+            raise ValueError(
+                msg.format(config.__class__.__name__, TimeConfig.__name__))
+
+        self.options.update({'time': config.options})
+        return self
+
+    def show_data_markers(self, show_markers=False):
+        """When ture, markers will be drawn for each datapoint within the
+           visualization."""
+        self.options.update({'showDataMarkers': show_markers})
+        return self
