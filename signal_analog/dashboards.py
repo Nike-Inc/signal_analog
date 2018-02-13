@@ -4,9 +4,8 @@ from signal_analog.charts import Chart
 from signal_analog.resources import Resource
 import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
-        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
+    ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import click
-import numpy as np
 
 
 class DashboardGroup(Resource):
@@ -28,7 +27,6 @@ class DashboardGroup(Resource):
         self.dashboards = []
         self.clone_options = {'sourceDashboard': ''}
         self.dashboard_group_ids = []
-        self.empty_body = ''
 
     def with_name(self, name):
         """Set this dashboard group's name."""
@@ -99,7 +97,7 @@ class DashboardGroup(Resource):
                 for dashboard_id in self.options['dashboards']:
                     self.clone(dashboard_id, dashboard_group_create_response['id'])
 
-                for dashboardGroupId in np.unique(self.dashboard_group_ids):
+                for dashboardGroupId in frozenset(self.dashboard_group_ids):
                     self.delete(dashboardGroupId)
 
                 if len(dashboard_group_create_response['dashboards']) > 0:
@@ -116,12 +114,12 @@ class DashboardGroup(Resource):
         See: https://developers.signalfx.com/v2/reference#get-dashboard-groups
         """
         if dry_run:
-            click.echo("Returns the data for Dashboard Group id \"{0}\". API call that is executed: \n GET {1}"\
-                .format(dashboard_group_id, (self.base_url + self.endpoint + '/' + dashboard_group_id)))
+            click.echo("Returns the data for Dashboard Group id \"{0}\". API call that is executed: \n GET {1}" \
+                       .format(dashboard_group_id, (self.base_url + self.endpoint + '/' + dashboard_group_id)))
             return None
 
         return self.__action__('get', self.endpoint + '/' + dashboard_group_id,
-                               lambda x: self.empty_body, params=None,
+                               util.empty_body(), params=None,
                                dry_run=dry_run)
 
     def delete(self, dashboard_group_id, dry_run=False):
@@ -136,10 +134,10 @@ class DashboardGroup(Resource):
             return None
 
         return self.__action__('delete', self.endpoint + '/' + dashboard_group_id,
-                               lambda x: self.empty_body, params=None,
+                               util.empty_body(), params=None,
                                dry_run=dry_run)
 
-    def clone(self, dashboard_id, dashboard_group_id,  dry_run=False):
+    def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
         """Clones a SignalFx dashboard using the /dashboardgroup/_id_/dashboard helper
         endpoint. Dashboard Group Id and sourceDashboard Id are required
 
@@ -149,7 +147,8 @@ class DashboardGroup(Resource):
             self.clone_options['sourceDashboard'] = dashboard_id
             click.echo("This will clone the dashboard \"{0}\" to Dashboard Group \"{1}\". API call being executed: \n"
                        "POST {2} \nRequest Body: \n {3}".format(dashboard_id, dashboard_group_id,
-                                                                (self.base_url + self.endpoint + '/' + dashboard_group_id + '/dashboard'),
+                                                                (
+                                                                            self.base_url + self.endpoint + '/' + dashboard_group_id + '/dashboard'),
                                                                 self.clone_options))
             return None
 
@@ -169,7 +168,6 @@ class Dashboard(Resource):
         """
         super(Dashboard, self).__init__(endpoint='/dashboard', session=session)
         self.options = {'charts': []}
-        self.empty_body = ''
 
     def with_name(self, name):
         """Set this dashboard's name."""
@@ -179,7 +177,7 @@ class Dashboard(Resource):
 
     def with_charts(self, *charts):
         for chart in charts:
-                self.options['charts'].append(chart)
+            self.options['charts'].append(chart)
         return self
 
     def create(self, dry_run=False, force=False, interactive=False):
@@ -192,8 +190,8 @@ class Dashboard(Resource):
         if dry_run:
             click.echo("Creates a new Dashboard named: \"{0}\". API call being executed: \n"
                        "POST {1} \nRequest Body: \n {2}".format(self.options['name'],
-                                                                 (self.base_url + self.endpoint),
-                                                                 self.options))
+                                                                (self.base_url + self.endpoint),
+                                                                self.options))
             return None
 
         if self.create_helper(force=force, interactive=interactive):
@@ -210,12 +208,12 @@ class Dashboard(Resource):
         See: https://developers.signalfx.com/v2/reference#get-dashboard
         """
         if dry_run:
-            click.echo("Returns the data for Dashboard id \"{0}\". API call that is executed: \n GET {1}"\
-                .format(dashboard_id, (self.base_url + self.endpoint + '/' + dashboard_id)))
+            click.echo("Returns the data for Dashboard id \"{0}\". API call that is executed: \n GET {1}" \
+                       .format(dashboard_id, (self.base_url + self.endpoint + '/' + dashboard_id)))
             return None
 
         return self.__action__('get', self.endpoint + '/' + dashboard_id,
-                               lambda x: self.empty_body, params=None,
+                               util.empty_body(), params=None,
                                dry_run=dry_run)
 
     def __update_child_resources__(self, chart_state):
@@ -234,9 +232,10 @@ class Dashboard(Resource):
         remote_chart_ids = list(map(lambda x: x['chartId'], state))
 
         def get_config_helper(id):
-            res = Chart(session=self.session_handler)\
+            res = Chart(session=self.session_handler) \
                 .with_api_token(self.api_token).with_id(id).read()
             return {'id': id, 'name': res['name']}
+
         remote_charts = list(map(get_config_helper, remote_chart_ids))
 
         local_charts = self.__get__('charts', [])
@@ -245,9 +244,9 @@ class Dashboard(Resource):
         for remote_chart in remote_charts:
             for local_chart in local_charts:
                 if remote_chart['name'] == local_chart.__get__('name'):
-                    local_chart\
-                        .with_id(remote_chart['id'])\
-                        .with_api_token(self.api_token)\
+                    local_chart \
+                        .with_id(remote_chart['id']) \
+                        .with_api_token(self.api_token) \
                         .create()
                     break
 
@@ -255,8 +254,8 @@ class Dashboard(Resource):
         remote_names = list(map(lambda x: x['name'], remote_charts))
         for local_chart in local_charts:
             if local_chart.__get__('name') not in remote_names:
-                resp = local_chart\
-                    .with_api_token(self.api_token)\
+                resp = local_chart \
+                    .with_api_token(self.api_token) \
                     .create()
                 state.append({
                     'chartId': resp['id'],
@@ -270,9 +269,9 @@ class Dashboard(Resource):
         local_names = list(map(lambda x: x.__get__('name'), local_charts))
         for remote_chart in remote_charts:
             if remote_chart['name'] not in local_names:
-                local_chart\
-                    .with_id(remote_chart['id'])\
-                    .with_api_token(self.api_token)\
+                local_chart \
+                    .with_id(remote_chart['id']) \
+                    .with_api_token(self.api_token) \
                     .delete()
 
         return state
@@ -324,7 +323,8 @@ class Dashboard(Resource):
                 click.echo("Updates the Dashboard named: \"{0}\". If it doesn't exist, will create a new one.  "
                            "API call being executed: \n"
                            "PUT {1} \nRequest Body: \n {2}".format(self.options['name'],
-                                                                   (self.base_url + self.endpoint + '/' + dashboard['id']),
+                                                                   (self.base_url + self.endpoint + '/' + dashboard[
+                                                                       'id']),
                                                                    updated_opts))
                 return None
 
@@ -356,10 +356,10 @@ https://jira.nike.com/browse/SIP-1062
         See: https://developers.signalfx.com/v2/reference#delete-dashboard
         """
         if dry_run:
-            click.echo("Dashboard id \"{0}\" will be deleted. API call that is executed: \n DELETE {1}"\
-                .format(dashboard_id, (self.base_url + self.endpoint + '/' + dashboard_id)))
+            click.echo("Dashboard id \"{0}\" will be deleted. API call that is executed: \n DELETE {1}" \
+                       .format(dashboard_id, (self.base_url + self.endpoint + '/' + dashboard_id)))
             return None
 
         return self.__action__('delete', self.endpoint + '/' + dashboard_id,
-                               lambda x: self.empty_body, params=None,
+                               util.empty_body(), params=None,
                                dry_run=dry_run)

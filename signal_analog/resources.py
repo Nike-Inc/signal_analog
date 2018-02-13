@@ -118,7 +118,7 @@ class Resource(object):
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as error:
-            if str(response.status_code) == '405':
+            if response.status_code == 405:
                 click.echo("Oops! We encountered a 405 exception for " + str(self.__class__.__name__) +
                            " resource. Possible cause: You might be passing an empty id\n")
                 sys.exit(1)
