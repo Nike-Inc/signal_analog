@@ -6,6 +6,7 @@ import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import click
+import numpy as np
 
 
 class DashboardGroup(Resource):
@@ -24,8 +25,10 @@ class DashboardGroup(Resource):
         super(DashboardGroup, self).__init__(
             endpoint='/dashboardgroup', session=session)
         self.options = {'dashboards': []}
+        self.dashboards = []
         self.clone_options = {'sourceDashboard': ''}
         self.dashboard_group_ids = []
+        self.empty_body = ''
 
     def with_name(self, name):
         """Set this dashboard group's name."""
@@ -43,9 +46,7 @@ class DashboardGroup(Resource):
             *dashboards: one or more dashboard objects to add.
         """
         for dashboard in dashboards:
-            response = dashboard.with_api_token(self.api_token).update()
-            self.options['dashboards'].append(response['id'])
-            self.dashboard_group_ids.append(response['groupId'])
+            self.dashboards.append(dashboard)
         return self
 
     def with_teams(self, *team_id):
@@ -72,57 +73,41 @@ class DashboardGroup(Resource):
                                                                 (self.base_url + self.endpoint),
                                                                 self.options))
             return None
+        if self.create_helper(force=force, interactive=interactive):
+            dashboard_group_create_response = self.__action__('post', self.endpoint,
+                                                              lambda x: self.options,
+                                                              params={'name': self.__get__('name')},
+                                                              dry_run=dry_run, interactive=interactive,
+                                                              force=force)
 
-        def create_helper(opts):
-            try:
-                query_result = self.__find_existing_resources__()
-                self.__find_existing_match__(query_result)
-            except (ResourceAlreadyExistsError,
-                    ResourceHasMultipleExactMatchesError) as e:
-                if not force and not interactive:
-                    # Rethrow error to user if we're not force creating things
-                    raise e
-                elif interactive:
-                    msg = 'A dashboard group with the name "{0}" already exists. ' +\
-                          'Do you want to create a new dashboard group?'
-                    if click.confirm(msg.format(self.__get__('name'))):
-                        return opts
-                    else:
-                        raise ResourceAlreadyExistsError(self.__get__('name'))
-            # Otherwise this is perfectly fine, create the dashboard group!
-            except ResourceMatchNotFoundError:
-                pass
+            """This is what the following code is doing: 
+                1) If any dashboard resources are provided, we already created new dashboards 
+                or updated if they already exist via `with_dashboards` method   
+                In which case, self.options['dashboards'] will have the list of those dashboard ids.
+                We then clone those dashboards to the dashboard group, delete the old duplicate dashboards that are 
+                already cloned and also delete the default dashboard that has been created as part of the new dashboard group
+                if it exists and then return the GET response of the dashboard group
+                
+                2) If no dashboard resources are created, just create a new dashboard group and return the response"""
 
-            return opts
+            if len(self.dashboards) > 0:
+                for dashboard in self.dashboards:
+                    dashboard_create_response = dashboard.with_api_token(self.api_token).update()
+                    self.options['dashboards'].append(dashboard_create_response['id'])
+                    self.dashboard_group_ids.append(dashboard_create_response['groupId'])
 
-        response = self.__action__('post', self.endpoint,
-                                   create_helper,
-                                   params={'name': self.__get__('name')},
-                                   dry_run=dry_run, interactive=interactive,
-                                   force=force)
+                for dashboard_id in self.options['dashboards']:
+                    self.clone(dashboard_id, dashboard_group_create_response['id'])
 
-        """This is what the following code is doing: 
-            1) If any dashboard resources are provided, we already created new dashboards 
-            or updated if they already exist via `with_dashboards` method   
-            In which case, self.options['dashboards'] will have the list of those dashboard ids.
-            We then clone those dashboards to the dashboard group, delete the old duplicate dashboards that are 
-            already cloned and also delete the default dashboard that has been created as part of the new dashboard group
-            and then return the GET response of the dashboard group
-            
-            2) If no dashboard resources are created, just create a new dashboard group and return the response"""
+                for dashboardGroupId in np.unique(self.dashboard_group_ids):
+                    self.delete(dashboardGroupId)
 
-        if len(self.options['dashboards']) > 0:
-            for dashboard in self.options['dashboards']:
-                self.clone(dashboard, response['id'])
+                if len(dashboard_group_create_response['dashboards']) > 0:
+                    Dashboard().with_api_token(self.api_token).delete(dashboard_group_create_response['dashboards'][0])
 
-            for dashboardGroupId in self.dashboard_group_ids:
-                self.delete(dashboardGroupId)
-
-            Dashboard().with_api_token(self.api_token).delete(response['dashboards'][0])
-
-            return self.read(response['id'])
-        else:
-            return response
+                return self.read(dashboard_group_create_response['id'])
+            else:
+                return dashboard_group_create_response
 
     def read(self, dashboard_group_id, dry_run=False):
         """Gets data of a SignalFx dashboard group using the /dashboardgroup/<id> helper
@@ -136,7 +121,7 @@ class DashboardGroup(Resource):
             return None
 
         return self.__action__('get', self.endpoint + '/' + dashboard_group_id,
-                               lambda x: x, params=None,
+                               lambda x: self.empty_body, params=None,
                                dry_run=dry_run)
 
     def delete(self, dashboard_group_id, dry_run=False):
@@ -151,7 +136,7 @@ class DashboardGroup(Resource):
             return None
 
         return self.__action__('delete', self.endpoint + '/' + dashboard_group_id,
-                               lambda x: x, params=None,
+                               lambda x: self.empty_body, params=None,
                                dry_run=dry_run)
 
     def clone(self, dashboard_id, dashboard_group_id,  dry_run=False):
@@ -184,6 +169,7 @@ class Dashboard(Resource):
         """
         super(Dashboard, self).__init__(endpoint='/dashboard', session=session)
         self.options = {'charts': []}
+        self.empty_body = ''
 
     def with_name(self, name):
         """Set this dashboard's name."""
@@ -210,33 +196,12 @@ class Dashboard(Resource):
                                                                  self.options))
             return None
 
-        def create_helper(opts):
-            try:
-                query_result = self.__find_existing_resources__()
-                self.__find_existing_match__(query_result)
-            except (ResourceAlreadyExistsError,
-                    ResourceHasMultipleExactMatchesError) as e:
-                if not force and not interactive:
-                    # Rethrow error to user if we're not force creating things
-                    raise e
-                elif interactive:
-                    msg = 'A dashboard with the name "{0}" already exists. ' +\
-                          'Do you want to create a new dashboard?'
-                    if click.confirm(msg.format(self.__get__('name'))):
-                        return util.flatten_charts(opts)
-                    else:
-                        raise ResourceAlreadyExistsError(self.__get__('name'))
-            # Otherwise this is perfectly fine, create the dashboard!
-            except ResourceMatchNotFoundError:
-                pass
-
-            return util.flatten_charts(opts)
-
-        return self.__action__('post', self.endpoint + '/simple',
-                               create_helper,
-                               params={'name': self.__get__('name')},
-                               dry_run=dry_run, interactive=interactive,
-                               force=force)
+        if self.create_helper(force=force, interactive=interactive):
+            return self.__action__('post', self.endpoint + '/simple',
+                                   lambda x: util.flatten_charts(self.options),
+                                   params={'name': self.__get__('name')},
+                                   dry_run=dry_run, interactive=interactive,
+                                   force=force)
 
     def read(self, dashboard_id, dry_run=False):
         """Gets data of a Signalfx dashboard using the /dashboard/<id> helper
@@ -250,7 +215,7 @@ class Dashboard(Resource):
             return None
 
         return self.__action__('get', self.endpoint + '/' + dashboard_id,
-                               lambda x: x, params=None,
+                               lambda x: self.empty_body, params=None,
                                dry_run=dry_run)
 
     def __update_child_resources__(self, chart_state):
@@ -379,6 +344,7 @@ To track the status of this work subscribe to the following ticket:
 https://jira.nike.com/browse/SIP-1062
                 """
                 click.secho(msg.format(dashboard['id']), fg='yellow')
+                return self.read(dashboard['id'])
 
         except ResourceMatchNotFoundError:
             return self.create(dry_run=dry_run)
@@ -395,5 +361,5 @@ https://jira.nike.com/browse/SIP-1062
             return None
 
         return self.__action__('delete', self.endpoint + '/' + dashboard_id,
-                               lambda x: x, params=None,
+                               lambda x: self.empty_body, params=None,
                                dry_run=dry_run)

@@ -21,3 +21,4 @@ betamax_serializers
 click
 mock
 pytest-xdist
+numpy
