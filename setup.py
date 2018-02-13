@@ -18,7 +18,6 @@ requirements = [
     # all other modules
     'requests',
     'click',
-    'numpy'
 ]
 
 setup_requirements = [
