@@ -1,5 +1,6 @@
 """Detector objects representable in the SignalFx API."""
 
+import click
 from enum import Enum
 from signal_analog.resources import Resource
 from signal_analog.flow import Program
@@ -497,7 +498,21 @@ class Detector(Resource):
             updated_opts.update({'name': description})
 
         if dry_run:
-            return updated_opts
+            msg = """
+Updates the Detector named "{0}". If it doesn't exist, we'll create a new one.
+API calls being executed:
+    GET {1}
+    PUT {2}
+Request Body:
+    {3}
+"""
+            click.echo(msg.format(
+                self.__get__('name'),
+                self.base_url + self.endpoint,
+                self.base_url + self.endpoint + '/<id>',
+                updated_opts
+            ))
+            return None
 
         query_result = self.__find_existing_resources__()
 
