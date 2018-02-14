@@ -21,6 +21,7 @@ or tools then please consult the [signal\_analog\_patterns] documentation.
       - [Building Charts](#charts)
       - [Building Dashboards](#dashboards)
       - [Updating Dashboards](#dashboards-updates)
+      - [Creating Detectors](#detectors)
       - [Talking to the SignalFlow API Directly](#signalflow)
       - [General `Resource` Guidelines](#general-resource-guidlines)
       - [Creating a CLI for your resources](#cli-builder)
@@ -258,6 +259,72 @@ At this point one of two things will happen:
   - We successfully updated the dashboard, in which case the JSON response is
   returned as a dictionary with the updated properties.
 
+<a name="detectors"></a>
+### Creating Detectors
+
+`signal_analog` provides a means of managing the lifecycle of `Detectors` in
+the `signal_analog.detectors` module. As of `FIXME_VERSION` only a subset of
+the full Detector API is supported.
+
+Consult the [upstream documentation][detectors] for more information about
+Detectors.
+
+Detectors are comprised of a few key elements:
+
+  - A name
+  - A SignalFlow Program
+  - A set of rules for alerting
+
+We start by building a `Detector` object and giving it a name:
+
+```python
+from signal_analog.detectors import Detector
+
+detector = Detector().with_name('My Super Serious Detector')
+```
+
+We'll now need to give it a program to alert on:
+
+```python
+from signal_analog.flow import Program, Detect, Filter, Data
+from signal_analog.combinators import GT
+
+# This program fires an alert if memory utilization is above 90% for the
+# 'shoeadmin' application.
+data = Data('memory.utilization', filter=Filter('app', 'shoeadmin')).publish(label='A')
+alert_label = 'Memory Utilization Above 90'
+detect = Detect(GT(data, 90)).publish(label=alert_label)
+
+detector.with_program(Program(detect))
+```
+
+With our name and program in hand, it's time to build up an alert rule that we
+can use to notify our teammates:
+
+```python
+from signal_analog.detectors import EmailNotification, Rule, Severity
+
+info_rule = Rule()\
+  # From our detector defined above.
+  .for_label(alert_label)\
+  .with_severity(Severity.Info)\
+  .with_notifications(EmailNotification('Lst-nike.my.team@nike.com'))
+
+detector.with_rules(info_rule)
+
+# We can now create this resource in SignalFx:
+detector.with_api_token('foo').create()
+# For a more robust solution consult the "Creating a CLI for your Resources"
+# section below.
+```
+
+To add multiple alerting rules we would need to use different `detect`
+statements with distinct `label`s to differentiate them from one another.
+
+#### Building Detectors from Existing Charts
+
+FIXME
+
 <a name="signalflow"></a>
 ### Talking to the SignalFlow API Directly
 
@@ -420,3 +487,4 @@ project template.
 [terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
 [dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
 [signal\_analog\_patterns]: https://bitbucket.nike.com/projects/NIK/repos/signal_analog_patterns/browse
+[detectors]: https://developers.signalfx.com/v2/reference#detector-model
