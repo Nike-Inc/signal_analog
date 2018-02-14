@@ -3,6 +3,8 @@ import json
 import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
+import click
+import sys
 
 # py2/3 compatability hack so that we can consistently handle JSON errors.
 try:
@@ -116,13 +118,16 @@ class Resource(object):
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as error:
+            if response.status_code == 405:
+                click.echo("Oops! We encountered a 405 exception for " + str(self.__class__.__name__) +
+                           " resource. Possible cause: You might be passing an empty id\n")
+                sys.exit(1)
             # Tell the user exactly what went wrong according to SignalFX
             raise RuntimeError(error.response.text)
         except JSONDecodeError:
             # Some responses from the API don't return anything, in these
             # situations we shouldn't either
             return None
-
 
     def __get__(self, name, default=None):
         """Internal helper for sourcing top-level options from this resource."""
@@ -203,6 +208,44 @@ class Resource(object):
             dry_run=dry_run, interactive=interactive, force=force)
 
     def update(self, dry_run=False):
-        """Default implementation for resource creation."""
+        """Default implementation for resource updation."""
         return self.__action__('put', self.endpoint, lambda x: x,
             dry_run=dry_run)
+
+    def read(self, resourceid, dry_run=False):
+        """Default implementation for resource reading."""
+        return self.__action__('get', self.endpoint, lambda x: x,
+            dry_run=dry_run)
+
+    def delete(self, resourceid, dry_run=False):
+        """Default implementation for resource deletion."""
+        return self.__action__('delete', self.endpoint, lambda x: x,
+            dry_run=dry_run)
+
+    def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
+        """Default implementation for resource cloning."""
+        return self.__action__('post', self.endpoint, lambda x: x,
+            dry_run=dry_run)
+
+    def create_helper(self, force=False, interactive=False):
+        try:
+            query_result = self.__find_existing_resources__()
+            self.__find_existing_match__(query_result)
+        except (ResourceAlreadyExistsError,
+                ResourceHasMultipleExactMatchesError) as e:
+            if not force and not interactive:
+                # Rethrow error to user if we're not force creating things
+                raise e
+            elif interactive:
+                msg = 'A resource with the name "{0}" already exists. ' +\
+                      'Do you want to create a new one?'
+                if click.confirm(msg.format(self.__get__('name'))):
+                    return True
+                else:
+                    raise ResourceAlreadyExistsError(self.__get__('name'))
+        # Otherwise this is perfectly fine, create the resource!
+        except ResourceMatchNotFoundError:
+            pass
+
+        return True
+
