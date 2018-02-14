@@ -21,12 +21,6 @@ class Dashboard(Resource):
         super(Dashboard, self).__init__(endpoint='/dashboard', session=session)
         self.options = {'charts': []}
 
-    def with_name(self, name):
-        """Sets dashboard's name."""
-        util.is_valid(name)
-        self.options.update({'name': name})
-        return self
-
     def with_charts(self, *charts):
         for chart in charts:
                 self.options['charts'].append(chart)

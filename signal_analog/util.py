@@ -5,6 +5,13 @@ import json
 from collections import Counter
 
 
+def check_collection(coll, type_):
+    for c in coll:
+        if not issubclass(c.__class__, type_):
+            msg = "We got a '{0}' when we were expecting a '{1}'."
+            raise ValueError(msg.format(c.__class__.__name__, type_.__name__))
+
+
 def in_given_enum(value, enum):
     """Determines if the given value is in the given enum. Raises ValueError
        if it is not.

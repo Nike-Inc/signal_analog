@@ -33,6 +33,8 @@ class Resource(object):
                      used in test scenarios.
         """
 
+        self.options = {}
+
         # Users may want to provide this via the `with_*` builder instead of
         # at resource creation time, so we shouldn't throw an error if they
         # don't pass one in at this point.
@@ -46,6 +48,27 @@ class Resource(object):
 
         self.__set_endpoint__(endpoint)
         self.__set_base_url__(base_url)
+
+    def with_name(self, name):
+        """The name to give this resource."""
+        util.is_valid(name)
+        self.options.update({'name': name})
+        return self
+
+    def with_description(self, description):
+        """The description to attach to this resource."""
+        util.is_valid(description)
+        self.options.update({'description': description})
+        return self
+
+    def with_id(self, ident):
+        """The id for this resource.
+
+        Useful for creates/deletes.
+        """
+        util.is_valid(ident)
+        self.options.update({'id': ident})
+        return self
 
     def __set_api_token__(self, token):
         """Internal helper for setting valid API tokens."""
@@ -206,3 +229,24 @@ class Resource(object):
         """Default implementation for resource creation."""
         return self.__action__('put', self.endpoint, lambda x: x,
             dry_run=dry_run)
+
+    def read(self):
+        """Attempt to find the given resource in SignalFx.
+
+        Your chances are much higher if you provide the chart id via
+        'with_id'. Otherwise, we will attempt to do a best effort to search for
+        your chart based on name.
+        """
+        if self.__get__('id'):
+            return self.__action__('get',
+                self.endpoint + '/' + self.__get__('id'), lambda x: None)
+        else:
+            return self.__action__('get', self.endpoint, lambda x: None,
+                params={'name': self.__get__('name')})['results'][0]
+
+
+    def delete(self):
+        """Delete the given resource in the SignalFx API.
+        """
+        return self.__action__('delete',
+            self.endpoint + '/' + self.read()['id'], lambda x: None)
