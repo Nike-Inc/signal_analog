@@ -7,7 +7,7 @@ The rest of this document assumes familiarity with the SignalFx API, SignalFlow
 language, and Chart/Dashboard models.
 
 For more information about the above concepts consult the
-[upstream documentation].
+[upstream documentation][signalflow].
 
 If you're looking for pre-built dashboards for existing application frameworks
 or tools then please consult the ***REMOVED*** documentation.
@@ -20,9 +20,10 @@ or tools then please consult the ***REMOVED*** documentation.
   - [Usage](#usage)
       - [Building Charts](#charts)
       - [Building Dashboards](#dashboards)
-          - [A note on Dashboard names](#dashboard-names)
       - [Updating Dashboards](#dashboards-updates)
+      - [Creating Detectors](#detectors)
       - [Talking to the SignalFlow API Directly](#signalflow)
+      - [General `Resource` Guidelines](#general-resource-guidlines)
       - [Creating a CLI for your resources](#cli-builder)
   - [Contributing](#contributing)
   - [Credits](#credits)
@@ -31,13 +32,10 @@ or tools then please consult the ***REMOVED*** documentation.
 ## Features
 
   - Provides bindings for the SignalFlow DSL
-  - Provides abstractions for building Charts
-  - Provides abstractions for building Dashboards
-
-<a name="planned-features"></a>
-### Planned Features
-
-  - High-level constructs for building Detectors
+  - Provides abstractions for:
+      - Charts
+      - Dashboards
+      - Detectors
 
 <a name="installation"></a>
 ## Installation
@@ -64,6 +62,13 @@ following documentation for more info:
 
 <a name="usage"></a>
 ## Usage
+
+`signal_analog` provides two kinds of abstractions, one for building resources
+in the SignalFx API and the other for describing metric timeseries through the
+[Signal Flow DSL][signalflow].
+
+The following sections describe how to use `Resource` abstractions in
+conjunction with the [Signal Flow DSL][signalflow].
 
 <a name="charts"></a>
 ### Building Charts
@@ -236,33 +241,89 @@ At this point one of two things will happen:
   - We successfully created the dashboard, in which case the JSON response is
   returned as a dictionary.
 
-<a name="dashboard-names"></a>
-#### A note on Dashboard names
-
-`signal_analog` assumes that dashboard names are unique in SignalFx. While at
-the time of this writing uniqueness is _not_ enforced by the `v2` API, this
-convention _is_ enforced by this library.
-
-We make this assumption so that we avoid easily creating duplicate dashboards
-and makes updating existing resources easier without having to manage extra
-state outside of the SignalFx API.
-
 <a name="dashboards-updates"></a>
 ### Updating Dashboards
-Once you have dashboard created, you can update the properties like name and descriptions of a dashboard
-    
-**Note**: For now, you can only update the dashboard name and description and *not* charts. 
-Updating charts is coming next and you can track that work [here](https://jira.nike.com/browse/SIP-1035) 
+Once you have dashboard created, you can update the properties like name and
+description of a dashboard:
 
 ```python
 dash.update(name='updated_dashboard_name', description='updated_dashboard_description')
 ```
+
+`Dashboard` updates will also update any `Chart` configuration that it owns.
+
 At this point one of two things will happen:
 
   - We receive some sort of error from the SignalFx API and an exception
   is thrown
   - We successfully updated the dashboard, in which case the JSON response is
   returned as a dictionary with the updated properties.
+
+<a name="detectors"></a>
+### Creating Detectors
+
+`signal_analog` provides a means of managing the lifecycle of `Detectors` in
+the `signal_analog.detectors` module. As of `FIXME_VERSION` only a subset of
+the full Detector API is supported.
+
+Consult the [upstream documentation][detectors] for more information about
+Detectors.
+
+Detectors are comprised of a few key elements:
+
+  - A name
+  - A SignalFlow Program
+  - A set of rules for alerting
+
+We start by building a `Detector` object and giving it a name:
+
+```python
+from signal_analog.detectors import Detector
+
+detector = Detector().with_name('My Super Serious Detector')
+```
+
+We'll now need to give it a program to alert on:
+
+```python
+from signal_analog.flow import Program, Detect, Filter, Data
+from signal_analog.combinators import GT
+
+# This program fires an alert if memory utilization is above 90% for the
+# '***REMOVED***' application.
+data = Data('memory.utilization', filter=Filter('app', '***REMOVED***')).publish(label='A')
+alert_label = 'Memory Utilization Above 90'
+detect = Detect(GT(data, 90)).publish(label=alert_label)
+
+detector.with_program(Program(detect))
+```
+
+With our name and program in hand, it's time to build up an alert rule that we
+can use to notify our teammates:
+
+```python
+from signal_analog.detectors import EmailNotification, Rule, Severity
+
+info_rule = Rule()\
+  # From our detector defined above.
+  .for_label(alert_label)\
+  .with_severity(Severity.Info)\
+  .with_notifications(EmailNotification('***REMOVED***'))
+
+detector.with_rules(info_rule)
+
+# We can now create this resource in SignalFx:
+detector.with_api_token('foo').create()
+# For a more robust solution consult the "Creating a CLI for your Resources"
+# section below.
+```
+
+To add multiple alerting rules we would need to use different `detect`
+statements with distinct `label`s to differentiate them from one another.
+
+#### Building Detectors from Existing Charts
+
+FIXME
 
 <a name="signalflow"></a>
 ### Talking to the SignalFlow API Directly
@@ -310,8 +371,41 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
             print('{0}: {1}'.format(msg.timestamp_ms, msg.properties))
 ```
 
+<a name="general-resource-guidlines"></a>
+### General `Resource` Guidelines
+
+#### Charts Always Belong to Dashboards
+
+It is always assumed that a Chart belongs to an existing Dashboard. This makes
+it easier for the library to manage the state of the world.
+
+#### Resource Names are Unique per Account
+
+In a `signal_analog` world it is assumed that all resource names are unique.
+That is, if we have two dashboards 'Foo Dashboard', when we attempt to update
+_either_ dashboard via `signal_analog` we expect to see errors.
+
+Resource names are assumed to be unique in order to simplify state management
+by the library itself. In practice we have not found this to be a major
+inconvenience.
+
+#### Configuration is the Source of Truth
+
+When conflicts arise between the state of a resource in your configuration and
+what SignalFx thinks that state should be, this library **always** prefers the
+local configuration.
+
+#### Only "CCRUD" Methods Interact with the SignalFx API
+
+`Resource` objects contain a number of builder methods to enable a "fluent" API
+when describing your project's dashboards in SignalFx. It is assumed that these
+methods do not perform state-affecting actions in the SignalFx API.
+
+Only "CCRUD" (Create, Clone, Read, Update, and Delete) methods will affect the
+state of your resources in SignalFx.
+
 <a name="cli-builder"></a>
-### Creating a CLI for your resources
+### Creating a CLI for your Resources
 
 `signal_analog` provides builders for fully featured command line clients that
 can manage sets of resources. These clients make handling resource updates
@@ -384,12 +478,13 @@ so via Homebrew (`brew install plantuml`).
 
 This package was created with
 [Cookiecutter](https://github.com/audreyr/cookiecutter) and the
-[nik/nike-python-template](***REMOVED***)
+[nik/nike_python_template](***REMOVED***)
 project template.
 
-[upstream documentation]: https://developers.signalfx.com/docs/signalflow-overview
+[signalflow]: https://developers.signalfx.com/docs/signalflow-overview
 [charts]: https://developers.signalfx.com/reference#charts-overview-1
 [sfx-contact]: https://confluence.nike.com/x/GlHiCQ
 [terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
 [dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
 ***REMOVED***: https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
+[detectors]: https://developers.signalfx.com/v2/reference#detector-model
