@@ -155,7 +155,7 @@ class DashboardGroup(Resource):
                                                                    (self.base_url + self.endpoint + '/' +
                                                                     dashboard_group[
                                                                         'id']),
-                                                                   updated_opts))
+                                                                   dashboard_group))
                 return None
 
             if len(self.dashboards) > 0:
@@ -177,13 +177,13 @@ class DashboardGroup(Resource):
                 for dashboardGroupId in frozenset(self.dashboard_group_ids):
                     self.delete(dashboardGroupId)
 
-            dashboards_to_delete = [x for x in dashboard_group['dashboards'] if x not in self.options['dashboards']]
-            if len(dashboards_to_delete) is not 0:
-                for dashboard_id in dashboards_to_delete:
-                    Dashboard().with_api_token(self.api_token).delete(dashboard_id)
+                dashboards_to_delete = [x for x in dashboard_group['dashboards'] if x not in self.options['dashboards']]
+                if len(dashboards_to_delete) is not 0:
+                    for dashboard_id in dashboards_to_delete:
+                        Dashboard().with_api_token(self.api_token).delete(dashboard_id)
 
             return self.__action__('put', '/dashboardgroup/' + dashboard_group['id'],
-                                       lambda x: updated_opts)
+                                       lambda x: dashboard_group)
         except ResourceMatchNotFoundError:
             return self.create(dry_run=dry_run)
 
@@ -213,7 +213,8 @@ class DashboardGroup(Resource):
             click.echo("This will clone the dashboard \"{0}\" to Dashboard Group \"{1}\". API call being executed: \n"
                        "POST {2} \nRequest Body: \n {3}".format(dashboard_id, dashboard_group_id,
                                                                 (
-                                                                            self.base_url + self.endpoint + '/' + dashboard_group_id + '/dashboard'),
+                                                                        self.base_url + self.endpoint + '/' +
+                                                                        dashboard_group_id + '/dashboard'),
                                                                 self.clone_options))
             return None
 

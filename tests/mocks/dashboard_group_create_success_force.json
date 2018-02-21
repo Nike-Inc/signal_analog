@@ -1,0 +1,321 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2018-02-20T17:29:17",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"created\" : 1519147743517,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWfse0VAYAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWfselZAgAA\",\n    \"lastUpdated\" : 1519147743517,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceXXX\",\n    \"teams\" : [ ]\n  } ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "307"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 20 Feb 2018 17:29:16 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      }
+    },
+    {
+      "recorded_at": "2018-02-20T17:29:17",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"dashboards\": [], \"name\": \"spaceX\"}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "36"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"created\" : 1519147757802,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DWfseTpAYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DWfseSeAgAA\",\n  \"lastUpdated\" : 1519147757802,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX\",\n  \"teams\" : [ ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "248"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 20 Feb 2018 17:29:17 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      }
+    },
+    {
+      "recorded_at": "2018-02-20T17:29:23",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 2,\n  \"results\" : [ {\n    \"created\" : 1519147757802,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWfseTpAYAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWfseSeAgAA\",\n    \"lastUpdated\" : 1519147757802,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceX\",\n    \"teams\" : [ ]\n  }, {\n    \"created\" : 1519147743517,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWfse0VAYAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWfselZAgAA\",\n    \"lastUpdated\" : 1519147743517,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceXXX\",\n    \"teams\" : [ ]\n  } ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "577"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 20 Feb 2018 17:29:22 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      }
+    },
+    {
+      "recorded_at": "2018-02-20T17:29:23",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 2,\n  \"results\" : [ {\n    \"created\" : 1519147757802,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWfseTpAYAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWfseSeAgAA\",\n    \"lastUpdated\" : 1519147757802,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceX\",\n    \"teams\" : [ ]\n  }, {\n    \"created\" : 1519147743517,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWfse0VAYAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWfselZAgAA\",\n    \"lastUpdated\" : 1519147743517,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceXXX\",\n    \"teams\" : [ ]\n  } ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "577"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 20 Feb 2018 17:29:23 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      }
+    },
+    {
+      "recorded_at": "2018-02-20T17:29:23",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"dashboards\": [], \"name\": \"spaceX\"}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "36"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"created\" : 1519147763260,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DWfsnvoAYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DWfsnr9AgAA\",\n  \"lastUpdated\" : 1519147763260,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX\",\n  \"teams\" : [ ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "248"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 20 Feb 2018 17:29:23 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}
