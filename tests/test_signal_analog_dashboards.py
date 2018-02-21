@@ -478,7 +478,7 @@ def test_dashboard_group_with_dashboard_create_interactive_success(confirm):
     confirm.__getitem__.return_value = 'y'
     dashboard_group = DashboardGroup(session=global_session) \
         .with_name('spaceX') \
-        .with_dashboards(mk_dashboard('Falcon9', 'chart1')) \
+        .with_dashboards(mk_dashboard('Falcon99', 'chart1')) \
         .with_api_token('foo')
     with global_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_success_interactive',
@@ -492,7 +492,7 @@ def test_dashboard_group_with_dashboard_create_interactive_failure(confirm):
     confirm.__getitem__.return_value = 'n'
     dashboard_group = DashboardGroup(session=global_session) \
         .with_name('spaceX') \
-        .with_dashboards(mk_dashboard('Falcon9', 'chart1')) \
+        .with_dashboards(mk_dashboard('Falcon99', 'chart1')) \
         .with_api_token('foo')
     with global_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_failure_interactive',
@@ -509,7 +509,7 @@ def test_dashboard_group_with_dashboard_update_success():
         dashboard_group = DashboardGroup(session=global_session) \
             .with_name('spaceX') \
             .with_dashboards(
-                mk_dashboard('Falcon9', 'chart1'),
+                mk_dashboard('Falcon99', 'chart1'),
                 mk_dashboard('FalconHeavy', 'chart2')) \
             .with_api_token('foo')
 
