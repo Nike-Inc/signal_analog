@@ -1,6 +1,3 @@
-import json
-import random
-import string
 import pytest
 from betamax_serializers import pretty_json
 import betamax
@@ -34,6 +31,7 @@ def mk_dashboard(dashboard_name, chart_name):
     return Dashboard(session=global_session)\
         .with_name(dashboard_name)\
         .with_charts(mk_chart(chart_name))
+
 
 def test_dashboard_init():
     dashboard = Dashboard()
@@ -255,7 +253,7 @@ def test_dashboard_update_success():
 
         dashboard.create()
         dashboard.update(name='updated_dashboard_name',
-            description='updated_dashboard_description')
+                         description='updated_dashboard_description')
 
 
 def test_dashboard_update_failure():
@@ -267,13 +265,15 @@ def test_dashboard_update_failure():
         .with_charts(chart)
     with global_recorder.use_cassette('dashboard_update_failure',
                                       serialize_with='prettyjson'):
-        # Just to make sure there are multiple dashboards exists, create a new dashboard with the same name
+        # Just to make sure there are multiple dashboards exists, create a new
+        # dashboard with the same name
         dashboard.create(force=True)
         dashboard.create(force=True)
 
         with pytest.raises(SignalAnalogError):
             # Verify that we can't update when multiple dashboards exist
-            dashboard.update(name='updated_dashboard_name', description='updated_dashboard_description')
+            dashboard.update(name='updated_dashboard_name',
+                             description='updated_dashboard_description')
 
 
 def test_dashboard_update_child_chart():
@@ -332,7 +332,8 @@ def test_dashboard_delete_child_chart():
 
         # Simulate removing a chart from a user's config.
         dashboard.options['charts'] = list(filter(
-            lambda x: x.options != chart2.options, dashboard.options['charts']))
+            lambda x: x.options != chart2.options,
+            dashboard.options['charts']))
 
         resp_delete = dashboard.update()
         assert resp_delete is None
@@ -385,8 +386,10 @@ def test_dashboard_group_create_interactive_success(confirm):
     dashboard_group = DashboardGroup(session=global_session) \
         .with_name('spaceX') \
         .with_api_token('foo')
-    with global_recorder.use_cassette('dashboard_group_create_success_interactive',
-                                      serialize_with='prettyjson'):
+    with global_recorder.use_cassette(
+        'dashboard_group_create_success_interactive',
+            serialize_with='prettyjson'):
+
         # Create our first dashboard group
         dashboard_group.create()
         with pytest.raises(SignalAnalogError):
@@ -402,8 +405,10 @@ def test_dashboard_group_create_interactive_failure(confirm):
     dashboard_group = DashboardGroup(session=global_session) \
         .with_name('spaceX') \
         .with_api_token('foo')
-    with global_recorder.use_cassette('dashboard_group_create_failure_interactive',
-                                      serialize_with='prettyjson'):
+    with global_recorder.use_cassette(
+        'dashboard_group_create_failure_interactive',
+            serialize_with='prettyjson'):
+
         # Create our first dashboard_group
         dashboard_group.create()
         with pytest.raises(SignalAnalogError):
@@ -420,8 +425,9 @@ def test_dashboard_group_update_success():
             .with_api_token('foo') \
 
         dashboard_group.create()
-        dashboard_group.update(name='updated_dashboard_group_name',
-                               description='updated_dashboard_group_description')
+        dashboard_group.update(
+            name='updated_dashboard_group_name',
+            description='updated_dashboard_group_description')
 
 
 def test_dashboard_group_update_failure():
@@ -431,19 +437,23 @@ def test_dashboard_group_update_failure():
         .with_api_token('foo')
     with global_recorder.use_cassette('dashboard_group_update_failure',
                                       serialize_with='prettyjson'):
-        # Just to make sure there are multiple dashboard groups exists, create a new dashboard group with the same name
+        # Just to make sure there are multiple dashboard groups exists,
+        # create a new dashboard group with the same name
         dashboard_group.create(force=True)
         dashboard_group.create(force=True)
 
         with pytest.raises(SignalAnalogError):
             # Verify that we can't update when multiple dashboard groups exist
-            dashboard_group.update(name='updated_dashboard_group_name',
-                                   description='updated_dashboard_group_description')
+            dashboard_group.update(
+                name='updated_dashboard_group_name',
+                description='updated_dashboard_group_description')
 
 
 def test_dashboard_group_with_dashboard_create_success():
-    with global_recorder.use_cassette('dashboard_group_with_dashboard_create_success',
-                                      serialize_with='prettyjson'):
+    with global_recorder.use_cassette(
+        'dashboard_group_with_dashboard_create_success',
+            serialize_with='prettyjson'):
+
         DashboardGroup(session=global_session)\
             .with_name('spaceX')\
             .with_dashboards(mk_dashboard('Falcon99', 'chart1'))\
@@ -457,8 +467,9 @@ def test_dashboard_group_with_dashboard_create_force_success():
         .with_dashboards(mk_dashboard('Falcon99', 'chart1'))\
         .with_api_token('foo')
 
-    with global_recorder.use_cassette('dashboard_group_with_dashboard_create_success_force',
-                                      serialize_with='prettyjson'):
+    with global_recorder.use_cassette(
+        'dashboard_group_with_dashboard_create_success_force',
+            serialize_with='prettyjson'):
         dashboard_group.create(force=True)
 
 
@@ -469,8 +480,9 @@ def test_dashboard_group_with_dashboard_create_interactive_success(confirm):
         .with_name('spaceX') \
         .with_dashboards(mk_dashboard('Falcon9', 'chart1')) \
         .with_api_token('foo')
-    with global_recorder.use_cassette('dashboard_group_with_dashboard_create_success_interactive',
-                                      serialize_with='prettyjson'):
+    with global_recorder.use_cassette(
+        'dashboard_group_with_dashboard_create_success_interactive',
+            serialize_with='prettyjson'):
 
         dashboard_group.create(interactive=True)
 
@@ -482,26 +494,32 @@ def test_dashboard_group_with_dashboard_create_interactive_failure(confirm):
         .with_name('spaceX') \
         .with_dashboards(mk_dashboard('Falcon9', 'chart1')) \
         .with_api_token('foo')
-    with global_recorder.use_cassette('dashboard_group_with_dashboard_create_failure_interactive',
-                                      serialize_with='prettyjson'):
+    with global_recorder.use_cassette(
+        'dashboard_group_with_dashboard_create_failure_interactive',
+            serialize_with='prettyjson'):
 
             dashboard_group.create(interactive=True)
 
 
 def test_dashboard_group_with_dashboard_update_success():
-    with global_recorder.use_cassette('dashboard_group_with_dashboard_update_success',
-                                      serialize_with='prettyjson'):
+    with global_recorder.use_cassette(
+        'dashboard_group_with_dashboard_update_success',
+            serialize_with='prettyjson'):
+
         dashboard_group = DashboardGroup(session=global_session) \
             .with_name('spaceX') \
-            .with_dashboards(mk_dashboard('Falcon9', 'chart1'), mk_dashboard('FalconHeavy', 'chart2')) \
+            .with_dashboards(
+                mk_dashboard('Falcon9', 'chart1'),
+                mk_dashboard('FalconHeavy', 'chart2')) \
             .with_api_token('foo')
 
         dashboard_group.update()
 
 
 def test_dashboard_group_with_delete_existing_dashboard_update_success():
-    with global_recorder.use_cassette('dashboard_group_with_delete_existing_dashboard_update_success',
-                                      serialize_with='prettyjson'):
+    with global_recorder.use_cassette(
+        'dashboard_group_with_delete_existing_dashboard_update_success',
+            serialize_with='prettyjson'):
         dashboard_group = DashboardGroup(session=global_session) \
             .with_name('spaceX') \
             .with_dashboards(mk_dashboard('Draagoon', 'chart3')) \
