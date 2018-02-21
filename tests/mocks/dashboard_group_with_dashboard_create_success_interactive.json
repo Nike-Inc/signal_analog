@@ -1,7 +1,7 @@
 {
   "http_interactions": [
     {
-      "recorded_at": "2018-02-20T21:30:40",
+      "recorded_at": "2018-02-21T01:01:26",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -33,20 +33,20 @@
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"count\" : 2,\n  \"results\" : [ {\n    \"created\" : 1519162164489,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWgjqjTAcAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWgjmYEAgAA\",\n    \"lastUpdated\" : 1519162164489,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceX\",\n    \"teams\" : [ ]\n  }, {\n    \"created\" : 1519162127150,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWgjeL5AgAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWgjeKFAcAA\",\n    \"lastUpdated\" : 1519162127150,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceX\",\n    \"teams\" : [ ]\n  } ]\n}"
+          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"created\" : 1519174859469,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWhT_5rAcAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWhUGG-AgAA\",\n    \"lastUpdated\" : 1519174859469,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceX\",\n    \"teams\" : [ ]\n  } ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "575"
+            "305"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Tue, 20 Feb 2018 21:30:39 GMT"
+            "Wed, 21 Feb 2018 01:01:24 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -63,7 +63,7 @@
       }
     },
     {
-      "recorded_at": "2018-02-20T21:30:40",
+      "recorded_at": "2018-02-21T01:01:26",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -98,7 +98,7 @@
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"created\" : 1519162240147,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DWgkXsNAYF0\" ],\n  \"description\" : \"\",\n  \"id\" : \"DWgkXr9AgBA\",\n  \"lastUpdated\" : 1519162240147,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX\",\n  \"teams\" : [ ]\n}"
+          "string": "{\n  \"created\" : 1519174886505,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DWhUIBNAYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DWhUH_jAgAE\",\n  \"lastUpdated\" : 1519174886505,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX\",\n  \"teams\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
@@ -111,7 +111,7 @@
             "application/json"
           ],
           "Date": [
-            "Tue, 20 Feb 2018 21:30:40 GMT"
+            "Wed, 21 Feb 2018 01:01:26 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -128,7 +128,7 @@
       }
     },
     {
-      "recorded_at": "2018-02-20T21:30:40",
+      "recorded_at": "2018-02-21T01:01:26",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -155,25 +155,25 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=Falcon9"
+        "uri": "https://api.signalfx.com/v2/dashboard?name=Falcon99"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"chartDensity\" : \"DEFAULT\",\n    \"charts\" : [ {\n      \"chartId\" : \"DWgjqjRAgAA\",\n      \"column\" : 0,\n      \"height\" : 1,\n      \"row\" : 0,\n      \"width\" : 6\n    } ],\n    \"created\" : 1519162165739,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"customProperties\" : null,\n    \"description\" : \"\",\n    \"discoveryOptions\" : null,\n    \"eventOverlays\" : null,\n    \"filters\" : {\n      \"sources\" : null,\n      \"time\" : null,\n      \"variables\" : null\n    },\n    \"groupId\" : \"DWgjmYEAgAA\",\n    \"id\" : \"DWgjqjTAcAA\",\n    \"lastUpdated\" : 1519162165739,\n    \"lastUpdatedBy\" : null,\n    \"locked\" : false,\n    \"maxDelayOverride\" : null,\n    \"name\" : \"Falcon99\",\n    \"selectedEventOverlays\" : null,\n    \"tags\" : null\n  } ]\n}"
+          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"chartDensity\" : \"DEFAULT\",\n    \"charts\" : [ {\n      \"chartId\" : \"DWhT_6FAgAA\",\n      \"column\" : 11,\n      \"height\" : 3,\n      \"row\" : 99,\n      \"width\" : 6\n    } ],\n    \"created\" : 1519174861922,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"customProperties\" : null,\n    \"description\" : \"\",\n    \"discoveryOptions\" : null,\n    \"eventOverlays\" : null,\n    \"filters\" : {\n      \"sources\" : null,\n      \"time\" : null,\n      \"variables\" : null\n    },\n    \"groupId\" : \"DWhUGG-AgAA\",\n    \"id\" : \"DWhT_5rAcAA\",\n    \"lastUpdated\" : 1519174861922,\n    \"lastUpdatedBy\" : null,\n    \"locked\" : false,\n    \"maxDelayOverride\" : null,\n    \"name\" : \"Falcon99\",\n    \"selectedEventOverlays\" : null,\n    \"tags\" : null\n  } ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "733"
+            "735"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Tue, 20 Feb 2018 21:30:40 GMT"
+            "Wed, 21 Feb 2018 01:01:26 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -186,11 +186,11 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard?name=Falcon9"
+        "url": "https://api.signalfx.com/v2/dashboard?name=Falcon99"
       }
     },
     {
-      "recorded_at": "2018-02-20T21:30:40",
+      "recorded_at": "2018-02-21T01:01:27",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -217,25 +217,25 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=Falcon9"
+        "uri": "https://api.signalfx.com/v2/chart/DWhT_6FAgAA"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"chartDensity\" : \"DEFAULT\",\n    \"charts\" : [ {\n      \"chartId\" : \"DWgjqjRAgAA\",\n      \"column\" : 0,\n      \"height\" : 1,\n      \"row\" : 0,\n      \"width\" : 6\n    } ],\n    \"created\" : 1519162165739,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"customProperties\" : null,\n    \"description\" : \"\",\n    \"discoveryOptions\" : null,\n    \"eventOverlays\" : null,\n    \"filters\" : {\n      \"sources\" : null,\n      \"time\" : null,\n      \"variables\" : null\n    },\n    \"groupId\" : \"DWgjmYEAgAA\",\n    \"id\" : \"DWgjqjTAcAA\",\n    \"lastUpdated\" : 1519162165739,\n    \"lastUpdatedBy\" : null,\n    \"locked\" : false,\n    \"maxDelayOverride\" : null,\n    \"name\" : \"Falcon99\",\n    \"selectedEventOverlays\" : null,\n    \"tags\" : null\n  } ]\n}"
+          "string": "{\n  \"created\" : 1519174861923,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : { },\n  \"description\" : \"\",\n  \"id\" : \"DWhT_6FAgAA\",\n  \"lastUpdated\" : 1519174863047,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"chart1\",\n  \"options\" : {\n    \"areaChartOptions\" : null,\n    \"axes\" : null,\n    \"axisPrecision\" : null,\n    \"colorBy\" : \"Dimension\",\n    \"defaultPlotType\" : \"LineChart\",\n    \"legendOptions\" : null,\n    \"lineChartOptions\" : null,\n    \"onChartLegendOptions\" : null,\n    \"programOptions\" : null,\n    \"publishLabelOptions\" : null,\n    \"showEventLines\" : false,\n    \"stacked\" : false,\n    \"time\" : null,\n    \"type\" : \"TimeSeriesChart\",\n    \"unitPrefix\" : \"Metric\"\n  },\n  \"packageSpecifications\" : \"\",\n  \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n  \"tags\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "733"
+            "782"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Tue, 20 Feb 2018 21:30:40 GMT"
+            "Wed, 21 Feb 2018 01:01:27 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -248,15 +248,77 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard?name=Falcon9"
+        "url": "https://api.signalfx.com/v2/chart/DWhT_6FAgAA"
       }
     },
     {
-      "recorded_at": "2018-02-20T21:30:40",
+      "recorded_at": "2018-02-21T01:01:27",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "[{\"name\": \"chart1\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}]"
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/chart?name=chart1"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"created\" : 1519174861923,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"customProperties\" : { },\n    \"description\" : \"\",\n    \"id\" : \"DWhT_6FAgAA\",\n    \"lastUpdated\" : 1519174862565,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"chart1\",\n    \"options\" : {\n      \"areaChartOptions\" : null,\n      \"axes\" : null,\n      \"axisPrecision\" : null,\n      \"colorBy\" : \"Dimension\",\n      \"defaultPlotType\" : \"LineChart\",\n      \"legendOptions\" : null,\n      \"lineChartOptions\" : null,\n      \"onChartLegendOptions\" : null,\n      \"programOptions\" : null,\n      \"publishLabelOptions\" : null,\n      \"showEventLines\" : false,\n      \"stacked\" : false,\n      \"time\" : null,\n      \"type\" : \"TimeSeriesChart\",\n      \"unitPrefix\" : \"Metric\"\n    },\n    \"packageSpecifications\" : \"\",\n    \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n    \"tags\" : [ ]\n  } ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "877"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 21 Feb 2018 01:01:27 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/chart?name=chart1"
+      }
+    },
+    {
+      "recorded_at": "2018-02-21T01:01:27",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"created\": 1519174861923, \"creator\": \"ClusPSzAYAA\", \"customProperties\": {}, \"description\": \"\", \"id\": \"DWhT_6FAgAA\", \"lastUpdated\": 1519174862565, \"lastUpdatedBy\": \"ClusPSzAYAA\", \"name\": \"chart1\", \"options\": {\"areaChartOptions\": null, \"axes\": null, \"axisPrecision\": null, \"colorBy\": \"Dimension\", \"defaultPlotType\": \"LineChart\", \"legendOptions\": null, \"lineChartOptions\": null, \"onChartLegendOptions\": null, \"programOptions\": null, \"publishLabelOptions\": null, \"showEventLines\": false, \"stacked\": false, \"time\": null, \"type\": \"TimeSeriesChart\", \"unitPrefix\": \"Metric\"}, \"packageSpecifications\": \"\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"tags\": []}"
         },
         "headers": {
           "Accept": [
@@ -269,7 +331,7 @@
             "keep-alive"
           ],
           "Content-Length": [
-            "114"
+            "663"
           ],
           "Content-Type": [
             "application/json"
@@ -281,26 +343,26 @@
             "foo"
           ]
         },
-        "method": "POST",
-        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=Falcon9"
+        "method": "PUT",
+        "uri": "https://api.signalfx.com/v2/chart/DWhT_6FAgAA"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DWgkZ21AYAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1519162240635,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DWgkZ3GAcAA\",\n  \"id\" : \"DWgkZ6fAgAA\",\n  \"lastUpdated\" : 1519162240635,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"Falcon9\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
+          "string": "{\n  \"created\" : 1519174861923,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : { },\n  \"description\" : \"\",\n  \"id\" : \"DWhT_6FAgAA\",\n  \"lastUpdated\" : 1519174887566,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"chart1\",\n  \"options\" : {\n    \"areaChartOptions\" : null,\n    \"axes\" : null,\n    \"axisPrecision\" : null,\n    \"colorBy\" : \"Dimension\",\n    \"defaultPlotType\" : \"LineChart\",\n    \"legendOptions\" : null,\n    \"lineChartOptions\" : null,\n    \"onChartLegendOptions\" : null,\n    \"programOptions\" : null,\n    \"publishLabelOptions\" : null,\n    \"showEventLines\" : false,\n    \"stacked\" : false,\n    \"time\" : null,\n    \"type\" : \"TimeSeriesChart\",\n    \"unitPrefix\" : \"Metric\"\n  },\n  \"packageSpecifications\" : \"\",\n  \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n  \"tags\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "637"
+            "782"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Tue, 20 Feb 2018 21:30:40 GMT"
+            "Wed, 21 Feb 2018 01:01:27 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -313,15 +375,80 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard/simple?name=Falcon9"
+        "url": "https://api.signalfx.com/v2/chart/DWhT_6FAgAA"
       }
     },
     {
-      "recorded_at": "2018-02-20T21:30:40",
+      "recorded_at": "2018-02-21T01:01:27",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "{\"sourceDashboard\": \"DWgkZ6fAgAA\"}"
+          "string": "{\"chartDensity\": \"DEFAULT\", \"charts\": [{\"chartId\": \"DWhT_6FAgAA\", \"column\": 11, \"height\": 3, \"row\": 99, \"width\": 6}], \"created\": 1519174861922, \"creator\": \"ClusPSzAYAA\", \"customProperties\": null, \"description\": \"\", \"discoveryOptions\": null, \"eventOverlays\": null, \"filters\": {\"sources\": null, \"time\": null, \"variables\": null}, \"groupId\": \"DWhUGG-AgAA\", \"id\": \"DWhT_5rAcAA\", \"lastUpdated\": 1519174861922, \"lastUpdatedBy\": null, \"locked\": false, \"maxDelayOverride\": null, \"name\": \"Falcon99\", \"selectedEventOverlays\": null, \"tags\": null}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "534"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "PUT",
+        "uri": "https://api.signalfx.com/v2/dashboard/DWhT_5rAcAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DWhT_6FAgAA\",\n    \"column\" : 11,\n    \"height\" : 3,\n    \"row\" : 99,\n    \"width\" : 6\n  } ],\n  \"created\" : 1519174861922,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DWhUGG-AgAA\",\n  \"id\" : \"DWhT_5rAcAA\",\n  \"lastUpdated\" : 1519174887729,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"Falcon99\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "649"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 21 Feb 2018 01:01:27 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard/DWhT_5rAcAA"
+      }
+    },
+    {
+      "recorded_at": "2018-02-21T01:01:28",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"sourceDashboard\": \"DWhT_5rAcAA\"}"
         },
         "headers": {
           "Accept": [
@@ -347,12 +474,12 @@
           ]
         },
         "method": "POST",
-        "uri": "https://api.signalfx.com/v2/dashboardgroup/DWgkXr9AgBA/dashboard"
+        "uri": "https://api.signalfx.com/v2/dashboardgroup/DWhUH_jAgAE/dashboard"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"id\" : \"DWgkX68AYIU\"\n}"
+          "string": "{\n  \"id\" : \"DWhUGZ8AYAA\"\n}"
         },
         "headers": {
           "Connection": [
@@ -365,7 +492,7 @@
             "application/json"
           ],
           "Date": [
-            "Tue, 20 Feb 2018 21:30:40 GMT"
+            "Wed, 21 Feb 2018 01:01:27 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -378,11 +505,11 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboardgroup/DWgkXr9AgBA/dashboard"
+        "url": "https://api.signalfx.com/v2/dashboardgroup/DWhUH_jAgAE/dashboard"
       }
     },
     {
-      "recorded_at": "2018-02-20T21:30:40",
+      "recorded_at": "2018-02-21T01:01:28",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -412,7 +539,7 @@
           ]
         },
         "method": "DELETE",
-        "uri": "https://api.signalfx.com/v2/dashboardgroup/DWgkZ3GAcAA"
+        "uri": "https://api.signalfx.com/v2/dashboardgroup/DWhUGG-AgAA"
       },
       "response": {
         "body": {
@@ -424,7 +551,7 @@
             "keep-alive"
           ],
           "Date": [
-            "Tue, 20 Feb 2018 21:30:40 GMT"
+            "Wed, 21 Feb 2018 01:01:28 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -437,11 +564,11 @@
           "code": 204,
           "message": "No Content"
         },
-        "url": "https://api.signalfx.com/v2/dashboardgroup/DWgkZ3GAcAA"
+        "url": "https://api.signalfx.com/v2/dashboardgroup/DWhUGG-AgAA"
       }
     },
     {
-      "recorded_at": "2018-02-20T21:30:41",
+      "recorded_at": "2018-02-21T01:01:28",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -468,25 +595,25 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboardgroup/DWgkXr9AgBA"
+        "uri": "https://api.signalfx.com/v2/dashboard/DWhUIBNAYAA"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"created\" : 1519162240147,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DWgkX68AYIU\" ],\n  \"description\" : \"\",\n  \"id\" : \"DWgkXr9AgBA\",\n  \"lastUpdated\" : 1519162240147,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX\",\n  \"teams\" : [ ]\n}"
+          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ ],\n  \"created\" : 1519174886513,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DWhUH_jAgAE\",\n  \"id\" : \"DWhUIBNAYAA\",\n  \"lastUpdated\" : 1519174887728,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"spaceX\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "248"
+            "532"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Tue, 20 Feb 2018 21:30:41 GMT"
+            "Wed, 21 Feb 2018 01:01:28 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -499,7 +626,131 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboardgroup/DWgkXr9AgBA"
+        "url": "https://api.signalfx.com/v2/dashboard/DWhUIBNAYAA"
+      }
+    },
+    {
+      "recorded_at": "2018-02-21T01:01:28",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "DELETE",
+        "uri": "https://api.signalfx.com/v2/dashboard/DWhUIBNAYAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": ""
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Date": [
+            "Wed, 21 Feb 2018 01:01:28 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard/DWhUIBNAYAA"
+      }
+    },
+    {
+      "recorded_at": "2018-02-21T01:01:28",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup/DWhUH_jAgAE"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"created\" : 1519174886505,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DWhUGZ8AYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DWhUH_jAgAE\",\n  \"lastUpdated\" : 1519174886505,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX\",\n  \"teams\" : [ ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "248"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 21 Feb 2018 01:01:28 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup/DWhUH_jAgAE"
       }
     }
   ],
