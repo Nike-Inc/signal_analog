@@ -9,6 +9,10 @@ from signal_analog.dashboards import Dashboard, DashboardGroup
 from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError, \
         SignalAnalogError
+from contextlib import redirect_stdout
+import io
+import json
+import ast
 
 # Global config. This will store all recorded requests in the 'mocks' dir
 with betamax.Betamax.configure() as config:
@@ -74,7 +78,20 @@ def test_dashboard_create():
     dashboard = Dashboard()
     dashboard.with_charts(chart1, chart2)
     dashboard.with_name(dashboard_name)
-    result = dashboard.create(dry_run=True)
+    f = io.StringIO()
+    with redirect_stdout(f):
+        dashboard.create(dry_run=True)
+
+    response = f.getvalue()
+    result_string = response[response.find('{'):]\
+        .replace('\'', '\"')\
+        .replace('("', '(\\"')\
+        .replace('")', '\\")')
+
+    import logging
+    result_dump = json.dumps(result_string)
+    result = json.loads(result_dump)
+    logging.debug(type(result))
 
     assert 'charts' in result
     assert 'name' in result
