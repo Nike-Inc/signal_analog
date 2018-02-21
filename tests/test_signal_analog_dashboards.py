@@ -89,9 +89,9 @@ def test_dashboard_create():
         .replace('")', '\\")')
 
     import logging
-    result_dump = json.dumps(result_string)
-    result = json.loads(result_dump)
-    logging.debug(type(result))
+    # result_dump = json.dumps(result_string)
+    result = json.loads(result_string)
+    logging.debug(result)
 
     assert 'charts' in result
     assert 'name' in result
@@ -353,7 +353,8 @@ def test_dashboard_delete_child_chart():
             dashboard.options['charts']))
 
         resp_delete = dashboard.update()
-        assert resp_delete is None
+        # We should only have one chart
+        assert len(resp_delete['charts']) == 1
 
 
 def test_dashboard_read_success():
