@@ -322,7 +322,7 @@ def test_dashboard_delete_child_chart():
 
     dashboard = Dashboard(session=global_session)\
         .with_name('isley brothers')\
-        .with_api_token('foo')\
+        .with_api_token('***REMOVED***')\
         .with_charts(chart, chart2)
 
     with global_recorder.use_cassette('dashboard_delete_child_chart',
