@@ -445,7 +445,7 @@ https://jira.nike.com/browse/SIP-1062
 
         if len(list_of_charts) > 0:
             for chart in list_of_charts:
-                Chart().with_api_token(self.api_token).with_id(chart).delete()
+                Chart(session=self.session_handler).with_api_token(self.api_token).with_id(chart).delete()
 
         return self.__action__('delete', self.endpoint + '/' + dashboard_id,
                                util.empty_body(), params=None,
