@@ -101,7 +101,10 @@ class DashboardGroup(Resource):
                     self.delete(dashboardGroupId)
 
                 if len(dashboard_group_create_response['dashboards']) > 0:
-                    Dashboard().with_api_token(self.api_token).delete(dashboard_group_create_response['dashboards'][0])
+                    Dashboard(session=self.session_handler)\
+                        .with_api_token(self.api_token)\
+                        .delete(
+                            dashboard_group_create_response['dashboards'][0])
 
                 return self.read(dashboard_group_create_response['id'])
             else:
@@ -166,7 +169,11 @@ class DashboardGroup(Resource):
 
                 for dashboard_id in self.options['dashboards']:
                     # Only clone the dashboards that are not part of the existing dashboard group
-                    if Dashboard().with_api_token(self.api_token).read(dashboard_id)['groupId'] != dashboard_group['id']:
+                    d_id = Dashboard(session=self.session_handler)\
+                              .with_api_token(self.api_token)\
+                              .read(dashboard_id)
+
+                    if d_id['groupId'] != dashboard_group['id']:
                         self.clone(dashboard_id, dashboard_group['id'])
 
                 # Remove the groupId of the current dashboard group from the list of dashboard groups
@@ -180,7 +187,9 @@ class DashboardGroup(Resource):
                 dashboards_to_delete = [x for x in dashboard_group['dashboards'] if x not in self.options['dashboards']]
                 if len(dashboards_to_delete) is not 0:
                     for dashboard_id in dashboards_to_delete:
-                        Dashboard().with_api_token(self.api_token).delete(dashboard_id)
+                        Dashboard(session=self.session_handler)\
+                            .with_api_token(self.api_token)\
+                            .delete(dashboard_id)
 
             return self.__action__('put', '/dashboardgroup/' + dashboard_group['id'],
                                        lambda x: dashboard_group)
