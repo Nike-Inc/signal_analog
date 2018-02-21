@@ -1,4 +1,6 @@
 import json
+import random
+import string
 import pytest
 from betamax_serializers import pretty_json
 import betamax
@@ -6,7 +8,7 @@ import requests
 from mock import patch
 from signal_analog.flow import Data
 from signal_analog.charts import TimeSeriesChart, PlotType
-from signal_analog.dashboards import Dashboard
+from signal_analog.dashboards import Dashboard, DashboardGroup
 from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError, \
         SignalAnalogError
@@ -27,6 +29,11 @@ def mk_chart(name):
         .with_name(name)\
         .with_program(program)
 
+
+def mk_dashboard(dashboard_name, chart_name):
+    return Dashboard(session=global_session)\
+        .with_name(dashboard_name)\
+        .with_charts(mk_chart(chart_name))
 
 def test_dashboard_init():
     dashboard = Dashboard()
@@ -176,8 +183,8 @@ def test_create_signal_analog_error(input):
                     .create()
 
 
-def test_create_success():
-    with global_recorder.use_cassette('create_success',
+def test_dashboard_create_success():
+    with global_recorder.use_cassette('dashboard_create_success',
                                       serialize_with='prettyjson'):
         Dashboard(session=global_session)\
             .with_name('testy mctesterson')\
@@ -186,13 +193,13 @@ def test_create_success():
             .create()
 
 
-def test_create_force_success():
+def test_dashboard_create_force_success():
     dashboard = Dashboard(session=global_session)\
         .with_name('testy mctesterson')\
         .with_api_token('foo')\
         .with_charts(mk_chart('lol'))
 
-    with global_recorder.use_cassette('create_success_force',
+    with global_recorder.use_cassette('dashboard_create_success_force',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
         dashboard.create()
@@ -204,14 +211,13 @@ def test_create_force_success():
 
 
 @patch('click.confirm')
-def test_create_interactive_success(confirm):
+def test_dashboard_create_interactive_success(confirm):
     confirm.__getitem__.return_value = 'y'
-    program = Data('cpu.utilization').publish()
     dashboard = Dashboard(session=global_session) \
         .with_name('testy mctesterson') \
         .with_api_token('foo') \
         .with_charts(mk_chart('lol'))
-    with global_recorder.use_cassette('create_success_interactive',
+    with global_recorder.use_cassette('dashboard_create_success_interactive',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
         dashboard.create()
@@ -223,13 +229,13 @@ def test_create_interactive_success(confirm):
 
 
 @patch('click.confirm')
-def test_create_interactive_failure(confirm):
+def test_dashboard_create_interactive_failure(confirm):
     confirm.__getitem__.return_value = 'n'
     dashboard = Dashboard(session=global_session) \
         .with_name('testy mctesterson') \
         .with_api_token('foo') \
         .with_charts(mk_chart('lol'))
-    with global_recorder.use_cassette('create_failure_interactive',
+    with global_recorder.use_cassette('dashboard_create_failure_interactive',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
         dashboard.create()
@@ -330,3 +336,199 @@ def test_dashboard_delete_child_chart():
 
         resp_delete = dashboard.update()
         assert resp_delete is None
+
+
+def test_dashboard_read_success():
+    with global_recorder.use_cassette('dashboard_read_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_api_token('foo')\
+            .read('DWgS_7IAgAA')
+
+
+def test_dashboard_delete_success():
+    with global_recorder.use_cassette('dashboard_delete_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_api_token('foo')\
+            .delete('DWgS_7IAgAA')
+
+
+def test_dashboard_group_create_success():
+    with global_recorder.use_cassette('dashboard_group_create_success',
+                                      serialize_with='prettyjson'):
+        DashboardGroup(session=global_session)\
+            .with_name('spaceX')\
+            .with_api_token('foo')\
+            .create()
+
+
+def test_dashboard_group_create_force_success():
+    dashboard_group = DashboardGroup(session=global_session)\
+        .with_name('spaceX')\
+        .with_api_token('foo')\
+
+    with global_recorder.use_cassette('dashboard_group_create_success_force',
+                                      serialize_with='prettyjson'):
+        # Create our first dashboard group
+        dashboard_group.create()
+        with pytest.raises(SignalAnalogError):
+            # Verify that we can't create it again
+            dashboard_group.create()
+        # Force the dashboard group to create itself again
+        dashboard_group.create(force=True)
+
+
+@patch('click.confirm')
+def test_dashboard_group_create_interactive_success(confirm):
+    confirm.__getitem__.return_value = 'y'
+    dashboard_group = DashboardGroup(session=global_session) \
+        .with_name('spaceX') \
+        .with_api_token('foo')
+    with global_recorder.use_cassette('dashboard_group_create_success_interactive',
+                                      serialize_with='prettyjson'):
+        # Create our first dashboard group
+        dashboard_group.create()
+        with pytest.raises(SignalAnalogError):
+            # Verify that we can't create it again
+            dashboard_group.create()
+        # Run the dashboard group creation in interactive mode
+        dashboard_group.create(interactive=True)
+
+
+@patch('click.confirm')
+def test_dashboard_group_create_interactive_failure(confirm):
+    confirm.__getitem__.return_value = 'n'
+    dashboard_group = DashboardGroup(session=global_session) \
+        .with_name('spaceX') \
+        .with_api_token('foo')
+    with global_recorder.use_cassette('dashboard_group_create_failure_interactive',
+                                      serialize_with='prettyjson'):
+        # Create our first dashboard_group
+        dashboard_group.create()
+        with pytest.raises(SignalAnalogError):
+            # Verify that we can't create it again
+            dashboard_group.create()
+            dashboard_group.create(interactive=True)
+
+
+def test_dashboard_group_update_success():
+    with global_recorder.use_cassette('dashboard_group_update_success',
+                                      serialize_with='prettyjson'):
+        dashboard_group = DashboardGroup(session=global_session) \
+            .with_name('spaceX') \
+            .with_api_token('foo') \
+
+        dashboard_group.create()
+        dashboard_group.update(name='updated_dashboard_group_name',
+                               description='updated_dashboard_group_description')
+
+
+def test_dashboard_group_update_failure():
+
+    dashboard_group = DashboardGroup(session=global_session) \
+        .with_name('spaceX') \
+        .with_api_token('foo')
+    with global_recorder.use_cassette('dashboard_group_update_failure',
+                                      serialize_with='prettyjson'):
+        # Just to make sure there are multiple dashboard groups exists, create a new dashboard group with the same name
+        dashboard_group.create(force=True)
+        dashboard_group.create(force=True)
+
+        with pytest.raises(SignalAnalogError):
+            # Verify that we can't update when multiple dashboard groups exist
+            dashboard_group.update(name='updated_dashboard_group_name',
+                                   description='updated_dashboard_group_description')
+
+
+def test_dashboard_group_with_dashboard_create_success():
+    with global_recorder.use_cassette('dashboard_group_with_dashboard_create_success',
+                                      serialize_with='prettyjson'):
+        DashboardGroup(session=global_session)\
+            .with_name('spaceX')\
+            .with_dashboards(mk_dashboard('Falcon99', 'chart1'))\
+            .with_api_token('foo')\
+            .create()
+
+
+def test_dashboard_group_with_dashboard_create_force_success():
+    dashboard_group = DashboardGroup(session=global_session)\
+        .with_name('spaceX') \
+        .with_dashboards(mk_dashboard('Falcon99', 'chart1'))\
+        .with_api_token('foo')
+
+    with global_recorder.use_cassette('dashboard_group_with_dashboard_create_success_force',
+                                      serialize_with='prettyjson'):
+        dashboard_group.create(force=True)
+
+
+@patch('click.confirm')
+def test_dashboard_group_with_dashboard_create_interactive_success(confirm):
+    confirm.__getitem__.return_value = 'y'
+    dashboard_group = DashboardGroup(session=global_session) \
+        .with_name('spaceX') \
+        .with_dashboards(mk_dashboard('Falcon9', 'chart1')) \
+        .with_api_token('foo')
+    with global_recorder.use_cassette('dashboard_group_with_dashboard_create_success_interactive',
+                                      serialize_with='prettyjson'):
+
+        dashboard_group.create(interactive=True)
+
+
+@patch('click.confirm')
+def test_dashboard_group_with_dashboard_create_interactive_failure(confirm):
+    confirm.__getitem__.return_value = 'n'
+    dashboard_group = DashboardGroup(session=global_session) \
+        .with_name('spaceX') \
+        .with_dashboards(mk_dashboard('Falcon9', 'chart1')) \
+        .with_api_token('foo')
+    with global_recorder.use_cassette('dashboard_group_with_dashboard_create_failure_interactive',
+                                      serialize_with='prettyjson'):
+
+            dashboard_group.create(interactive=True)
+
+
+def test_dashboard_group_with_dashboard_update_success():
+    with global_recorder.use_cassette('dashboard_group_with_dashboard_update_success',
+                                      serialize_with='prettyjson'):
+        dashboard_group = DashboardGroup(session=global_session) \
+            .with_name('spaceX') \
+            .with_dashboards(mk_dashboard('Falcon9', 'chart1'), mk_dashboard('FalconHeavy', 'chart2')) \
+            .with_api_token('foo')
+
+        dashboard_group.update()
+
+
+def test_dashboard_group_with_delete_existing_dashboard_update_success():
+    with global_recorder.use_cassette('dashboard_group_with_delete_existing_dashboard_update_success',
+                                      serialize_with='prettyjson'):
+        dashboard_group = DashboardGroup(session=global_session) \
+            .with_name('spaceX') \
+            .with_dashboards(mk_dashboard('Draagoon', 'chart3')) \
+            .with_api_token('foo')
+
+        dashboard_group.update()
+
+
+def test_dashboard_group_read_success():
+    with global_recorder.use_cassette('dashboard_group_read_success',
+                                      serialize_with='prettyjson'):
+        DashboardGroup(session=global_session)\
+            .with_api_token('foo')\
+            .read('DWgXZfyAcAA')
+
+
+def test_dashboard_group_delete_success():
+    with global_recorder.use_cassette('dashboard_group_delete_success',
+                                      serialize_with='prettyjson'):
+        DashboardGroup(session=global_session)\
+            .with_api_token('foo')\
+            .delete('DWgXZfyAcAA')
+
+
+def test_dashboard_group_clone_success():
+    with global_recorder.use_cassette('dashboard_group_clone_success',
+                                      serialize_with='prettyjson'):
+        DashboardGroup(session=global_session)\
+            .with_api_token('foo')\
+            .clone('DWgX6iYAcAA', 'DWgX6dNAYAA')
