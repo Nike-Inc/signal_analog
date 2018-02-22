@@ -24,7 +24,7 @@
             "python-requests/2.18.4"
           ],
           "X-SF-Token": [
-            "***REMOVED***"
+            "foo"
           ]
         },
         "method": "GET",
@@ -89,7 +89,7 @@
             "python-requests/2.18.4"
           ],
           "X-SF-Token": [
-            "***REMOVED***"
+            "foo"
           ]
         },
         "method": "POST",
@@ -151,7 +151,7 @@
             "python-requests/2.18.4"
           ],
           "X-SF-Token": [
-            "***REMOVED***"
+            "foo"
           ]
         },
         "method": "GET",
@@ -213,7 +213,7 @@
             "python-requests/2.18.4"
           ],
           "X-SF-Token": [
-            "***REMOVED***"
+            "foo"
           ]
         },
         "method": "GET",
@@ -278,7 +278,7 @@
             "python-requests/2.18.4"
           ],
           "X-SF-Token": [
-            "***REMOVED***"
+            "foo"
           ]
         },
         "method": "POST",
