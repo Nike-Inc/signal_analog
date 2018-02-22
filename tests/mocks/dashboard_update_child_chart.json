@@ -1,7 +1,7 @@
 {
   "http_interactions": [
     {
-      "recorded_at": "2018-01-30T03:10:31",
+      "recorded_at": "2018-02-21T02:19:57",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -33,20 +33,20 @@
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"chartDensity\" : \"DEFAULT\",\n    \"charts\" : [ {\n      \"chartId\" : \"DUv8NOCAcAA\",\n      \"column\" : 0,\n      \"height\" : 1,\n      \"row\" : 0,\n      \"width\" : 6\n    } ],\n    \"created\" : 1517272849854,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"customProperties\" : null,\n    \"description\" : \"\",\n    \"discoveryOptions\" : null,\n    \"eventOverlays\" : null,\n    \"filters\" : {\n      \"sources\" : null,\n      \"time\" : null,\n      \"variables\" : null\n    },\n    \"groupId\" : \"DUv8NQdAYAA\",\n    \"id\" : \"DUv8NVJAgAA\",\n    \"lastUpdated\" : 1517281606740,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"locked\" : false,\n    \"maxDelayOverride\" : null,\n    \"name\" : \"foobarium\",\n    \"selectedEventOverlays\" : null,\n    \"tags\" : null\n  } ]\n}"
+          "string": "{\n  \"count\" : 0,\n  \"results\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "743"
+            "36"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Tue, 30 Jan 2018 03:10:31 GMT"
+            "Wed, 21 Feb 2018 02:19:57 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -63,199 +63,7 @@
       }
     },
     {
-      "recorded_at": "2018-01-30T03:10:31",
-      "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": ""
-        },
-        "headers": {
-          "Accept": [
-            "*/*"
-          ],
-          "Accept-Encoding": [
-            "gzip, deflate"
-          ],
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "User-Agent": [
-            "python-requests/2.18.4"
-          ],
-          "X-SF-Token": [
-            "foo"
-          ]
-        },
-        "method": "GET",
-        "uri": "https://api.signalfx.com/v2/chart/DUv8NOCAcAA"
-      },
-      "response": {
-        "body": {
-          "encoding": null,
-          "string": "{\n  \"created\" : 1517272849834,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : { },\n  \"description\" : \"\",\n  \"id\" : \"DUv8NOCAcAA\",\n  \"lastUpdated\" : 1517272851387,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"rawr\",\n  \"options\" : {\n    \"areaChartOptions\" : null,\n    \"axes\" : null,\n    \"axisPrecision\" : null,\n    \"colorBy\" : \"Dimension\",\n    \"defaultPlotType\" : \"LineChart\",\n    \"legendOptions\" : null,\n    \"lineChartOptions\" : null,\n    \"onChartLegendOptions\" : null,\n    \"programOptions\" : null,\n    \"publishLabelOptions\" : null,\n    \"showEventLines\" : false,\n    \"stacked\" : false,\n    \"time\" : null,\n    \"type\" : \"TimeSeriesChart\",\n    \"unitPrefix\" : \"Metric\"\n  },\n  \"packageSpecifications\" : \"\",\n  \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n  \"tags\" : [ ]\n}"
-        },
-        "headers": {
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Length": [
-            "780"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "Date": [
-            "Tue, 30 Jan 2018 03:10:31 GMT"
-          ],
-          "Strict-Transport-Security": [
-            "max-age=7776000"
-          ],
-          "X-Content-Type-Options": [
-            "nosniff"
-          ]
-        },
-        "status": {
-          "code": 200,
-          "message": "OK"
-        },
-        "url": "https://api.signalfx.com/v2/chart/DUv8NOCAcAA"
-      }
-    },
-    {
-      "recorded_at": "2018-01-30T03:10:31",
-      "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"id\": \"DUv8NOCAcAA\", \"options\": {\"type\": \"TimeSeriesChart\"}}"
-        },
-        "headers": {
-          "Accept": [
-            "*/*"
-          ],
-          "Accept-Encoding": [
-            "gzip, deflate"
-          ],
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Length": [
-            "131"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "User-Agent": [
-            "python-requests/2.18.4"
-          ],
-          "X-SF-Token": [
-            "foo"
-          ]
-        },
-        "method": "POST",
-        "uri": "https://api.signalfx.com/v2/chart"
-      },
-      "response": {
-        "body": {
-          "encoding": null,
-          "string": "{\n  \"created\" : 1517281831348,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : { },\n  \"description\" : \"\",\n  \"id\" : \"DUweTnAAYAA\",\n  \"lastUpdated\" : 1517281831348,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"rawr\",\n  \"options\" : {\n    \"areaChartOptions\" : null,\n    \"axes\" : null,\n    \"axisPrecision\" : null,\n    \"colorBy\" : \"Dimension\",\n    \"defaultPlotType\" : \"LineChart\",\n    \"legendOptions\" : null,\n    \"lineChartOptions\" : null,\n    \"onChartLegendOptions\" : null,\n    \"programOptions\" : null,\n    \"publishLabelOptions\" : null,\n    \"showEventLines\" : false,\n    \"stacked\" : false,\n    \"time\" : null,\n    \"type\" : \"TimeSeriesChart\",\n    \"unitPrefix\" : \"Metric\"\n  },\n  \"packageSpecifications\" : \"\",\n  \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n  \"tags\" : [ ]\n}"
-        },
-        "headers": {
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Length": [
-            "780"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "Date": [
-            "Tue, 30 Jan 2018 03:10:31 GMT"
-          ],
-          "Strict-Transport-Security": [
-            "max-age=7776000"
-          ],
-          "X-Content-Type-Options": [
-            "nosniff"
-          ]
-        },
-        "status": {
-          "code": 200,
-          "message": "OK"
-        },
-        "url": "https://api.signalfx.com/v2/chart"
-      }
-    },
-    {
-      "recorded_at": "2018-01-30T03:10:31",
-      "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "{\"chartDensity\": \"DEFAULT\", \"charts\": [{\"chartId\": \"DUv8NOCAcAA\", \"column\": 0, \"height\": 1, \"row\": 0, \"width\": 6}], \"created\": 1517272849854, \"creator\": \"ClusPSzAYAA\", \"customProperties\": null, \"description\": \"\", \"discoveryOptions\": null, \"eventOverlays\": null, \"filters\": {\"sources\": null, \"time\": null, \"variables\": null}, \"groupId\": \"DUv8NQdAYAA\", \"id\": \"DUv8NVJAgAA\", \"lastUpdated\": 1517281606740, \"lastUpdatedBy\": \"ClusPSzAYAA\", \"locked\": false, \"maxDelayOverride\": null, \"name\": \"foobarium\", \"selectedEventOverlays\": null, \"tags\": null}"
-        },
-        "headers": {
-          "Accept": [
-            "*/*"
-          ],
-          "Accept-Encoding": [
-            "gzip, deflate"
-          ],
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Length": [
-            "542"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "User-Agent": [
-            "python-requests/2.18.4"
-          ],
-          "X-SF-Token": [
-            "foo"
-          ]
-        },
-        "method": "PUT",
-        "uri": "https://api.signalfx.com/v2/dashboard/DUv8NVJAgAA"
-      },
-      "response": {
-        "body": {
-          "encoding": null,
-          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DUv8NOCAcAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1517272849854,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DUv8NQdAYAA\",\n  \"id\" : \"DUv8NVJAgAA\",\n  \"lastUpdated\" : 1517281831490,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"foobarium\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
-        },
-        "headers": {
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Length": [
-            "648"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "Date": [
-            "Tue, 30 Jan 2018 03:10:31 GMT"
-          ],
-          "Strict-Transport-Security": [
-            "max-age=7776000"
-          ],
-          "X-Content-Type-Options": [
-            "nosniff"
-          ]
-        },
-        "status": {
-          "code": 200,
-          "message": "OK"
-        },
-        "url": "https://api.signalfx.com/v2/dashboard/DUv8NVJAgAA"
-      }
-    },
-    {
-      "recorded_at": "2018-01-30T03:10:31",
+      "recorded_at": "2018-02-21T02:20:00",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -287,20 +95,20 @@
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"chartDensity\" : \"DEFAULT\",\n    \"charts\" : [ {\n      \"chartId\" : \"DUv8NOCAcAA\",\n      \"column\" : 0,\n      \"height\" : 1,\n      \"row\" : 0,\n      \"width\" : 6\n    } ],\n    \"created\" : 1517272849854,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"customProperties\" : null,\n    \"description\" : \"\",\n    \"discoveryOptions\" : null,\n    \"eventOverlays\" : null,\n    \"filters\" : {\n      \"sources\" : null,\n      \"time\" : null,\n      \"variables\" : null\n    },\n    \"groupId\" : \"DUv8NQdAYAA\",\n    \"id\" : \"DUv8NVJAgAA\",\n    \"lastUpdated\" : 1517281606740,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"locked\" : false,\n    \"maxDelayOverride\" : null,\n    \"name\" : \"foobarium\",\n    \"selectedEventOverlays\" : null,\n    \"tags\" : null\n  } ]\n}"
+          "string": "{\n  \"count\" : 0,\n  \"results\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "743"
+            "36"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Tue, 30 Jan 2018 03:10:31 GMT"
+            "Wed, 21 Feb 2018 02:19:58 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -317,7 +125,72 @@
       }
     },
     {
-      "recorded_at": "2018-01-30T03:10:31",
+      "recorded_at": "2018-02-21T02:20:00",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "[{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}]"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "112"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=foobarium"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DWhmUfqAgAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1519179600632,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DWhmUkIAYEc\",\n  \"id\" : \"DWhmUkKAcAA\",\n  \"lastUpdated\" : 1519179600632,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"foobarium\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "639"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 21 Feb 2018 02:20:00 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard/simple?name=foobarium"
+      }
+    },
+    {
+      "recorded_at": "2018-02-21T02:20:00",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -344,25 +217,25 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/chart/DUv8NOCAcAA"
+        "uri": "https://api.signalfx.com/v2/dashboard?name=foobarium"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"created\" : 1517272849834,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : { },\n  \"description\" : \"\",\n  \"id\" : \"DUv8NOCAcAA\",\n  \"lastUpdated\" : 1517272851387,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"rawr\",\n  \"options\" : {\n    \"areaChartOptions\" : null,\n    \"axes\" : null,\n    \"axisPrecision\" : null,\n    \"colorBy\" : \"Dimension\",\n    \"defaultPlotType\" : \"LineChart\",\n    \"legendOptions\" : null,\n    \"lineChartOptions\" : null,\n    \"onChartLegendOptions\" : null,\n    \"programOptions\" : null,\n    \"publishLabelOptions\" : null,\n    \"showEventLines\" : false,\n    \"stacked\" : false,\n    \"time\" : null,\n    \"type\" : \"TimeSeriesChart\",\n    \"unitPrefix\" : \"Metric\"\n  },\n  \"packageSpecifications\" : \"\",\n  \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n  \"tags\" : [ ]\n}"
+          "string": "{\n  \"count\" : 0,\n  \"results\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "780"
+            "36"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Tue, 30 Jan 2018 03:10:31 GMT"
+            "Wed, 21 Feb 2018 02:20:00 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -375,15 +248,77 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/chart/DUv8NOCAcAA"
+        "url": "https://api.signalfx.com/v2/dashboard?name=foobarium"
       }
     },
     {
-      "recorded_at": "2018-01-30T03:10:32",
+      "recorded_at": "2018-02-21T02:20:00",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"id\": \"DUv8NOCAcAA\", \"options\": {\"type\": \"TimeSeriesChart\"}}"
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboard?name=foobarium"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 0,\n  \"results\" : [ ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "36"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 21 Feb 2018 02:20:00 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard?name=foobarium"
+      }
+    },
+    {
+      "recorded_at": "2018-02-21T02:20:01",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "[{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}]"
         },
         "headers": {
           "Accept": [
@@ -396,7 +331,7 @@
             "keep-alive"
           ],
           "Content-Length": [
-            "131"
+            "112"
           ],
           "Content-Type": [
             "application/json"
@@ -409,25 +344,25 @@
           ]
         },
         "method": "POST",
-        "uri": "https://api.signalfx.com/v2/chart"
+        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=foobarium"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"created\" : 1517281831882,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : { },\n  \"description\" : \"\",\n  \"id\" : \"DUweUU9AgAA\",\n  \"lastUpdated\" : 1517281831882,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"rawr\",\n  \"options\" : {\n    \"areaChartOptions\" : null,\n    \"axes\" : null,\n    \"axisPrecision\" : null,\n    \"colorBy\" : \"Dimension\",\n    \"defaultPlotType\" : \"LineChart\",\n    \"legendOptions\" : null,\n    \"lineChartOptions\" : null,\n    \"onChartLegendOptions\" : null,\n    \"programOptions\" : null,\n    \"publishLabelOptions\" : null,\n    \"showEventLines\" : false,\n    \"stacked\" : false,\n    \"time\" : null,\n    \"type\" : \"TimeSeriesChart\",\n    \"unitPrefix\" : \"Metric\"\n  },\n  \"packageSpecifications\" : \"\",\n  \"programText\" : \"data(\\\"cpu.utilization\\\").publish()\",\n  \"tags\" : [ ]\n}"
+          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DWhmTLsAgAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1519179600991,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DWhmTMJAYAA\",\n  \"id\" : \"DWhmTUqAgAA\",\n  \"lastUpdated\" : 1519179600991,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"foobarium\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "780"
+            "639"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Tue, 30 Jan 2018 03:10:31 GMT"
+            "Wed, 21 Feb 2018 02:20:00 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -440,72 +375,7 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/chart"
-      }
-    },
-    {
-      "recorded_at": "2018-01-30T03:10:32",
-      "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "{\"chartDensity\": \"DEFAULT\", \"charts\": [{\"chartId\": \"DUv8NOCAcAA\", \"column\": 0, \"height\": 1, \"row\": 0, \"width\": 6}], \"created\": 1517272849854, \"creator\": \"ClusPSzAYAA\", \"customProperties\": null, \"description\": \"\", \"discoveryOptions\": null, \"eventOverlays\": null, \"filters\": {\"sources\": null, \"time\": null, \"variables\": null}, \"groupId\": \"DUv8NQdAYAA\", \"id\": \"DUv8NVJAgAA\", \"lastUpdated\": 1517281606740, \"lastUpdatedBy\": \"ClusPSzAYAA\", \"locked\": false, \"maxDelayOverride\": null, \"name\": \"foobarium\", \"selectedEventOverlays\": null, \"tags\": null}"
-        },
-        "headers": {
-          "Accept": [
-            "*/*"
-          ],
-          "Accept-Encoding": [
-            "gzip, deflate"
-          ],
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Length": [
-            "542"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "User-Agent": [
-            "python-requests/2.18.4"
-          ],
-          "X-SF-Token": [
-            "foo"
-          ]
-        },
-        "method": "PUT",
-        "uri": "https://api.signalfx.com/v2/dashboard/DUv8NVJAgAA"
-      },
-      "response": {
-        "body": {
-          "encoding": null,
-          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DUv8NOCAcAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1517272849854,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DUv8NQdAYAA\",\n  \"id\" : \"DUv8NVJAgAA\",\n  \"lastUpdated\" : 1517281832027,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"foobarium\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
-        },
-        "headers": {
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Length": [
-            "648"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "Date": [
-            "Tue, 30 Jan 2018 03:10:31 GMT"
-          ],
-          "Strict-Transport-Security": [
-            "max-age=7776000"
-          ],
-          "X-Content-Type-Options": [
-            "nosniff"
-          ]
-        },
-        "status": {
-          "code": 200,
-          "message": "OK"
-        },
-        "url": "https://api.signalfx.com/v2/dashboard/DUv8NVJAgAA"
+        "url": "https://api.signalfx.com/v2/dashboard/simple?name=foobarium"
       }
     }
   ],
