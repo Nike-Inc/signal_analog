@@ -3,6 +3,8 @@ import json
 import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
+import click
+import sys
 
 # py2/3 compatability hack so that we can consistently handle JSON errors.
 try:
@@ -96,8 +98,8 @@ class Resource(object):
         self.__set_api_token__(token)
         return self
 
-    def __action__(self, action, endpoint, update_fn,
-                    params=None, dry_run=False, interactive=False, force=False):
+    def __action__(self, action, endpoint, update_fn, params=None,
+                   dry_run=False, interactive=False, force=False):
         """Perform a stateful HTTP action against the SignalFx API.
 
         Arguments:
@@ -139,6 +141,12 @@ class Resource(object):
             response.raise_for_status()
             return response.json()
         except requests.exceptions.HTTPError as error:
+            if response.status_code == 405:
+                msg = "Oops! We encountered a 405 exception for {0}" +\
+                      " resource. Possible cause: You might be passing an " +\
+                      "empty id"
+                click.echo(msg.format(str(self.__class__.__name__)))
+                sys.exit(1)
             # Tell the user exactly what went wrong according to SignalFX
             raise RuntimeError(error.response.text)
         except JSONDecodeError:
@@ -146,9 +154,8 @@ class Resource(object):
             # situations we shouldn't either
             return None
 
-
     def __get__(self, name, default=None):
-        """Internal helper for sourcing top-level options from this resource."""
+        """Helper for sourcing top-level options from this resource."""
         return self.options.get(name, default)
 
     def __find_existing_resources__(self):
@@ -223,30 +230,69 @@ class Resource(object):
     def create(self, dry_run=False, interactive=False, force=False):
         """Default implementation for resource creation."""
         return self.__action__('post', self.endpoint, lambda x: x,
-            dry_run=dry_run, interactive=interactive, force=force)
+                               dry_run=dry_run, interactive=interactive,
+                               force=force)
 
     def update(self, dry_run=False):
-        """Default implementation for resource creation."""
+        """Default implementation for resource updation."""
         return self.__action__('put', self.endpoint, lambda x: x,
-            dry_run=dry_run)
+                               dry_run=dry_run)
 
-    def read(self):
+    def read(self, resource_id=None):
         """Attempt to find the given resource in SignalFx.
 
         Your chances are much higher if you provide the chart id via
         'with_id'. Otherwise, we will attempt to do a best effort to search for
         your chart based on name.
         """
-        if self.__get__('id'):
-            return self.__action__('get',
-                self.endpoint + '/' + self.__get__('id'), lambda x: None)
+        rid = resource_id if resource_id else self.__get__('id')
+        if rid:
+            return self.__action__(
+                'get', self.endpoint + '/' + rid, lambda x: None)
         else:
-            return self.__action__('get', self.endpoint, lambda x: None,
+            return self.__action__(
+                'get', self.endpoint, lambda x: None,
                 params={'name': self.__get__('name')})['results'][0]
 
+    def delete(self, resource_id=None, dry_run=False):
+        """Delete the given resource in the SignalFx API."""
+        rid = resource_id if resource_id else self.__get__('id')
 
-    def delete(self):
-        """Delete the given resource in the SignalFx API.
+        if rid:
+            return self.__action__(
+                'delete', self.endpoint + '/' + rid,
+                lambda x: None, dry_run=dry_run)
+        else:
+            return self.__action__(
+                'delete', self.endpoint + '/' + self.read()['id'],
+                lambda x: None)
+
+    def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
+        """Default implementation for resource cloning.
+
+        TODO is this meant to work?
         """
-        return self.__action__('delete',
-            self.endpoint + '/' + self.read()['id'], lambda x: None)
+        return self.__action__('post', self.endpoint, lambda x: x,
+                               dry_run=dry_run)
+
+    def create_helper(self, force=False, interactive=False):
+        try:
+            query_result = self.__find_existing_resources__()
+            self.__find_existing_match__(query_result)
+        except (ResourceAlreadyExistsError,
+                ResourceHasMultipleExactMatchesError) as e:
+            if not force and not interactive:
+                # Rethrow error to user if we're not force creating things
+                raise e
+            elif interactive:
+                msg = 'A resource with the name "{0}" already exists. ' +\
+                      'Do you want to create a new one?'
+                if click.confirm(msg.format(self.__get__('name'))):
+                    return True
+                else:
+                    raise ResourceAlreadyExistsError(self.__get__('name'))
+        # Otherwise this is perfectly fine, create the resource!
+        except ResourceMatchNotFoundError:
+            pass
+
+        return True
