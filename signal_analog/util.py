@@ -58,3 +58,10 @@ def flatten_charts(opts):
 def pp_json(dictionary):
     """Pretty print a dictionary as JSON."""
     click.echo(json.dumps(dictionary, indent=2))
+
+
+def empty_body():
+    """
+    :return: Returns  an empty body when making requests to SignalFx.
+    """
+    return lambda x: None
