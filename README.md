@@ -22,6 +22,8 @@ or tools then please consult the ***REMOVED*** documentation.
       - [Building Dashboards](#dashboards)
       - [Updating Dashboards](#dashboards-updates)
       - [Creating Detectors](#detectors)
+      - [Building Dashboard Groups](#dashboard-groups)
+      - [Updating Dashboard Group](#dashboard-group-updates)
       - [Talking to the SignalFlow API Directly](#signalflow)
       - [General `Resource` Guidelines](#general-resource-guidlines)
       - [Creating a CLI for your resources](#cli-builder)
@@ -243,7 +245,7 @@ At this point one of two things will happen:
 
 <a name="dashboards-updates"></a>
 ### Updating Dashboards
-Once you have dashboard created, you can update the properties like name and
+Once you have created a dashboard, you can update the properties like name and
 description of a dashboard:
 
 ```python
@@ -324,6 +326,84 @@ statements with distinct `label`s to differentiate them from one another.
 #### Building Detectors from Existing Charts
 
 FIXME
+
+<a name="dashboard-groups"></a>
+### Building Dashboard Groups
+
+`signal_analog` provides constructs for building dashboard groups in the
+`signal_analog.dashboards` module.
+
+Consult the [upstream documentation][dashboard-groups] for more information on
+the Dashboard Groups API.
+
+Building on the examples described in the previous section, we'd now like to
+build a dashboard group containing our dashboards.
+
+First, lets build a couple of Dashboard objects similar to how we did it in
+the `Building Dashboards` example:
+
+```python
+from signal_analog.dashboards import Dashboard, DashboardGroup
+
+dg = DashboardGroup()
+dash1 = Dashboard().with_name('My Little Dashboard1: Metrics are Magic')\
+    .with_charts(memory_chart)
+dash2 = Dashboard().with_name('My Little Dashboard2: Metrics are Magic')\
+    .with_charts(memory_chart)
+```
+**Note that we are not actually creating the dashboards here using the .create() method as we did it in the dashboards 
+example.
+This will be taken care by the DashboardGroup()**
+
+Many of the same methods for dashboards are available on dashboard groups as well, so
+let's give our dashboard group a memorable name and configure it's API token:
+
+```python
+
+dg.with_name('My Dashboard Group')\
+    .with_api_token('my-api-token')
+```
+
+See the [note below](#dashboard-group-names) for caveats on naming dashboard groups.
+
+Our final task will be to add dashboard to our dashboard group and create it in the API!
+
+```python
+response = dg.with_dashboards(dash1).create()
+```
+
+At this point one of two things will happen:
+
+  - We receive some sort of error from the SignalFx API and an exception
+  is thrown
+  - We successfully created the dashboard group with the provided dashboard resources, in which case the JSON 
+  response is returned as a dictionary.
+
+<a name="dashboard-group-updates"></a>
+### Updating Dashboard Groups
+Once you have dashboard group created, you can update the properties like name and descriptions of a dashboard group or 
+add new dashboards or delete existing dashboards in a dashboard group
+
+*Example 1:*
+
+```python
+dg.update(
+    name='updated_dashboard_group_name',
+    description='updated_dashboard_group_description')
+```
+
+*Example 2:*
+
+```python
+dg.with_dashboards(dash1, dash2).update()
+```
+
+At this point one of two things will happen:
+
+  - We receive some sort of error from the SignalFx API and an exception
+  is thrown
+  - We successfully updated the dashboard group, in which case the JSON response is
+  returned as a dictionary with the updated properties.  
 
 <a name="signalflow"></a>
 ### Talking to the SignalFlow API Directly
@@ -486,5 +566,6 @@ project template.
 [sfx-contact]: https://confluence.nike.com/x/GlHiCQ
 [terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
 [dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
+[dashboard-groups]: https://developers.signalfx.com/v2/reference#dashboard-groups-overview
 ***REMOVED***: https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
 [detectors]: https://developers.signalfx.com/v2/reference#detector-model
