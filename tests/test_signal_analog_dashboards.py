@@ -1,18 +1,24 @@
-import pytest
-from betamax_serializers import pretty_json
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+import json
+import sys
+from contextlib import contextmanager
+
 import betamax
+import pytest
 import requests
+from betamax_serializers import pretty_json
 from mock import patch
-from signal_analog.flow import Data
+
 from signal_analog.charts import TimeSeriesChart, PlotType
 from signal_analog.dashboards import Dashboard, DashboardGroup
 from signal_analog.errors import ResourceMatchNotFoundError, \
-        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError, \
-        SignalAnalogError
-from contextlib import redirect_stdout
-import io
-import json
-import ast
+    ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError, \
+    SignalAnalogError
+from signal_analog.flow import Data
+
 
 # Global config. This will store all recorded requests in the 'mocks' dir
 with betamax.Betamax.configure() as config:
@@ -22,6 +28,17 @@ with betamax.Betamax.configure() as config:
 # Don't get in the habit of doing this, but it simplifies testing
 global_session = requests.Session()
 global_recorder = betamax.Betamax(global_session)
+
+
+# Method to capture stdout
+@contextmanager
+def stdout_redirected(new_stdout):
+    save_stdout = sys.stdout
+    sys.stdout = new_stdout
+    try:
+        yield None
+    finally:
+        sys.stdout = save_stdout
 
 
 def mk_chart(name):
@@ -78,8 +95,8 @@ def test_dashboard_create():
     dashboard = Dashboard()
     dashboard.with_charts(chart1, chart2)
     dashboard.with_name(dashboard_name)
-    f = io.StringIO()
-    with redirect_stdout(f):
+    f = StringIO()
+    with stdout_redirected(f):
         dashboard.create(dry_run=True)
 
     response = f.getvalue()
@@ -88,10 +105,7 @@ def test_dashboard_create():
         .replace('("', '(\\"')\
         .replace('")', '\\")')
 
-    import logging
-    # result_dump = json.dumps(result_string)
     result = json.loads(result_string)
-    logging.debug(result)
 
     assert 'charts' in result
     assert 'name' in result
