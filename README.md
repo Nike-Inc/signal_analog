@@ -1,12 +1,9 @@
 # Signal Analog
 
-A troposphere-like library for building and composing SignalFx SignalFlow
-programs into Charts, Dashboards, and Detectors.
+A troposphere-like library for managing SignalFx Charts, Dashboards, and
+Detectors.
 
-The rest of this document assumes familiarity with the SignalFx API, SignalFlow
-language, and Chart/Dashboard models.
-
-For more information about the above concepts consult the
+For more thorough coverage on the above concepts consult the
 [upstream documentation][signalflow].
 
 If you're looking for pre-built dashboards for existing application frameworks
@@ -15,7 +12,6 @@ or tools then please consult the [signal\_analog\_patterns] documentation.
 ## TOC
 
   - [Features](#features)
-      - [Planned Features](#planned-features)
   - [Installation](#installation)
   - [Usage](#usage)
       - [Building Charts](#charts)
@@ -78,8 +74,7 @@ conjunction with the [Signal Flow DSL][signalflow].
 `signal_analog` provides constructs for building charts in the
 `signal_analog.charts` module.
 
-Consult the [upstream documentation][charts] for more information on the
-Chart API.
+Consult the [upstream documentation][charts] for more information Charts.
 
 Let's consider an example where we would like to build a chart to monitor
 memory utilization for a single Riposte applicaton in a single environment.
@@ -177,27 +172,8 @@ memory_chart = TimeSeriesChart()\
 
 [Terrific]; there's only a few more details before we have a complete chart.
 
-In order for any chart to be created we must provide an API token. Contact
-your account administrator for the best way to access your account's API
-tokens. If you are unsure who your account administrator is consult
-[this document to determine the appropriate contact][sfx-contact].
-
-With API token in hand we can now create our chart in the API:
-
-```python
-response = memory_chart.with_api_token('my-api-token').create()
-```
-
-As of version `0.3.0` one of two things will happen:
-
-  - We receive some sort of error from the SignalFx API and an exception
-  is thrown
-  - We successfully created the chart, in which case the JSON response is
-  returned as a dictionary.
-
-From this point forward we can see our chart in the SignalFx UI by navigating
-to https://app.signalfx.com/#/chart/v2/\<chart\_id\>, where `chart_id` is
-the `id` field from our chart response.
+In the following sections we'll see how we can create dashboards from
+collections of charts.
 
 <a name="dashboards"></a>
 ### Building Dashboards
@@ -223,17 +199,17 @@ Many of the same methods for charts are available on dashboards as well, so
 let's give our dashboard a memorable name and configure it's API token:
 
 ```python
-
 dash.with_name('My Little Dashboard: Metrics are Magic')\
     .with_api_token('my-api-token')
 ```
 
-See the [note below](#dashboard-names) for caveats on naming dashboards.
-
 Our final task will be to add charts to our dashboard and create it in the API!
 
 ```python
-response = dash.with_charts(memory_chart).create()
+response = dash\
+  .with_charts(memory_chart)\
+  .with_api_token('my-api-token')\
+  .create()
 ```
 
 At this point one of two things will happen:
@@ -243,29 +219,29 @@ At this point one of two things will happen:
   - We successfully created the dashboard, in which case the JSON response is
   returned as a dictionary.
 
+Now, storing API keys in source isn't ideal, so if you'd like to see how you
+can pass in your API keys at runtime check the documentation below to see how
+you can [dynamically build a CLI for your resources](#cli-builder).
+
 <a name="dashboards-updates"></a>
 ### Updating Dashboards
-Once you have created a dashboard, you can update the properties like name and
-description of a dashboard:
+Once you have created a dashboard you can update properties like name and
+description:
 
 ```python
-dash.update(name='updated_dashboard_name', description='updated_dashboard_description')
+dash.update(
+    name='updated_dashboard_name',
+    description='updated_dashboard_description'
+)
 ```
 
-`Dashboard` updates will also update any `Chart` configuration that it owns.
-
-At this point one of two things will happen:
-
-  - We receive some sort of error from the SignalFx API and an exception
-  is thrown
-  - We successfully updated the dashboard, in which case the JSON response is
-  returned as a dictionary with the updated properties.
+`Dashboard` updates will also update any `Chart` configurations it owns.
 
 <a name="detectors"></a>
 ### Creating Detectors
 
 `signal_analog` provides a means of managing the lifecycle of `Detectors` in
-the `signal_analog.detectors` module. As of `FIXME_VERSION` only a subset of
+the `signal_analog.detectors` module. As of `v0.21.0` only a subset of
 the full Detector API is supported.
 
 Consult the [upstream documentation][detectors] for more information about
@@ -304,6 +280,7 @@ With our name and program in hand, it's time to build up an alert rule that we
 can use to notify our teammates:
 
 ```python
+# We provide a number of notification strategies in the detectors module.
 from signal_analog.detectors import EmailNotification, Rule, Severity
 
 info_rule = Rule()\
@@ -330,7 +307,7 @@ FIXME
 <a name="dashboard-groups"></a>
 ### Building Dashboard Groups
 
-`signal_analog` provides constructs for building dashboard groups in the
+`signal_analog` provides abstractions for building dashboard groups in the
 `signal_analog.dashboards` module.
 
 Consult the [upstream documentation][dashboard-groups] for more information on
@@ -351,12 +328,12 @@ dash1 = Dashboard().with_name('My Little Dashboard1: Metrics are Magic')\
 dash2 = Dashboard().with_name('My Little Dashboard2: Metrics are Magic')\
     .with_charts(memory_chart)
 ```
-**Note that we are not actually creating the dashboards here using the .create() method as we did it in the dashboards 
-example.
-This will be taken care by the DashboardGroup()**
+**Note: we do not create Dashboard objects ourselves, the DashboardGroup object
+is responsible for creating all child resources.**
 
-Many of the same methods for dashboards are available on dashboard groups as well, so
-let's give our dashboard group a memorable name and configure it's API token:
+Many of the same methods for dashboards are available on dashboard groups as
+well, so let's give our dashboard group a memorable name and configure it's
+API token:
 
 ```python
 
@@ -364,53 +341,47 @@ dg.with_name('My Dashboard Group')\
     .with_api_token('my-api-token')
 ```
 
-See the [note below](#dashboard-group-names) for caveats on naming dashboard groups.
-
-Our final task will be to add dashboard to our dashboard group and create it in the API!
+Our final task will be to add dashboard to our dashboard group and create it
+in the API!
 
 ```python
-response = dg.with_dashboards(dash1).create()
+response = dg\
+    .with_dashboards(dash1)\
+    .with_api_token('my-api-token')\
+    .create()
 ```
 
-At this point one of two things will happen:
-
-  - We receive some sort of error from the SignalFx API and an exception
-  is thrown
-  - We successfully created the dashboard group with the provided dashboard resources, in which case the JSON 
-  response is returned as a dictionary.
+Now, storing API keys in source isn't ideal, so if you'd like to see how you
+can pass in your API keys at runtime check the documentation below to see how
+you can [dynamically build a CLI for your resources](#cli-builder).
 
 <a name="dashboard-group-updates"></a>
 ### Updating Dashboard Groups
-Once you have dashboard group created, you can update the properties like name and descriptions of a dashboard group or 
-add new dashboards or delete existing dashboards in a dashboard group
+
+Once you have created a dashboard group, you can update properties like name
+and description of a dashboard group or add/remove dashboards in a group.
 
 *Example 1:*
 
 ```python
-dg.update(
-    name='updated_dashboard_group_name',
-    description='updated_dashboard_group_description')
+dg.with_api_token('my-api-token')\
+    .update(name='updated_dashboard_group_name',
+            description='updated_dashboard_group_description')
 ```
 
 *Example 2:*
 
 ```python
-dg.with_dashboards(dash1, dash2).update()
+dg.with_api_token('my-api-token').with_dashboards(dash1, dash2).update()
 ```
-
-At this point one of two things will happen:
-
-  - We receive some sort of error from the SignalFx API and an exception
-  is thrown
-  - We successfully updated the dashboard group, in which case the JSON response is
-  returned as a dictionary with the updated properties.  
 
 <a name="signalflow"></a>
 ### Talking to the SignalFlow API Directly
 
-If you need to process SignalFx data outside of their walled garden it may be
+If you need to process SignalFx data outside the confince of the API it may be
 useful to call the SignalFlow API directly. Note that you may incur time
-penalties when pulling data out due to SignalFx's architecture.
+penalties when pulling data out depending on the source of the data
+(e.g. AWS/CloudWatch).
 
 SignalFlow constructs are contained in the `flow` module. The following is an
 example SignalFlow program that monitors Riposte RPS metrics for the `foo`
@@ -488,8 +459,7 @@ state of your resources in SignalFx.
 ### Creating a CLI for your Resources
 
 `signal_analog` provides builders for fully featured command line clients that
-can manage sets of resources. These clients make handling resource updates
-more consistent and provide additional.
+can manage the lifecycle of sets of resources.
 
 #### Simple CLI integration
 
