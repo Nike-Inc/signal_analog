@@ -1,7 +1,7 @@
 {
   "http_interactions": [
     {
-      "recorded_at": "2018-02-21T19:49:08",
+      "recorded_at": "2018-02-20T18:04:19",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -28,7 +28,7 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
       },
       "response": {
         "body": {
@@ -46,7 +46,7 @@
             "application/json"
           ],
           "Date": [
-            "Wed, 21 Feb 2018 19:49:08 GMT"
+            "Tue, 20 Feb 2018 18:04:18 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -59,15 +59,15 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
       }
     },
     {
-      "recorded_at": "2018-02-21T19:49:08",
+      "recorded_at": "2018-02-20T18:04:19",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "[{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}, {\"name\": \"roar\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}]"
+          "string": "{\"dashboards\": [], \"name\": \"spaceX\"}"
         },
         "headers": {
           "Accept": [
@@ -80,7 +80,7 @@
             "keep-alive"
           ],
           "Content-Length": [
-            "224"
+            "36"
           ],
           "Content-Type": [
             "application/json"
@@ -93,25 +93,25 @@
           ]
         },
         "method": "POST",
-        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=isley+brothers"
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DWlWWmEAcAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  }, {\n    \"chartId\" : \"DWlWWnVAgAA\",\n    \"column\" : 6,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1519242548891,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : null,\n  \"id\" : \"DWlWW7cAcAA\",\n  \"lastUpdated\" : 1519242548891,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"isley brothers\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
+          "string": "{\n  \"created\" : 1519149859837,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DWf1OoVAcAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DWf1OmLAYAA\",\n  \"lastUpdated\" : 1519149859837,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX\",\n  \"teams\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "740"
+            "248"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Wed, 21 Feb 2018 19:49:08 GMT"
+            "Tue, 20 Feb 2018 18:04:19 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -124,11 +124,11 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard/simple?name=isley+brothers"
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
       }
     },
     {
-      "recorded_at": "2018-02-21T19:49:09",
+      "recorded_at": "2018-02-20T18:04:21",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -155,7 +155,7 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
       },
       "response": {
         "body": {
@@ -173,7 +173,7 @@
             "application/json"
           ],
           "Date": [
-            "Wed, 21 Feb 2018 19:49:09 GMT"
+            "Tue, 20 Feb 2018 18:04:19 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -186,15 +186,15 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
       }
     },
     {
-      "recorded_at": "2018-02-21T19:49:09",
+      "recorded_at": "2018-02-20T18:04:21",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": ""
+          "string": "{\"dashboards\": [], \"name\": \"spaceX\"}"
         },
         "headers": {
           "Accept": [
@@ -203,73 +203,11 @@
           "Accept-Encoding": [
             "gzip, deflate"
           ],
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "User-Agent": [
-            "python-requests/2.18.4"
-          ],
-          "X-SF-Token": [
-            "foo"
-          ]
-        },
-        "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
-      },
-      "response": {
-        "body": {
-          "encoding": null,
-          "string": "{\n  \"count\" : 0,\n  \"results\" : [ ]\n}"
-        },
-        "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
             "36"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "Date": [
-            "Wed, 21 Feb 2018 19:49:09 GMT"
-          ],
-          "Strict-Transport-Security": [
-            "max-age=7776000"
-          ],
-          "X-Content-Type-Options": [
-            "nosniff"
-          ]
-        },
-        "status": {
-          "code": 200,
-          "message": "OK"
-        },
-        "url": "https://api.signalfx.com/v2/dashboard?name=isley+brothers"
-      }
-    },
-    {
-      "recorded_at": "2018-02-21T19:49:09",
-      "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "[{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}]"
-        },
-        "headers": {
-          "Accept": [
-            "*/*"
-          ],
-          "Accept-Encoding": [
-            "gzip, deflate"
-          ],
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Length": [
-            "112"
           ],
           "Content-Type": [
             "application/json"
@@ -282,25 +220,25 @@
           ]
         },
         "method": "POST",
-        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=isley+brothers"
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DWlWXEiAYAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1519242549359,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DWlWXFRAcAA\",\n  \"id\" : \"DWlWXIoAgAA\",\n  \"lastUpdated\" : 1519242549359,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"isley brothers\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
+          "string": "{\n  \"created\" : 1519149861642,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DWf1OHRAgAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DWf1OE5AcAA\",\n  \"lastUpdated\" : 1519149861642,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX\",\n  \"teams\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "644"
+            "248"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Wed, 21 Feb 2018 19:49:09 GMT"
+            "Tue, 20 Feb 2018 18:04:21 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -313,7 +251,69 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard/simple?name=isley+brothers"
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      }
+    },
+    {
+      "recorded_at": "2018-02-20T18:04:26",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 2,\n  \"results\" : [ {\n    \"created\" : 1519149861642,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWf1OHRAgAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWf1OE5AcAA\",\n    \"lastUpdated\" : 1519149861642,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceX\",\n    \"teams\" : [ ]\n  }, {\n    \"created\" : 1519149859837,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DWf1OoVAcAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DWf1OmLAYAA\",\n    \"lastUpdated\" : 1519149859837,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"spaceX\",\n    \"teams\" : [ ]\n  } ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "575"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Tue, 20 Feb 2018 18:04:26 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX"
       }
     }
   ],
