@@ -473,5 +473,5 @@ project template.
 [sfx-contact]: https://confluence.nike.com/x/GlHiCQ
 [terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
 [dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
-[dashboard-groups] : https://developers.signalfx.com/v2/reference#dashboard-groups-overview
+[dashboard-groups]: https://developers.signalfx.com/v2/reference#dashboard-groups-overview
 [signal\_analog\_patterns]: https://bitbucket.nike.com/projects/NIK/repos/signal_analog_patterns/browse
