@@ -28,12 +28,6 @@ class DashboardGroup(Resource):
         self.clone_options = {'sourceDashboard': ''}
         self.dashboard_group_ids = []
 
-    def with_name(self, name):
-        """Set this dashboard group's name."""
-        util.is_valid(name)
-        self.options.update({'name': name})
-        return self
-
     def with_dashboards(self, *dashboards):
         """Adds the given dashboards to this DashboardGroup.
 
