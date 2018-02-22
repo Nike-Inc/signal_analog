@@ -460,30 +460,11 @@ class Detector(Resource):
         See: https://developers.signalfx.com/v2/reference#detector
         """
 
-        def create_helper(opts):
-            try:
-                query_result = self.__find_existing_resources__()
-                self.__find_existing_match__(query_result)
-            except (ResourceAlreadyExistsError,
-                    ResourceHasMultipleExactMatchesError) as e:
-                if not force and not interactive:
-                    # Rethrow error to user if we're not force creating things
-                    raise e
-                elif interactive:
-                    msg = 'A detector with the name "{0}" already exists. ' + \
-                          'Do you want to create a new detector?'
-                    if click.confirm(msg.format(self.__get__('name'))):
-                        return opts
-                    else:
-                        raise ResourceAlreadyExistsError(self.__get__('name'))
-            # Otherwise this is perfectly fine, create the dashboard!
-            except ResourceMatchNotFoundError:
-                pass
-
-            return opts
-
-        return self.__action__('post', self.endpoint, create_helper,
-            dry_run=dry_run, interactive=interactive, force=force)
+        if self.__create_helper__(force=force, interactive=interactive):
+            return self.__action__('post', self.endpoint,
+                                   lambda x: x,
+                                   dry_run=dry_run, interactive=interactive,
+                                   force=force)
 
     def update(self, name=None, description=None, dry_run=False):
         """Update a detector in the SignalFx API.

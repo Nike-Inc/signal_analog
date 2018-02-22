@@ -65,7 +65,7 @@ class DashboardGroup(Resource):
                                                                 (self.base_url + self.endpoint),
                                                                 self.options))
             return None
-        if self.create_helper(force=force, interactive=interactive):
+        if self.__create_helper__(force=force, interactive=interactive):
             dashboard_group_create_response = self.__action__('post', self.endpoint,
                                                               lambda x: self.options,
                                                               params={'name': self.__get__('name')},
@@ -258,7 +258,7 @@ class Dashboard(Resource):
                                                                 self.options))
             return None
 
-        if self.create_helper(force=force, interactive=interactive):
+        if self.__create_helper__(force=force, interactive=interactive):
             return self.__action__('post', self.endpoint + '/simple',
                                    lambda x: util.flatten_charts(self.options),
                                    params={'name': self.__get__('name')},
