@@ -275,7 +275,7 @@ class Resource(object):
         return self.__action__('post', self.endpoint, lambda x: x,
                                dry_run=dry_run)
 
-    def create_helper(self, force=False, interactive=False):
+    def __create_helper__(self, force=False, interactive=False):
         try:
             query_result = self.__find_existing_resources__()
             self.__find_existing_match__(query_result)
