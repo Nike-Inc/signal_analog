@@ -6,6 +6,7 @@ from collections import Counter
 
 
 def check_collection(coll, type_):
+    """Ensure type consistency for the given collection."""
     for c in coll:
         if not issubclass(c.__class__, type_):
             msg = "We got a '{0}' when we were expecting a '{1}'."
@@ -61,7 +62,5 @@ def pp_json(dictionary):
 
 
 def empty_body():
-    """
-    :return: Returns  an empty body when making requests to SignalFx.
-    """
+    """Returns  an empty body when making requests to SignalFx."""
     return lambda x: None
