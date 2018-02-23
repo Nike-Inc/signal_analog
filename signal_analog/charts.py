@@ -38,7 +38,7 @@ class Chart(Resource):
         https://developers.signalfx.com/docs/signalflow-overview
         """
         util.is_valid(program)
-        self.options.update({'programText': str(program)})
+        self.options.update({'programText': program})
         return self
 
     def to_dict(self):
@@ -48,6 +48,10 @@ class Chart(Resource):
         chart_opts_copy = deepcopy(self.options)
         chart_opts_copy.update({
             'options': curr_chart_opts
+        })
+
+        chart_opts_copy.update({
+            'programText': str(chart_opts_copy['programText'])
         })
 
         return chart_opts_copy
