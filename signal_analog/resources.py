@@ -233,7 +233,7 @@ class Resource(object):
                                dry_run=dry_run, interactive=interactive,
                                force=force)
 
-    def update(self, resource_id=None):
+    def update(self, name=None, description=None, resource_id=None):
         """Attempt to find the given resource in SignalFx.
 
         Your chances are much higher if you provide the resource id via
@@ -241,6 +241,10 @@ class Resource(object):
         your resource based on name.
         """
         uid = resource_id if resource_id else self.__get__('id')
+        if name:
+            self.options.update({'name': name})
+        if description:
+            self.options.update({'description': description})
         if uid:
             return self.__action__(
                 'put', self.endpoint + '/' + uid, lambda x: x)
