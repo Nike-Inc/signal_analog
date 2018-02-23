@@ -4,7 +4,9 @@ import re
 import pytest
 
 from email_validator import EmailNotValidError
-from signal_analog.flow import Data, Program
+from signal_analog.combinators import LT
+from signal_analog.flow import Data, Program, Detect
+from signal_analog.charts import TimeSeriesChart
 from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
                                     SlackNotification, HipChatNotification, \
                                     ServiceNowNotification, \
@@ -351,3 +353,42 @@ def test_detector_invalid(method):
         detector = Detector()
         fn = getattr(detector, method)
         fn(None)
+
+
+def test_detector_from_chart():
+    program = Program(Data('cpu.utilization').publish(label='Z'))
+    chart = TimeSeriesChart().with_program(program)
+
+    def helper(p):
+        return Program(Detect(LT(p.find_label('Z'), 10)).publish(label='foo'))
+
+    detector = Detector().from_chart(chart, helper)
+    assert detector.options['programText'] == str(helper(program))
+
+
+def test_detector_from_chart_mod_prog():
+    """We shouldn't be able to muck about with programs from charts."""
+    program = Program(Data('disk.utilization').publish(label='X'))
+    prog_size = len(program.statements)
+    chart = TimeSeriesChart().with_program(program)
+
+    def bad_helper(p):
+        p.add_statements(Data("I shouldn't exist").publish(label='Y'))
+        return Program(Detect(LT(p.find_label('Z'), 10)).publish(label='foo'))
+
+    Detector().from_chart(chart, bad_helper)
+
+    # bad_helper should not be allowed to add new program statements to
+    # the originating chart's program.
+    assert prog_size == len(program.statements)
+
+
+def test_detector_from_chart_not_program():
+    """We should throw an error if we receive a chart that doesn't have a
+       proper program.
+    """
+    program = Data('awesome.metrics').publish(label='A')
+    chart = TimeSeriesChart().with_program(program)
+
+    with pytest.raises(ValueError):
+        Detector().from_chart(chart, lambda x: x)

@@ -474,6 +474,20 @@ class Detector(Resource):
             ))
 
         program = deepcopy(chart.__get__('programText', Program()))
+
+        if not issubclass(program.__class__, Program):
+            msg = """
+Detector.from_chart only supports Charts that implement a Program. "{0}"
+contains a "{1}".
+
+You might consider contacting the Chart author to update their configuration to
+implement a proper `Program` from the `signal_analog.flow` module.
+"""
+            raise ValueError(msg.format(
+                chart.__class__.__name__,
+                program.__class__.__name__
+            ))
+
         self.options.update({'programText': str(update_fn(program))})
         return self
 
