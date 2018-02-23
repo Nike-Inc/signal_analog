@@ -1,0 +1,23 @@
+version: 1
+root:
+  level: NOTSET
+  handlers: [debug]
+loggers:
+  # Turn down logging from the requests library
+  requests.packages.urllib3:
+    propagate: False
+  requests:
+    level: WARNING
+  urllib3:
+    level: WARNING
+handlers:
+  debug:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: detailed
+    filename: signal_analog.debug.log
+    maxBytes: 1048576
+    backupCount: 4
+formatters:
+  detailed:
+    format: '[%(asctime)s] %(name)s:%(levelname)s %(module)s:%(lineno)d:  %(message)s'

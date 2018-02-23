@@ -1,10 +1,11 @@
 import requests
-import json
 import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import click
 import sys
+import os
+from signal_analog import logger
 
 # py2/3 compatability hack so that we can consistently handle JSON errors.
 try:
@@ -136,6 +137,13 @@ class Resource(object):
                 'X-SF-Token': self.api_token,
                 'Content-Type': 'application/json'
             })
+
+        if os.environ.get('LOG_LEVEL', '').lower() == 'debug':
+            logger.debug(
+                "{0} {1}".format(
+                    response.request.method.upper(),
+                    response.request.url))
+            logger.debug(response.request.body)
 
         try:
             response.raise_for_status()
