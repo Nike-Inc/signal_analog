@@ -101,6 +101,12 @@ class Chart(Resource):
                 lambda x: chart)
         except ResourceMatchNotFoundError:
             return self.create(dry_run=dry_run)
+        except ResourceHasMultipleExactMatchesError as e:
+            if self.options['id']:
+                return Resource(session=self.session_handler).update(self)
+            else:
+                raise e
+
 
 class UnitPrefix(Enum):
     """Enum for unit prefix types in TimeSeriesCharts."""
