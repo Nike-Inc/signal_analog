@@ -254,7 +254,8 @@ class Dashboard(Resource):
             self.options.update({'charts': util.flatten_charts(self.options)})
             click.echo("Creates a new Dashboard named: \"{0}\". API call being executed: \n"
                        "POST {1} \nRequest Body: \n {2}".format(self.options['name'],
-                                                                (self.base_url + self.endpoint),
+                                                                (self.base_url + self.endpoint +
+                                                                 '/simple?name=' + self.__get__('name')),
                                                                 self.options))
             return None
 
