@@ -98,12 +98,12 @@ class Chart(Resource):
                 chart.update({'description': description})
 
             return self.__action__('put', self.endpoint + '/' + chart['id'],
-                lambda x: chart)
+                                   lambda x: chart)
         except ResourceMatchNotFoundError:
             return self.create(dry_run=dry_run)
         except ResourceHasMultipleExactMatchesError as e:
             if self.options['id']:
-                return Resource(session=self.session_handler).update(self)
+                return super(Chart, self).update(name=name, description=description, resource_id=self.options['id'])
             else:
                 raise e
 
