@@ -18,6 +18,7 @@ or tools then please consult the [signal\_analog\_patterns] documentation.
       - [Building Dashboards](#dashboards)
       - [Updating Dashboards](#dashboards-updates)
       - [Creating Detectors](#detectors)
+          - [Building Detectors from Existing Charts](#from_chart)
       - [Building Dashboard Groups](#dashboard-groups)
       - [Updating Dashboard Group](#dashboard-group-updates)
       - [Talking to the SignalFlow API Directly](#signalflow)
@@ -300,9 +301,43 @@ detector.with_api_token('foo').create()
 To add multiple alerting rules we would need to use different `detect`
 statements with distinct `label`s to differentiate them from one another.
 
+<a name="from_chart"></a>
 #### Building Detectors from Existing Charts
 
-FIXME
+We can also build up Detectors from an existing chart, which allows us to reuse
+our SignalFlow program and ensure consistency between what we're monitoring
+and what we're alerting on.
+
+Let's assume that we already have a chart defined for our use:
+
+```python
+from signal_analog.flow import Program, Data
+from signal_analog.charts import TimeSeriesChart
+
+program = Program(Data('cpu.utilization').publish(label='A'))
+cpu_chart = TimeSeriesChart().with_name('Disk Utilization').with_program(program)
+```
+
+In order to alert on this chart we'll use the `from_chart`  builder for
+detectors:
+
+```python
+from signal_analog.combinators import GT
+from signal_analog.detectors import Detector
+from signal_analog.flow import Detect
+
+# Alert when CPU utilization rises above 95%
+detector = Detector()\
+    .with_name('CPU Detector')\
+    .from_chart(
+        cpu_chart,
+        # `p` is the Program object from the cpu_chart we passed in.
+        lambda p: Detect(GT(p.find_label('A'), 95).publish(label='Info Alert'))
+    )
+```
+
+The above example won't actually alert on anything until we add a `Rule`, which
+you can find examples for in the previous section.
 
 <a name="dashboard-groups"></a>
 ### Building Dashboard Groups
