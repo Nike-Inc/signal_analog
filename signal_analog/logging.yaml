@@ -12,12 +12,10 @@ loggers:
     level: WARNING
 handlers:
   debug:
-    class: logging.handlers.RotatingFileHandler
+    class: logging.StreamHandler
     level: DEBUG
     formatter: detailed
-    filename: signal_analog.debug.log
-    maxBytes: 1048576
-    backupCount: 4
+    stream: ext://sys.stdout
 formatters:
   detailed:
     format: '[%(asctime)s] %(name)s:%(levelname)s %(module)s:%(lineno)d:  %(message)s'
