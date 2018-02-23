@@ -40,7 +40,7 @@ def test_chart_with_description():
 def test_chart_with_program():
     expected = Data('Ms. Communication')
     chart = Chart().with_program(expected)
-    assert chart.options['programText'] == str(expected)
+    assert chart.options['programText'] == expected
 
 
 def test_ts_chart_init():
