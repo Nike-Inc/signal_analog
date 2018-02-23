@@ -233,10 +233,21 @@ class Resource(object):
                                dry_run=dry_run, interactive=interactive,
                                force=force)
 
-    def update(self, dry_run=False):
-        """Default implementation for resource updation."""
-        return self.__action__('put', self.endpoint, lambda x: x,
-                               dry_run=dry_run)
+    def update(self, resource_id=None):
+        """Attempt to find the given resource in SignalFx.
+
+        Your chances are much higher if you provide the resource id via
+        'with_id'. Otherwise, we will attempt to do a best effort to search for
+        your resource based on name.
+        """
+        uid = resource_id if resource_id else self.__get__('id')
+        if uid:
+            return self.__action__(
+                'put', self.endpoint + '/' + uid, lambda x: x)
+        else:
+            return self.__action__(
+                'put', self.endpoint, lambda x: x,
+                params={'name': self.__get__('name')})['results'][0]
 
     def read(self, resource_id=None):
         """Attempt to find the given resource in SignalFx.
