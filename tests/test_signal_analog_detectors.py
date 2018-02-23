@@ -148,9 +148,10 @@ def test_rule_for_label():
 
 
 @pytest.mark.parametrize('method',
-    ['for_label', 'with_description', 'with_severity', 'with_notifications',
-     'with_parameterized_body', 'with_parameterized_subject',
-     'with_runbook_url', 'with_tip'])
+                         ['for_label', 'with_description', 'with_severity',
+                          'with_notifications', 'with_parameterized_body',
+                          'with_parameterized_subject', 'with_runbook_url',
+                          'with_tip'])
 def test_rule_invalid(method):
     with pytest.raises(ValueError):
         rule = Rule()
@@ -171,11 +172,11 @@ def test_rule_with_severity():
 
 
 def test_rule_is_disabled_default():
-    assert Rule().is_disabled().options['disabled'] == False
+    assert Rule().is_disabled().options['disabled'] is False
 
 
 def test_rule_is_disabled():
-    assert Rule().is_disabled(disabled=True).options['disabled'] == True
+    assert Rule().is_disabled(disabled=True).options['disabled'] is True
 
 
 def test_rule_with_notifications_single():
@@ -202,8 +203,10 @@ def mk_rule_fn(rule, name):
     fn_name = '_'.join(map(lambda x: x.lower(), parts))
     return getattr(rule, fn_name)
 
+
 @pytest.mark.parametrize('name',
-    ['parameterizedBody', 'parameterizedSubject', 'runbookUrl', 'tip'])
+                         ['parameterizedBody', 'parameterizedSubject',
+                          'runbookUrl', 'tip'])
 def test_rule_stringy_things(name):
     expected = 'foo'
     rule = Rule()
@@ -241,6 +244,7 @@ def test_time_config_end_relative():
     with pytest.raises(ValueError):
         TimeConfig().with_type(Time.Relative).with_end(100)
 
+
 def test_time_config_range_absolute():
     with pytest.raises(ValueError):
         TimeConfig().with_type(Time.Absolute).with_range(100)
@@ -267,7 +271,7 @@ def test_time_config_relative():
     assert config.options['range'] == expected
 
     conf = TimeConfig().with_type(Time.Relative).with_range(expected)
-    assert config.options['range'] == expected
+    assert conf.options['range'] == expected
 
 
 def test_vis_opts_init():
@@ -288,12 +292,12 @@ def test_vis_opts_time_config():
 
 def test_show_data_markers_default():
     assert VisualizationOptions()\
-        .show_data_markers().options['showDataMarkers'] == False
+        .show_data_markers().options['showDataMarkers'] is False
 
 
 def test_show_data_markers():
     assert VisualizationOptions().show_data_markers(show_markers=True)\
-        .options['showDataMarkers'] == True
+        .options['showDataMarkers'] is True
 
 
 def test_detector_init():
@@ -339,12 +343,11 @@ def test_detector_with_teams():
     d = Detector().with_teams(*team_ids)
     assert d.options['teams'] == team_ids
 
+
 @pytest.mark.parametrize('method',
-    ['with_program', 'with_visualization_options'])
-def test_rule_invalid(method):
+                         ['with_program', 'with_visualization_options'])
+def test_detector_invalid(method):
     with pytest.raises(ValueError):
         detector = Detector()
         fn = getattr(detector, method)
         fn(None)
-
-
