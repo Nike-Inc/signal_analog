@@ -240,7 +240,7 @@ class Dashboard(Resource):
 
     def with_charts(self, *charts):
         for chart in charts:
-            self.options['charts'].append(chart)
+            self.options['charts'].append(deepcopy(chart))
         return self
 
     def create(self, dry_run=False, force=False, interactive=False):
