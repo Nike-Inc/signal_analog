@@ -1,8 +1,10 @@
 """Detector objects representable in the SignalFx API."""
 
+from copy import deepcopy
 import click
 from enum import Enum
 from signal_analog.resources import Resource
+from signal_analog.charts import Chart
 from signal_analog.flow import Program
 from six import string_types
 import signal_analog.util as util
@@ -454,6 +456,27 @@ class Detector(Resource):
         self.options.update({'teams': list(team_ids)})
         return self
 
+    def from_chart(self, chart, update_fn):
+        """Given a Chart and an update fn, return a SignalFlow program.
+
+        Arguments:
+            chart: the Chart object containing the desired SignalFlow program.
+            update_fn: a function of type Program -> Program, allowing you
+                       to access the program of a given chart and return a
+                       modified version for this detector.
+        """
+        if not issubclass(chart.__class__, Chart):
+            msg = 'Expected a Chart but got a "{0}" instead when building ' +\
+                  'a Detector named "{1}".'
+            raise ValueError(msg.format(
+                chart.__class__.__name__,
+                self.__get__('name', 'undefined')
+            ))
+
+        program = deepcopy(chart.__get__('programText', Program()))
+        self.options.update({'programText': str(update_fn(program))})
+        return self
+
     def create(self, dry_run=False, force=False, interactive=False):
         """Creates a Detector in SignalFx.
 
@@ -509,6 +532,6 @@ Request Body:
                 detector.update({'description': description})
 
             return self.__action__('put', self.endpoint + '/' + detector['id'],
-                lambda x: detector)
+                                   lambda x: detector)
         except ResourceMatchNotFoundError:
             return self.create(dry_run=dry_run)
