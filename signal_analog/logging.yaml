@@ -1,0 +1,21 @@
+version: 1
+root:
+  level: NOTSET
+  handlers: [debug]
+loggers:
+  # Turn down logging from the requests library
+  requests.packages.urllib3:
+    propagate: False
+  requests:
+    level: WARNING
+  urllib3:
+    level: WARNING
+handlers:
+  debug:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: detailed
+    stream: ext://sys.stdout
+formatters:
+  detailed:
+    format: '[%(asctime)s] %(name)s:%(levelname)s %(module)s:%(lineno)d:  %(message)s'
