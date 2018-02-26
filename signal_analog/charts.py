@@ -90,17 +90,19 @@ class Chart(Resource):
             self.__find_existing_match__(query_result)
 
         except ResourceAlreadyExistsError:
-            chart = self.__filter_matches__(query_result)
+            self.options = self.to_dict()
+            return super(Chart, self).update(name=name, description=description)
 
-            if name:
-                chart.update({'name': name})
-            if description:
-                chart.update({'description': description})
+        except ResourceHasMultipleExactMatchesError as e:
+            if self.options['id']:
+                self.options = self.to_dict()
+                return super(Chart, self).update(name=name, description=description, resource_id=self.options['id'])
+            else:
+                raise e
 
-            return self.__action__('put', self.endpoint + '/' + chart['id'],
-                lambda x: chart)
         except ResourceMatchNotFoundError:
             return self.create(dry_run=dry_run)
+
 
 class UnitPrefix(Enum):
     """Enum for unit prefix types in TimeSeriesCharts."""
