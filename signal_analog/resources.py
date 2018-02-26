@@ -242,7 +242,7 @@ class Resource(object):
                                force=force)
 
     def update(self, name=None, description=None, resource_id=None):
-        """Attempt to find the given resource in SignalFx.
+        """Attempt to update the given resource in SignalFx.
 
         Your chances are much higher if you provide the resource id via
         'with_id'. Otherwise, we will attempt to do a best effort to search for
