@@ -79,7 +79,7 @@ class DashboardGroup(Resource):
                 We then clone those dashboards to the dashboard group, delete the old duplicate dashboards that are 
                 already cloned and also delete the default dashboard that has been created as part of the new dashboard group
                 if it exists and then return the GET response of the dashboard group
-                
+
                 2) If no dashboard resources are created, just create a new dashboard group and return the response"""
 
             if len(self.dashboards) > 0:
@@ -95,10 +95,10 @@ class DashboardGroup(Resource):
                     self.delete(dashboardGroupId)
 
                 if len(dashboard_group_create_response['dashboards']) > 0:
-                    Dashboard(session=self.session_handler)\
-                        .with_api_token(self.api_token)\
+                    Dashboard(session=self.session_handler) \
+                        .with_api_token(self.api_token) \
                         .delete(
-                            dashboard_group_create_response['dashboards'][0])
+                        dashboard_group_create_response['dashboards'][0])
 
                 return self.read(dashboard_group_create_response['id'])
             else:
@@ -163,9 +163,9 @@ class DashboardGroup(Resource):
 
                 for dashboard_id in self.options['dashboards']:
                     # Only clone the dashboards that are not part of the existing dashboard group
-                    d_id = Dashboard(session=self.session_handler)\
-                              .with_api_token(self.api_token)\
-                              .read(dashboard_id)
+                    d_id = Dashboard(session=self.session_handler) \
+                        .with_api_token(self.api_token) \
+                        .read(dashboard_id)
 
                     if d_id['groupId'] != dashboard_group['id']:
                         self.clone(dashboard_id, dashboard_group['id'])
@@ -181,12 +181,12 @@ class DashboardGroup(Resource):
                 dashboards_to_delete = [x for x in dashboard_group['dashboards'] if x not in self.options['dashboards']]
                 if len(dashboards_to_delete) is not 0:
                     for dashboard_id in dashboards_to_delete:
-                        Dashboard(session=self.session_handler)\
-                            .with_api_token(self.api_token)\
+                        Dashboard(session=self.session_handler) \
+                            .with_api_token(self.api_token) \
                             .delete(dashboard_id)
 
             return self.__action__('put', '/dashboardgroup/' + dashboard_group['id'],
-                                       lambda x: dashboard_group)
+                                   lambda x: dashboard_group)
         except ResourceMatchNotFoundError:
             return self.create(dry_run=dry_run)
 
@@ -240,7 +240,7 @@ class Dashboard(Resource):
 
     def with_charts(self, *charts):
         for chart in charts:
-            self.options['charts'].append(chart)
+            self.options['charts'].append(deepcopy(chart))
         return self
 
     def create(self, dry_run=False, force=False, interactive=False):
@@ -254,7 +254,8 @@ class Dashboard(Resource):
             self.options.update({'charts': util.flatten_charts(self.options)})
             click.echo("Creates a new Dashboard named: \"{0}\". API call being executed: \n"
                        "POST {1} \nRequest Body: \n {2}".format(self.options['name'],
-                                                                (self.base_url + self.endpoint),
+                                                                (self.base_url + self.endpoint +
+                                                                 '/simple?name=' + self.__get__('name')),
                                                                 self.options))
             return None
 
@@ -314,6 +315,18 @@ class Dashboard(Resource):
                         .update()
                     break
 
+        # Delete charts that exist in SignalFx but not our local config
+        local_names = list(map(lambda x: x.__get__('name'), local_charts))
+        for remote_chart in remote_charts:
+            if remote_chart['name'] not in local_names:
+                Chart(session=self.session_handler) \
+                    .with_id(remote_chart['id']) \
+                    .with_api_token(self.api_token) \
+                    .delete()
+                # Deleting the chart from state to make sure empty chart states are not returned back to the update
+                # call which has adverse effects(throws a 500 error)
+                state[:] = [d for d in state if d.get('chartId') != remote_chart['id']]
+
         # Create charts in our local environment but not in SignalFx
         remote_names = list(map(lambda x: x['name'], remote_charts))
         for local_chart in local_charts:
@@ -321,23 +334,24 @@ class Dashboard(Resource):
                 resp = local_chart \
                     .with_api_token(self.api_token) \
                     .create()
+
+                # We need different row and column values when we are creating new charts so that they won't overlap
+                # with one another
+                row_nums = [state['row'] for state in state]
+                column_nums = [state['column'] for state in state]
+                row_num_to_set = 0
+                column_num_to_set = 0
+                if 0 in row_nums:
+                    row_num_to_set = max(set(row_nums)) + 1
+                if 0 in column_nums:
+                    column_num_to_set = max(set(column_nums)) + 1
                 state.append({
                     'chartId': resp['id'],
-                    'column': 11,  # TODO can we provide better defaults?
-                    'height': 3,
-                    'row': 99,
+                    'column': column_num_to_set,
+                    'height': 2,
+                    'row': row_num_to_set,
                     'width': 6
                 })
-
-        # Delete charts that exist in SignalFx but not our local config
-        local_names = list(map(lambda x: x.__get__('name'), local_charts))
-        for remote_chart in remote_charts:
-            if remote_chart['name'] not in local_names:
-                local_chart \
-                    .with_id(remote_chart['id']) \
-                    .with_api_token(self.api_token) \
-                    .delete()
-
         return state
 
     def update(self, name=None, description=None, dry_run=False):
