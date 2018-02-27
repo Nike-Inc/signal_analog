@@ -25,7 +25,7 @@ program = Program(cpu_too_low)
 info_rule = Rule()\
     .for_label(alert_label)\
     .with_severity(Severity.Info)\
-    .with_notifications(EmailNotification('fernando.freire@nike.com'))
+    .with_notifications(EmailNotification('user@example.com'))
 
 detector = Detector()\
     .with_name('TEST: example detector')\
