@@ -244,9 +244,8 @@ class Resource(object):
     def update(self, name=None, description=None, resource_id=None):
         """Attempt to update the given resource in SignalFx.
 
-        Your chances are much higher if you provide the resource id via
-        'with_id'. Otherwise, we will attempt to do a best effort to search for
-        your resource based on name.
+        Your have to provide the resource id via
+        'with_id' or you can pass the id as a parameter
         """
         uid = resource_id if resource_id else self.__get__('id')
         if name:
@@ -257,9 +256,7 @@ class Resource(object):
             return self.__action__(
                 'put', self.endpoint + '/' + uid, lambda x: x)
         else:
-            return self.__action__(
-                'put', self.endpoint, lambda x: x,
-                params={'name': self.__get__('name')})['results'][0]
+            raise ValueError('Id is required for resource updates')
 
     def read(self, resource_id=None):
         """Attempt to find the given resource in SignalFx.
