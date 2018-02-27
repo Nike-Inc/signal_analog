@@ -4,8 +4,7 @@ from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import click
 import sys
-import os
-from signal_analog import logger
+from signal_analog import debug
 
 # py2/3 compatability hack so that we can consistently handle JSON errors.
 try:
@@ -138,12 +137,13 @@ class Resource(object):
                 'Content-Type': 'application/json'
             })
 
-        if os.environ.get('LOG_LEVEL', '').lower() == 'debug':
-            logger.debug(
-                "{0} {1}".format(
-                    response.request.method.upper(),
-                    response.request.url))
-            logger.debug(response.request.body)
+        debug(
+            "{0} {1}".format(
+                response.request.method.upper(),
+                response.request.url)
+        )
+        if response.request.body:
+            debug(response.request.body)
 
         try:
             response.raise_for_status()
@@ -290,8 +290,10 @@ class Resource(object):
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
         """Default implementation for resource cloning."""
 
-        return self.__action__('post', self.endpoint + '/' + dashboard_group_id + '/dashboard', lambda x: x,
-                               dry_run=dry_run)
+        return self.__action__(
+            'post',
+            self.endpoint + '/' + dashboard_group_id + '/dashboard',
+            lambda x: x, dry_run=dry_run)
 
     def __create_helper__(self, force=False, interactive=False):
         try:
