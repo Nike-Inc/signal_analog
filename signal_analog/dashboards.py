@@ -3,9 +3,10 @@ from copy import deepcopy
 from signal_analog.charts import Chart
 from signal_analog.resources import Resource
 import signal_analog.util as util
-from signal_analog.errors import ResourceMatchNotFoundError, \
-    ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
+from signal_analog.errors \
+    import ResourceMatchNotFoundError, ResourceAlreadyExistsError
 import click
+from signal_analog import debug
 
 
 class DashboardGroup(Resource):
@@ -65,6 +66,7 @@ class DashboardGroup(Resource):
                                                                 (self.base_url + self.endpoint),
                                                                 self.options))
             return None
+
         if self.__create_helper__(force=force, interactive=interactive):
             dashboard_group_create_response = self.__action__('post', self.endpoint,
                                                               lambda x: self.options,
@@ -88,10 +90,22 @@ class DashboardGroup(Resource):
                     self.options['dashboards'].append(dashboard_create_response['id'])
                     self.dashboard_group_ids.append(dashboard_create_response['groupId'])
 
+                    msg = "Updating dashboard with name '{0}' and parent " +\
+                          "group id '{1}' for Dashboard Group '{2}' with " +\
+                          "id '{3}'"
+                    debug(msg.format(
+                      dashboard_create_response['name'],
+                      dashboard_create_response['groupId'],
+                      dashboard_group_create_response['name'],
+                      dashboard_group_create_response['id']))
+
                 for dashboard_id in self.options['dashboards']:
                     self.clone(dashboard_id, dashboard_group_create_response['id'])
 
-                for dashboardGroupId in frozenset(self.dashboard_group_ids):
+                dupes = frozenset(self.dashboard_group_ids)
+                debug("These dashboards groups are dupes and will be deleted:")
+                debug(dupes)
+                for dashboardGroupId in dupes:
                     self.with_id(dashboardGroupId).delete()
 
                 if len(dashboard_group_create_response['dashboards']) > 0:
@@ -124,12 +138,7 @@ class DashboardGroup(Resource):
         See: https://developers.signalfx.com/v2/reference#update-dashboard-group
         """
 
-        updated_opts = dict(self.options)
-        if name:
-            updated_opts.update({'name': name})
-        if description:
-            updated_opts.update({'description': description})
-
+        debug("Update DashboardGroup")
         query_result = self.__find_existing_resources__()
 
         try:
@@ -137,6 +146,8 @@ class DashboardGroup(Resource):
 
         except ResourceAlreadyExistsError:
             dashboard_group = self.__filter_matches__(query_result)
+            msg = "Found existing match with name '{0}' and id '{1}'"
+            debug(msg.format(dashboard_group['name'], dashboard_group['id']))
 
             if name:
                 dashboard_group.update({'name': name})
@@ -188,6 +199,9 @@ class DashboardGroup(Resource):
             return self.__action__('put', '/dashboardgroup/' + dashboard_group['id'],
                                    lambda x: dashboard_group)
         except ResourceMatchNotFoundError:
+            msg = "Couldn't update Dashboard Group with name '{0}', " +\
+                  "creating it instead."
+            debug(msg.format(self.__get__('name')))
             return self.create(dry_run=dry_run)
 
     def delete(self, dry_run=False):
@@ -357,13 +371,6 @@ class Dashboard(Resource):
         See: https://developers.signalfx.com/v2/reference#update-dashboard
         """
 
-        updated_opts = dict(self.options)
-        if name:
-            updated_opts.update({'name': name})
-        if description:
-            updated_opts.update({'description': description})
-        updated_opts.update({'charts': util.flatten_charts(self.options)})
-
         query_result = self.__find_existing_resources__()
 
         try:
@@ -399,7 +406,7 @@ class Dashboard(Resource):
                            "PUT {1} \nRequest Body: \n {2}".format(self.options['name'],
                                                                    (self.base_url + self.endpoint + '/' + dashboard[
                                                                        'id']),
-                                                                   updated_opts))
+                                                                   dashboard))
                 return None
 
             try:
