@@ -5,6 +5,7 @@
 import logging.config
 import pkg_resources
 import yaml
+import os
 
 __author__ = """Fernando Freire"""
 __email__ = 'Lst-nike.plus.platform.sharedinfrastructure@nike.com'
@@ -16,3 +17,8 @@ logging_config = pkg_resources.resource_string(
 logging.config.dictConfig(yaml.load(logging_config))
 
 logger = logging.getLogger()
+
+
+def debug(msg):
+    if os.environ.get('LOG_LEVEL', '').lower() == 'debug':
+        logger.debug(msg)
