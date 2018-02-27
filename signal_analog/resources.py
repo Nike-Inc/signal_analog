@@ -118,7 +118,7 @@ class Resource(object):
                 The JSON response if successful.
 
             Raises:
-                HTTPError: when a network exception ocurred
+                HTTPError: when a network exception occurred
         """
         if dry_run:
             opts = dict(self.options)
@@ -277,25 +277,23 @@ class Resource(object):
                 'get', self.endpoint, lambda x: None,
                 params={'name': self.__get__('name')})['results'][0]
 
-    def delete(self, resource_id=None, dry_run=False):
+    def delete(self, resource_id=None):
         """Delete the given resource in the SignalFx API."""
         rid = resource_id if resource_id else self.__get__('id')
 
         if rid:
             return self.__action__(
                 'delete', self.endpoint + '/' + rid,
-                lambda x: None, dry_run=dry_run)
+                lambda x: None)
         else:
             return self.__action__(
                 'delete', self.endpoint + '/' + self.read()['id'],
                 lambda x: None)
 
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
-        """Default implementation for resource cloning.
+        """Default implementation for resource cloning."""
 
-        TODO is this meant to work?
-        """
-        return self.__action__('post', self.endpoint, lambda x: x,
+        return self.__action__('post', self.endpoint + '/' + dashboard_group_id + '/dashboard', lambda x: x,
                                dry_run=dry_run)
 
     def __create_helper__(self, force=False, interactive=False):
