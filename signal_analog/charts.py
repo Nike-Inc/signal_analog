@@ -64,7 +64,7 @@ class Chart(Resource):
         self.options = self.to_dict()
         return super(Chart, self).create(dry_run=dry_run)
 
-    def update(self, name=None, description=None, dry_run=False):
+    def update(self, name=None, description=None, resource_id=None, dry_run=False):
         """Update a chart in the SignalFx API.
 
         WARNING: Users are strongly discouraged from updating charts outside
@@ -79,7 +79,7 @@ class Chart(Resource):
         if name:
             updated_opts.update({'name': name})
         if description:
-            updated_opts.update({'name': description})
+            updated_opts.update({'description': description})
 
         if dry_run:
             return updated_opts
@@ -91,10 +91,10 @@ class Chart(Resource):
 
         except ResourceAlreadyExistsError:
             self.options = self.to_dict()
-            return super(Chart, self).update(name=name, description=description)
+            return super(Chart, self).update(name=name, description=description, resource_id=resource_id)
 
         except ResourceHasMultipleExactMatchesError as e:
-            if self.options['id']:
+            if 'id' in self.options:
                 self.options = self.to_dict()
                 return super(Chart, self).update(name=name, description=description, resource_id=self.options['id'])
             else:
