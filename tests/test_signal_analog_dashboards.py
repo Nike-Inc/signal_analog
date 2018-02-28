@@ -77,7 +77,8 @@ def test_dashboard_with_charts():
 
     list_charts = dashboard.options['charts']
     assert len(list_charts) == 2
-    assert set(list_charts) == set(expected_values)
+    assert set(map(lambda x: x.__get__('name'), list_charts)) \
+        == set(map(lambda x: x.__get__('name'), expected_values))
 
 
 def test_dashboard_create():
@@ -450,16 +451,26 @@ def test_dashboard_group_create_interactive_failure(confirm):
 
 
 def test_dashboard_group_update_success():
+
+    name = 'spaceX lol'
+    updated_name = 'updated_dashboard_group_name'
+
     with global_recorder.use_cassette('dashboard_group_update_success',
                                       serialize_with='prettyjson'):
-        dashboard_group = DashboardGroup(session=global_session) \
-            .with_name('spaceX') \
-            .with_api_token('foo') \
 
-        dashboard_group.create()
-        dashboard_group.update(
-            name='updated_dashboard_group_name',
-            description='updated_dashboard_group_description')
+        dashboard_group = DashboardGroup(session=global_session)\
+            .with_name(name)\
+            .with_api_token('foo')
+
+        create_result = dashboard_group.create()
+
+        update_result = dashboard_group\
+            .with_id(create_result['id'])\
+            .update(name='updated_dashboard_group_name',
+                    description='updated_dashboard_group_description')
+
+        assert create_result['name'] == name
+        assert update_result['name'] == updated_name
 
 
 def test_dashboard_group_update_failure():
@@ -482,55 +493,79 @@ def test_dashboard_group_update_failure():
 
 
 def test_dashboard_group_with_dashboard_create_success():
+
+    name = 'spaceX unique'
+    group = DashboardGroup(session=global_session)\
+        .with_name(name)\
+        .with_dashboards(mk_dashboard('Falcon99', 'chart1'))\
+        .with_api_token('foo')\
+
     with global_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_success',
             serialize_with='prettyjson'):
 
-        DashboardGroup(session=global_session)\
-            .with_name('spaceX')\
-            .with_dashboards(mk_dashboard('Falcon99', 'chart1'))\
-            .with_api_token('foo')\
-            .create()
+        result = group.create()
+
+        assert result['name'] == name
+        assert len(result['dashboards']) == 1
 
 
 def test_dashboard_group_with_dashboard_create_force_success():
+
+    name = 'spaceX'
     dashboard_group = DashboardGroup(session=global_session)\
-        .with_name('spaceX') \
+        .with_name(name) \
         .with_dashboards(mk_dashboard('Falcon99', 'chart1'))\
         .with_api_token('foo')
 
     with global_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_success_force',
             serialize_with='prettyjson'):
-        dashboard_group.create(force=True)
+
+        result = dashboard_group.create(force=True)
+
+        assert result['name'] == name
+        assert len(result['dashboards']) == 1
 
 
 @patch('click.confirm')
 def test_dashboard_group_with_dashboard_create_interactive_success(confirm):
     confirm.__getitem__.return_value = 'y'
+
+    name = 'spaceX'
+
     dashboard_group = DashboardGroup(session=global_session) \
-        .with_name('spaceX') \
+        .with_name(name) \
         .with_dashboards(mk_dashboard('Falcon99', 'chart1')) \
         .with_api_token('foo')
+
     with global_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_success_interactive',
             serialize_with='prettyjson'):
 
-        dashboard_group.create(interactive=True)
+        result = dashboard_group.create(interactive=True)
+        assert result['name'] == name
+        assert len(result['dashboards']) == 1
 
 
 @patch('click.confirm')
 def test_dashboard_group_with_dashboard_create_interactive_failure(confirm):
     confirm.__getitem__.return_value = 'n'
+
+    name = 'spaceX'
+
     dashboard_group = DashboardGroup(session=global_session) \
-        .with_name('spaceX') \
+        .with_name(name) \
         .with_dashboards(mk_dashboard('Falcon99', 'chart1')) \
         .with_api_token('foo')
+
     with global_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_failure_interactive',
             serialize_with='prettyjson'):
 
-            dashboard_group.create(interactive=True)
+            result = dashboard_group.create(interactive=True)
+            assert result['name'] == name
+            assert len(result['dashboards']) == 1
 
 
 def test_dashboard_group_with_dashboard_update_success():
@@ -549,23 +584,33 @@ def test_dashboard_group_with_dashboard_update_success():
 
 
 def test_dashboard_group_with_delete_existing_dashboard_update_success():
+    name = 'spaceX'
+
     with global_recorder.use_cassette(
         'dashboard_group_with_delete_existing_dashboard_update_success',
             serialize_with='prettyjson'):
+
         dashboard_group = DashboardGroup(session=global_session) \
-            .with_name('spaceX') \
+            .with_name(name) \
             .with_dashboards(mk_dashboard('Draagoon', 'chart3')) \
             .with_api_token('foo')
 
-        dashboard_group.update()
+        response = dashboard_group.update()
+
+        assert response['name'] == name
+        assert len(response['dashboards']) == 1
 
 
 def test_dashboard_group_read_success():
     with global_recorder.use_cassette('dashboard_group_read_success',
                                       serialize_with='prettyjson'):
-        DashboardGroup(session=global_session)\
+        expected = '[prod] Legacyidmapping Application Dashboard Group'
+        response = DashboardGroup(session=global_session)\
             .with_api_token('foo')\
-            .read('DWgXZfyAcAA')
+            .with_name(expected)\
+            .read()
+
+        assert response['name'] == expected
 
 
 def test_dashboard_group_delete_success():
