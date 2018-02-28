@@ -1,11 +1,12 @@
 from copy import deepcopy
 
-from signal_analog.charts import Chart
-from signal_analog.resources import Resource
-import signal_analog.util as util
-from signal_analog.errors import ResourceMatchNotFoundError, \
-    ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import click
+
+import signal_analog.util as util
+from signal_analog.charts import Chart
+from signal_analog.errors import ResourceMatchNotFoundError, \
+    ResourceAlreadyExistsError
+from signal_analog.resources import Resource
 
 
 class DashboardGroup(Resource):
