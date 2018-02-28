@@ -1,10 +1,12 @@
-import requests
-import signal_analog.util as util
-from signal_analog.errors import ResourceMatchNotFoundError, \
-        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
-import click
 import sys
+
+import click
+import requests
+
+import signal_analog.util as util
 from signal_analog import debug
+from signal_analog.errors import ResourceMatchNotFoundError, \
+    ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 
 # py2/3 compatability hack so that we can consistently handle JSON errors.
 try:
