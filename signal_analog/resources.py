@@ -247,14 +247,14 @@ class Resource(object):
         Your have to provide the resource id via
         'with_id' or you can pass the id as a parameter
         """
-        uid = resource_id if resource_id else self.__get__('id')
+        rid = resource_id if resource_id else self.__get__('id')
         if name:
             self.options.update({'name': name})
         if description:
             self.options.update({'description': description})
-        if uid:
+        if rid:
             return self.__action__(
-                'put', self.endpoint + '/' + uid, lambda x: x)
+                'put', self.endpoint + '/' + rid, lambda x: x)
         else:
             raise ValueError('Id is required for resource updates')
 
