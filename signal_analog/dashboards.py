@@ -3,9 +3,10 @@ from copy import deepcopy
 from signal_analog.charts import Chart
 from signal_analog.resources import Resource
 import signal_analog.util as util
-from signal_analog.errors import ResourceMatchNotFoundError, \
-    ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
+from signal_analog.errors \
+    import ResourceMatchNotFoundError, ResourceAlreadyExistsError
 import click
+from signal_analog import debug
 
 
 class DashboardGroup(Resource):
@@ -65,6 +66,7 @@ class DashboardGroup(Resource):
                                                                 (self.base_url + self.endpoint),
                                                                 self.options))
             return None
+
         if self.__create_helper__(force=force, interactive=interactive):
             dashboard_group_create_response = self.__action__('post', self.endpoint,
                                                               lambda x: self.options,
@@ -88,23 +90,35 @@ class DashboardGroup(Resource):
                     self.options['dashboards'].append(dashboard_create_response['id'])
                     self.dashboard_group_ids.append(dashboard_create_response['groupId'])
 
+                    msg = "Updating dashboard with name '{0}' and parent " +\
+                          "group id '{1}' for Dashboard Group '{2}' with " +\
+                          "id '{3}'"
+                    debug(msg.format(
+                      dashboard_create_response['name'],
+                      dashboard_create_response['groupId'],
+                      dashboard_group_create_response['name'],
+                      dashboard_group_create_response['id']))
+
                 for dashboard_id in self.options['dashboards']:
                     self.clone(dashboard_id, dashboard_group_create_response['id'])
 
-                for dashboardGroupId in frozenset(self.dashboard_group_ids):
-                    self.delete(dashboardGroupId)
+                dupes = frozenset(self.dashboard_group_ids)
+                debug("These dashboards groups are dupes and will be deleted:")
+                debug(dupes)
+                for dashboardGroupId in dupes:
+                    self.with_id(dashboardGroupId).delete()
 
                 if len(dashboard_group_create_response['dashboards']) > 0:
                     Dashboard(session=self.session_handler) \
                         .with_api_token(self.api_token) \
-                        .delete(
-                        dashboard_group_create_response['dashboards'][0])
+                        .with_id(dashboard_group_create_response['dashboards'][0])\
+                        .delete()
 
-                return self.read(dashboard_group_create_response['id'])
+                return self.with_id(dashboard_group_create_response['id']).read()
             else:
                 return dashboard_group_create_response
 
-    def read(self, dashboard_group_id, dry_run=False):
+    def read(self, dry_run=False):
         """Gets data of a SignalFx dashboard group using the /dashboardgroup/<id> helper
         endpoint. Dashboard Group Id is required
 
@@ -112,12 +126,10 @@ class DashboardGroup(Resource):
         """
         if dry_run:
             click.echo("Returns the data for Dashboard Group id \"{0}\". API call that is executed: \n GET {1}" \
-                       .format(dashboard_group_id, (self.base_url + self.endpoint + '/' + dashboard_group_id)))
+                       .format(self.options['id'], (self.base_url + self.endpoint + '/' + self.options['id'])))
             return None
 
-        return self.__action__('get', self.endpoint + '/' + dashboard_group_id,
-                               util.empty_body(), params=None,
-                               dry_run=dry_run)
+        return super(DashboardGroup, self).read()
 
     def update(self, name=None, description=None, dry_run=False):
         """Updates a SignalFx dashboard group using the /dashboardgroup/_id_ helper
@@ -126,12 +138,7 @@ class DashboardGroup(Resource):
         See: https://developers.signalfx.com/v2/reference#update-dashboard-group
         """
 
-        updated_opts = dict(self.options)
-        if name:
-            updated_opts.update({'name': name})
-        if description:
-            updated_opts.update({'description': description})
-
+        debug("Update DashboardGroup")
         query_result = self.__find_existing_resources__()
 
         try:
@@ -139,6 +146,8 @@ class DashboardGroup(Resource):
 
         except ResourceAlreadyExistsError:
             dashboard_group = self.__filter_matches__(query_result)
+            msg = "Found existing match with name '{0}' and id '{1}'"
+            debug(msg.format(dashboard_group['name'], dashboard_group['id']))
 
             if name:
                 dashboard_group.update({'name': name})
@@ -165,7 +174,8 @@ class DashboardGroup(Resource):
                     # Only clone the dashboards that are not part of the existing dashboard group
                     d_id = Dashboard(session=self.session_handler) \
                         .with_api_token(self.api_token) \
-                        .read(dashboard_id)
+                        .with_id(dashboard_id)\
+                        .read()
 
                     if d_id['groupId'] != dashboard_group['id']:
                         self.clone(dashboard_id, dashboard_group['id'])
@@ -176,21 +186,25 @@ class DashboardGroup(Resource):
                     self.dashboard_group_ids.remove(dashboard_group['id'])
 
                 for dashboardGroupId in frozenset(self.dashboard_group_ids):
-                    self.delete(dashboardGroupId)
+                    self.with_id(dashboardGroupId).delete()
 
                 dashboards_to_delete = [x for x in dashboard_group['dashboards'] if x not in self.options['dashboards']]
                 if len(dashboards_to_delete) is not 0:
                     for dashboard_id in dashboards_to_delete:
                         Dashboard(session=self.session_handler) \
                             .with_api_token(self.api_token) \
-                            .delete(dashboard_id)
+                            .with_id(dashboard_id)\
+                            .delete()
 
             return self.__action__('put', '/dashboardgroup/' + dashboard_group['id'],
                                    lambda x: dashboard_group)
         except ResourceMatchNotFoundError:
+            msg = "Couldn't update Dashboard Group with name '{0}', " +\
+                  "creating it instead."
+            debug(msg.format(self.__get__('name')))
             return self.create(dry_run=dry_run)
 
-    def delete(self, dashboard_group_id, dry_run=False):
+    def delete(self, dry_run=False):
         """Deletes a SignalFx dashboard group using the /dashboardgroup/<id> helper
         endpoint. Dashboard Group Id is required
 
@@ -198,12 +212,10 @@ class DashboardGroup(Resource):
         """
         if dry_run:
             click.echo("Dashboard Group id \"{0}\" will be deleted. API call that is executed: \n DELETE {1}"
-                       .format(dashboard_group_id, (self.base_url + self.endpoint + '/' + dashboard_group_id)))
+                       .format(self.options['id'], (self.base_url + self.endpoint + '/' + self.options['id'])))
             return None
 
-        return self.__action__('delete', self.endpoint + '/' + dashboard_group_id,
-                               util.empty_body(), params=None,
-                               dry_run=dry_run)
+        return super(DashboardGroup, self).delete()
 
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
         """Clones a SignalFx dashboard using the /dashboardgroup/_id_/dashboard helper
@@ -266,7 +278,7 @@ class Dashboard(Resource):
                                    dry_run=dry_run, interactive=interactive,
                                    force=force)
 
-    def read(self, dashboard_id, dry_run=False):
+    def read(self, dry_run=False):
         """Gets data of a Signalfx dashboard using the /dashboard/<id> helper
         endpoint. Dashboard Id is required
 
@@ -274,12 +286,10 @@ class Dashboard(Resource):
         """
         if dry_run:
             click.echo("Returns the data for Dashboard id \"{0}\". API call that is executed: \n GET {1}" \
-                       .format(dashboard_id, (self.base_url + self.endpoint + '/' + dashboard_id)))
+                       .format(self.options['id'], (self.base_url + self.endpoint + '/' + self.options['id'])))
             return None
 
-        return self.__action__('get', self.endpoint + '/' + dashboard_id,
-                               util.empty_body(), params=None,
-                               dry_run=dry_run)
+        return super(Dashboard, self).read()
 
     def __update_child_resources__(self, chart_state):
         """Update child resources for this dashboard.
@@ -361,13 +371,6 @@ class Dashboard(Resource):
         See: https://developers.signalfx.com/v2/reference#update-dashboard
         """
 
-        updated_opts = dict(self.options)
-        if name:
-            updated_opts.update({'name': name})
-        if description:
-            updated_opts.update({'description': description})
-        updated_opts.update({'charts': util.flatten_charts(self.options)})
-
         query_result = self.__find_existing_resources__()
 
         try:
@@ -403,7 +406,7 @@ class Dashboard(Resource):
                            "PUT {1} \nRequest Body: \n {2}".format(self.options['name'],
                                                                    (self.base_url + self.endpoint + '/' + dashboard[
                                                                        'id']),
-                                                                   updated_opts))
+                                                                   dashboard))
                 return None
 
             try:
@@ -422,12 +425,12 @@ To track the status of this work subscribe to the following ticket:
 https://jira.nike.com/browse/SIP-1062
                 """
                 click.secho(msg.format(dashboard['id']), fg='yellow')
-                return self.read(dashboard['id'])
+                return self.with_id(dashboard['id']).read()
 
         except ResourceMatchNotFoundError:
             return self.create(dry_run=dry_run)
 
-    def delete(self, dashboard_id, dry_run=False):
+    def delete(self, dry_run=False):
         """Deletes a SignalFx dashboard using the /dashboard/<id> helper
         endpoint. Dashboard Group Id is required
 
@@ -435,7 +438,7 @@ https://jira.nike.com/browse/SIP-1062
         """
         if dry_run:
             click.echo("Dashboard id \"{0}\" will be deleted. API call that is executed: \n DELETE {1}" \
-                       .format(dashboard_id, (self.base_url + self.endpoint + '/' + dashboard_id)))
+                       .format(self.options['id'], (self.base_url + self.endpoint + '/' + self.options['id'])))
             return None
 
         """So, as per SignalFx design as of 02/19/18, 
@@ -444,12 +447,10 @@ https://jira.nike.com/browse/SIP-1062
         orphaned and available to other dashboards. If you wish to delete them at the same time you delete their current 
         dashboard you must send a Delete Chart API call for each chart. And, that's exactly what we are doing here
         """
-        list_of_charts = [charts['chartId'] for charts in self.read(dashboard_id)['charts']]
+        list_of_charts = [charts['chartId'] for charts in self.with_id(self.options['id']).read()['charts']]
 
         if len(list_of_charts) > 0:
             for chart in list_of_charts:
                 Chart(session=self.session_handler).with_api_token(self.api_token).with_id(chart).delete()
 
-        return self.__action__('delete', self.endpoint + '/' + dashboard_id,
-                               util.empty_body(), params=None,
-                               dry_run=dry_run)
+        return super(Dashboard, self).delete()
