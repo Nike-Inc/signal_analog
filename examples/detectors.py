@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-"""Examples for the `signal_analog.detectors` module.
-"""
+"""Examples for the `signal_analog.detectors` module."""
 
 from signal_analog.charts import TimeSeriesChart
 from signal_analog.detectors import Detector, Rule, EmailNotification, Severity
