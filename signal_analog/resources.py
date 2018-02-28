@@ -4,8 +4,7 @@ from signal_analog.errors import ResourceMatchNotFoundError, \
         ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import click
 import sys
-import os
-from signal_analog import logger
+from signal_analog import debug
 
 # py2/3 compatability hack so that we can consistently handle JSON errors.
 try:
@@ -118,7 +117,7 @@ class Resource(object):
                 The JSON response if successful.
 
             Raises:
-                HTTPError: when a network exception ocurred
+                HTTPError: when a network exception occurred
         """
         if dry_run:
             opts = dict(self.options)
@@ -138,12 +137,13 @@ class Resource(object):
                 'Content-Type': 'application/json'
             })
 
-        if os.environ.get('LOG_LEVEL', '').lower() == 'debug':
-            logger.debug(
-                "{0} {1}".format(
-                    response.request.method.upper(),
-                    response.request.url))
-            logger.debug(response.request.body)
+        debug(
+            "{0} {1}".format(
+                response.request.method.upper(),
+                response.request.url)
+        )
+        if response.request.body:
+            debug(response.request.body)
 
         try:
             response.raise_for_status()
@@ -244,9 +244,8 @@ class Resource(object):
     def update(self, name=None, description=None, resource_id=None):
         """Attempt to update the given resource in SignalFx.
 
-        Your chances are much higher if you provide the resource id via
-        'with_id'. Otherwise, we will attempt to do a best effort to search for
-        your resource based on name.
+        Your have to provide the resource id via
+        'with_id' or you can pass the id as a parameter
         """
         uid = resource_id if resource_id else self.__get__('id')
         if name:
@@ -257,9 +256,7 @@ class Resource(object):
             return self.__action__(
                 'put', self.endpoint + '/' + uid, lambda x: x)
         else:
-            return self.__action__(
-                'put', self.endpoint, lambda x: x,
-                params={'name': self.__get__('name')})['results'][0]
+            raise ValueError('Id is required for resource updates')
 
     def read(self, resource_id=None):
         """Attempt to find the given resource in SignalFx.
@@ -277,26 +274,26 @@ class Resource(object):
                 'get', self.endpoint, lambda x: None,
                 params={'name': self.__get__('name')})['results'][0]
 
-    def delete(self, resource_id=None, dry_run=False):
+    def delete(self, resource_id=None):
         """Delete the given resource in the SignalFx API."""
         rid = resource_id if resource_id else self.__get__('id')
 
         if rid:
             return self.__action__(
                 'delete', self.endpoint + '/' + rid,
-                lambda x: None, dry_run=dry_run)
+                lambda x: None)
         else:
             return self.__action__(
                 'delete', self.endpoint + '/' + self.read()['id'],
                 lambda x: None)
 
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
-        """Default implementation for resource cloning.
+        """Default implementation for resource cloning."""
 
-        TODO is this meant to work?
-        """
-        return self.__action__('post', self.endpoint, lambda x: x,
-                               dry_run=dry_run)
+        return self.__action__(
+            'post',
+            self.endpoint + '/' + dashboard_group_id + '/dashboard',
+            lambda x: x, dry_run=dry_run)
 
     def __create_helper__(self, force=False, interactive=False):
         try:
