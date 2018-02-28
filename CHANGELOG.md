@@ -1,5 +1,17 @@
 # History
 
+## 0.21.0 (2018-02-28)
+
+  * Dashboard Group support has been added giving you the ability group sets of
+  dashboards together in a convenient construct
+  * Detector support has been added giving you the ability to create detectors
+  from scratch or re-use the SignalFlow program of an existing Chart
+  * Dashboards and Charts now update via their `id` instead of by name to
+  mitigate name conflicts when creating multiple resources with the same name
+  * Dry-run results are now more consistent between all resources and expose
+  the API call (sans-headers) that would have been made to use for the given
+  resource
+
 ## 0.20.0 (2018-01-31)
 
   * Dashboards have learned how to update their child resources (e.g. if you

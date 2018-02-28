@@ -5,6 +5,14 @@ import json
 from collections import Counter
 
 
+def check_collection(coll, type_):
+    """Ensure type consistency for the given collection."""
+    for c in coll:
+        if not issubclass(c.__class__, type_):
+            msg = "We got a '{0}' when we were expecting a '{1}'."
+            raise ValueError(msg.format(c.__class__.__name__, type_.__name__))
+
+
 def in_given_enum(value, enum):
     """Determines if the given value is in the given enum. Raises ValueError
        if it is not.
@@ -51,3 +59,8 @@ def flatten_charts(opts):
 def pp_json(dictionary):
     """Pretty print a dictionary as JSON."""
     click.echo(json.dumps(dictionary, indent=2))
+
+
+def empty_body():
+    """Returns  an empty body when making requests to SignalFx."""
+    return lambda x: None
