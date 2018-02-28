@@ -232,10 +232,7 @@ class DashboardGroup(Resource):
                                                                 self.clone_options))
             return None
 
-        self.clone_options['sourceDashboard'] = dashboard_id
-        return self.__action__('post', self.endpoint + '/' + dashboard_group_id + '/dashboard',
-                               lambda x: self.clone_options, params=None,
-                               dry_run=dry_run)
+        return super(DashboardGroup, self).clone(dashboard_id=dashboard_id, dashboard_group_id=dashboard_group_id)
 
 
 class Dashboard(Resource):
