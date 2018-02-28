@@ -217,3 +217,5 @@ share
 # Ignore Mac DS_Store files
 .DS_Store
 docs/activity/*.png
+
+.pytest_cache

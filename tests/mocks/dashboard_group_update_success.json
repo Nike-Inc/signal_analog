@@ -1,7 +1,7 @@
 {
   "http_interactions": [
     {
-      "recorded_at": "2018-02-21T02:19:57",
+      "recorded_at": "2018-02-28T17:03:25",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -28,7 +28,7 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=foobarium"
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX+lol"
       },
       "response": {
         "body": {
@@ -46,7 +46,7 @@
             "application/json"
           ],
           "Date": [
-            "Wed, 21 Feb 2018 02:19:57 GMT"
+            "Wed, 28 Feb 2018 17:03:23 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -59,77 +59,15 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard?name=foobarium"
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX+lol"
       }
     },
     {
-      "recorded_at": "2018-02-21T02:20:00",
+      "recorded_at": "2018-02-28T17:03:25",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": ""
-        },
-        "headers": {
-          "Accept": [
-            "*/*"
-          ],
-          "Accept-Encoding": [
-            "gzip, deflate"
-          ],
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "User-Agent": [
-            "python-requests/2.18.4"
-          ],
-          "X-SF-Token": [
-            "foo"
-          ]
-        },
-        "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=foobarium"
-      },
-      "response": {
-        "body": {
-          "encoding": null,
-          "string": "{\n  \"count\" : 0,\n  \"results\" : [ ]\n}"
-        },
-        "headers": {
-          "Connection": [
-            "keep-alive"
-          ],
-          "Content-Length": [
-            "36"
-          ],
-          "Content-Type": [
-            "application/json"
-          ],
-          "Date": [
-            "Wed, 21 Feb 2018 02:19:58 GMT"
-          ],
-          "Strict-Transport-Security": [
-            "max-age=7776000"
-          ],
-          "X-Content-Type-Options": [
-            "nosniff"
-          ]
-        },
-        "status": {
-          "code": 200,
-          "message": "OK"
-        },
-        "url": "https://api.signalfx.com/v2/dashboard?name=foobarium"
-      }
-    },
-    {
-      "recorded_at": "2018-02-21T02:20:00",
-      "request": {
-        "body": {
-          "encoding": "utf-8",
-          "string": "[{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}]"
+          "string": "{\"dashboards\": [], \"name\": \"spaceX lol\"}"
         },
         "headers": {
           "Accept": [
@@ -142,7 +80,7 @@
             "keep-alive"
           ],
           "Content-Length": [
-            "112"
+            "40"
           ],
           "Content-Type": [
             "application/json"
@@ -155,25 +93,25 @@
           ]
         },
         "method": "POST",
-        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=foobarium"
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX+lol"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DWhmUfqAgAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1519179600632,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DWhmUkIAYEc\",\n  \"id\" : \"DWhmUkKAcAA\",\n  \"lastUpdated\" : 1519179600632,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"foobarium\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
+          "string": "{\n  \"created\" : 1519837403765,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DXIz3LaAYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DXIz3LYAgAA\",\n  \"lastUpdated\" : 1519837403765,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX lol\",\n  \"teams\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "639"
+            "252"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Wed, 21 Feb 2018 02:20:00 GMT"
+            "Wed, 28 Feb 2018 17:03:23 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -186,11 +124,11 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard/simple?name=foobarium"
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=spaceX+lol"
       }
     },
     {
-      "recorded_at": "2018-02-21T02:20:00",
+      "recorded_at": "2018-02-28T17:03:35",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -217,25 +155,25 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=foobarium"
+        "uri": "https://api.signalfx.com/v2/dashboardgroup/DXIz3LYAgAA"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"count\" : 0,\n  \"results\" : [ ]\n}"
+          "string": "{\n  \"created\" : 1519837403765,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DXIz3LaAYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DXIz3LYAgAA\",\n  \"lastUpdated\" : 1519837403765,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX lol\",\n  \"teams\" : [ ]\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "36"
+            "252"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Wed, 21 Feb 2018 02:20:00 GMT"
+            "Wed, 28 Feb 2018 17:03:33 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -248,11 +186,11 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard?name=foobarium"
+        "url": "https://api.signalfx.com/v2/dashboardgroup/DXIz3LYAgAA"
       }
     },
     {
-      "recorded_at": "2018-02-21T02:20:00",
+      "recorded_at": "2018-02-28T17:03:35",
       "request": {
         "body": {
           "encoding": "utf-8",
@@ -279,25 +217,25 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=foobarium"
+        "uri": "https://api.signalfx.com/v2/dashboard/DXIz3LaAYAA"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"count\" : 0,\n  \"results\" : [ ]\n}"
+          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ ],\n  \"created\" : 1519837403776,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DXIz3LYAgAA\",\n  \"id\" : \"DXIz3LaAYAA\",\n  \"lastUpdated\" : 1519837404652,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"spaceX lol\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "36"
+            "536"
           ],
           "Content-Type": [
             "application/json"
           ],
           "Date": [
-            "Wed, 21 Feb 2018 02:20:00 GMT"
+            "Wed, 28 Feb 2018 17:03:33 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -310,15 +248,77 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard?name=foobarium"
+        "url": "https://api.signalfx.com/v2/dashboard/DXIz3LaAYAA"
       }
     },
     {
-      "recorded_at": "2018-02-21T02:20:01",
+      "recorded_at": "2018-02-28T17:03:35",
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "[{\"name\": \"rawr\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}]"
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboard/DXIz3LaAYAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ ],\n  \"created\" : 1519837403776,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DXIz3LYAgAA\",\n  \"id\" : \"DXIz3LaAYAA\",\n  \"lastUpdated\" : 1519837404652,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"spaceX lol\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "536"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 28 Feb 2018 17:03:34 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard/DXIz3LaAYAA"
+      }
+    },
+    {
+      "recorded_at": "2018-02-28T17:03:36",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
         },
         "headers": {
           "Accept": [
@@ -331,7 +331,7 @@
             "keep-alive"
           ],
           "Content-Length": [
-            "112"
+            "0"
           ],
           "Content-Type": [
             "application/json"
@@ -343,26 +343,23 @@
             "foo"
           ]
         },
-        "method": "POST",
-        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=foobarium"
+        "method": "DELETE",
+        "uri": "https://api.signalfx.com/v2/dashboard/DXIz3LaAYAA"
       },
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"chartDensity\" : \"DEFAULT\",\n  \"charts\" : [ {\n    \"chartId\" : \"DWhmTLsAgAA\",\n    \"column\" : 0,\n    \"height\" : 1,\n    \"row\" : 0,\n    \"width\" : 6\n  } ],\n  \"created\" : 1519179600991,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"customProperties\" : null,\n  \"description\" : \"\",\n  \"discoveryOptions\" : null,\n  \"eventOverlays\" : null,\n  \"filters\" : {\n    \"sources\" : null,\n    \"time\" : null,\n    \"variables\" : null\n  },\n  \"groupId\" : \"DWhmTMJAYAA\",\n  \"id\" : \"DWhmTUqAgAA\",\n  \"lastUpdated\" : 1519179600991,\n  \"lastUpdatedBy\" : null,\n  \"locked\" : false,\n  \"maxDelayOverride\" : null,\n  \"name\" : \"foobarium\",\n  \"selectedEventOverlays\" : null,\n  \"tags\" : null\n}"
+          "string": ""
         },
         "headers": {
           "Connection": [
             "keep-alive"
           ],
           "Content-Length": [
-            "639"
-          ],
-          "Content-Type": [
-            "application/json"
+            "0"
           ],
           "Date": [
-            "Wed, 21 Feb 2018 02:20:00 GMT"
+            "Wed, 28 Feb 2018 17:03:34 GMT"
           ],
           "Strict-Transport-Security": [
             "max-age=7776000"
@@ -375,7 +372,72 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard/simple?name=foobarium"
+        "url": "https://api.signalfx.com/v2/dashboard/DXIz3LaAYAA"
+      }
+    },
+    {
+      "recorded_at": "2018-02-28T17:03:36",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"created\": 1519837403765, \"creator\": \"ClusPSzAYAA\", \"dashboards\": [\"DXIz3LaAYAA\"], \"description\": \"updated_dashboard_group_description\", \"id\": \"DXIz3LYAgAA\", \"lastUpdated\": 1519837403765, \"lastUpdatedBy\": \"ClusPSzAYAA\", \"name\": \"updated_dashboard_group_name\", \"teams\": []}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "273"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "PUT",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup/DXIz3LYAgAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"created\" : 1519837403765,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ ],\n  \"description\" : \"updated_dashboard_group_description\",\n  \"id\" : \"DXIz3LYAgAA\",\n  \"lastUpdated\" : 1519837414408,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"updated_dashboard_group_name\",\n  \"teams\" : [ ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "291"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 28 Feb 2018 17:03:34 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup/DXIz3LYAgAA"
       }
     }
   ],

@@ -1,13 +1,10 @@
 # Signal Analog
 
-A troposphere-like library for building and composing SignalFx SignalFlow
-programs into Charts, Dashboards, and Detectors.
+A troposphere-like library for managing SignalFx Charts, Dashboards, and
+Detectors.
 
-The rest of this document assumes familiarity with the SignalFx API, SignalFlow
-language, and Chart/Dashboard models.
-
-For more information about the above concepts consult the
-[upstream documentation].
+For more thorough coverage on the above concepts consult the
+[upstream documentation][signalflow].
 
 If you're looking for pre-built dashboards for existing application frameworks
 or tools then please consult the [signal\_analog\_patterns] documentation.
@@ -15,14 +12,17 @@ or tools then please consult the [signal\_analog\_patterns] documentation.
 ## TOC
 
   - [Features](#features)
-      - [Planned Features](#planned-features)
   - [Installation](#installation)
   - [Usage](#usage)
       - [Building Charts](#charts)
       - [Building Dashboards](#dashboards)
-          - [A note on Dashboard names](#dashboard-names)
       - [Updating Dashboards](#dashboards-updates)
+      - [Creating Detectors](#detectors)
+          - [Building Detectors from Existing Charts](#from_chart)
+      - [Building Dashboard Groups](#dashboard-groups)
+      - [Updating Dashboard Group](#dashboard-group-updates)
       - [Talking to the SignalFlow API Directly](#signalflow)
+      - [General `Resource` Guidelines](#general-resource-guidlines)
       - [Creating a CLI for your resources](#cli-builder)
   - [Contributing](#contributing)
   - [Credits](#credits)
@@ -31,13 +31,10 @@ or tools then please consult the [signal\_analog\_patterns] documentation.
 ## Features
 
   - Provides bindings for the SignalFlow DSL
-  - Provides abstractions for building Charts
-  - Provides abstractions for building Dashboards
-
-<a name="planned-features"></a>
-### Planned Features
-
-  - High-level constructs for building Detectors
+  - Provides abstractions for:
+      - Charts
+      - Dashboards
+      - Detectors
 
 <a name="installation"></a>
 ## Installation
@@ -65,14 +62,20 @@ https://confluence.nike.com/x/1kPlCg
 <a name="usage"></a>
 ## Usage
 
+`signal_analog` provides two kinds of abstractions, one for building resources
+in the SignalFx API and the other for describing metric timeseries through the
+[Signal Flow DSL][signalflow].
+
+The following sections describe how to use `Resource` abstractions in
+conjunction with the [Signal Flow DSL][signalflow].
+
 <a name="charts"></a>
 ### Building Charts
 
 `signal_analog` provides constructs for building charts in the
 `signal_analog.charts` module.
 
-Consult the [upstream documentation][charts] for more information on the
-Chart API.
+Consult the [upstream documentation][charts] for more information Charts.
 
 Let's consider an example where we would like to build a chart to monitor
 memory utilization for a single Riposte applicaton in a single environment.
@@ -170,27 +173,8 @@ memory_chart = TimeSeriesChart()\
 
 [Terrific]; there's only a few more details before we have a complete chart.
 
-In order for any chart to be created we must provide an API token. Contact
-your account administrator for the best way to access your account's API
-tokens. If you are unsure who your account administrator is consult
-[this document to determine the appropriate contact][sfx-contact].
-
-With API token in hand we can now create our chart in the API:
-
-```python
-response = memory_chart.with_api_token('my-api-token').create()
-```
-
-As of version `0.3.0` one of two things will happen:
-
-  - We receive some sort of error from the SignalFx API and an exception
-  is thrown
-  - We successfully created the chart, in which case the JSON response is
-  returned as a dictionary.
-
-From this point forward we can see our chart in the SignalFx UI by navigating
-to https://app.signalfx.com/#/chart/v2/\<chart\_id\>, where `chart_id` is
-the `id` field from our chart response.
+In the following sections we'll see how we can create dashboards from
+collections of charts.
 
 <a name="dashboards"></a>
 ### Building Dashboards
@@ -216,17 +200,17 @@ Many of the same methods for charts are available on dashboards as well, so
 let's give our dashboard a memorable name and configure it's API token:
 
 ```python
-
 dash.with_name('My Little Dashboard: Metrics are Magic')\
     .with_api_token('my-api-token')
 ```
 
-See the [note below](#dashboard-names) for caveats on naming dashboards.
-
 Our final task will be to add charts to our dashboard and create it in the API!
 
 ```python
-response = dash.with_charts(memory_chart).create()
+response = dash\
+  .with_charts(memory_chart)\
+  .with_api_token('my-api-token')\
+  .create()
 ```
 
 At this point one of two things will happen:
@@ -236,40 +220,203 @@ At this point one of two things will happen:
   - We successfully created the dashboard, in which case the JSON response is
   returned as a dictionary.
 
-<a name="dashboard-names"></a>
-#### A note on Dashboard names
-
-`signal_analog` assumes that dashboard names are unique in SignalFx. While at
-the time of this writing uniqueness is _not_ enforced by the `v2` API, this
-convention _is_ enforced by this library.
-
-We make this assumption so that we avoid easily creating duplicate dashboards
-and makes updating existing resources easier without having to manage extra
-state outside of the SignalFx API.
+Now, storing API keys in source isn't ideal, so if you'd like to see how you
+can pass in your API keys at runtime check the documentation below to see how
+you can [dynamically build a CLI for your resources](#cli-builder).
 
 <a name="dashboards-updates"></a>
 ### Updating Dashboards
-Once you have dashboard created, you can update the properties like name and descriptions of a dashboard
-    
-**Note**: For now, you can only update the dashboard name and description and *not* charts. 
-Updating charts is coming next and you can track that work [here](https://jira.nike.com/browse/SIP-1035) 
+Once you have created a dashboard you can update properties like name and
+description:
 
 ```python
-dash.update(name='updated_dashboard_name', description='updated_dashboard_description')
+dash.update(
+    name='updated_dashboard_name',
+    description='updated_dashboard_description'
+)
 ```
-At this point one of two things will happen:
 
-  - We receive some sort of error from the SignalFx API and an exception
-  is thrown
-  - We successfully updated the dashboard, in which case the JSON response is
-  returned as a dictionary with the updated properties.
+`Dashboard` updates will also update any `Chart` configurations it owns.
+
+<a name="detectors"></a>
+### Creating Detectors
+
+`signal_analog` provides a means of managing the lifecycle of `Detectors` in
+the `signal_analog.detectors` module. As of `v0.21.0` only a subset of
+the full Detector API is supported.
+
+Consult the [upstream documentation][detectors] for more information about
+Detectors.
+
+Detectors are comprised of a few key elements:
+
+  - A name
+  - A SignalFlow Program
+  - A set of rules for alerting
+
+We start by building a `Detector` object and giving it a name:
+
+```python
+from signal_analog.detectors import Detector
+
+detector = Detector().with_name('My Super Serious Detector')
+```
+
+We'll now need to give it a program to alert on:
+
+```python
+from signal_analog.flow import Program, Detect, Filter, Data
+from signal_analog.combinators import GT
+
+# This program fires an alert if memory utilization is above 90% for the
+# 'shoeadmin' application.
+data = Data('memory.utilization', filter=Filter('app', 'shoeadmin')).publish(label='A')
+alert_label = 'Memory Utilization Above 90'
+detect = Detect(GT(data, 90)).publish(label=alert_label)
+
+detector.with_program(Program(detect))
+```
+
+With our name and program in hand, it's time to build up an alert rule that we
+can use to notify our teammates:
+
+```python
+# We provide a number of notification strategies in the detectors module.
+from signal_analog.detectors import EmailNotification, Rule, Severity
+
+info_rule = Rule()\
+  # From our detector defined above.
+  .for_label(alert_label)\
+  .with_severity(Severity.Info)\
+  .with_notifications(EmailNotification('Lst-nike.my.team@nike.com'))
+
+detector.with_rules(info_rule)
+
+# We can now create this resource in SignalFx:
+detector.with_api_token('foo').create()
+# For a more robust solution consult the "Creating a CLI for your Resources"
+# section below.
+```
+
+To add multiple alerting rules we would need to use different `detect`
+statements with distinct `label`s to differentiate them from one another.
+
+<a name="from_chart"></a>
+#### Building Detectors from Existing Charts
+
+We can also build up Detectors from an existing chart, which allows us to reuse
+our SignalFlow program and ensure consistency between what we're monitoring
+and what we're alerting on.
+
+Let's assume that we already have a chart defined for our use:
+
+```python
+from signal_analog.flow import Program, Data
+from signal_analog.charts import TimeSeriesChart
+
+program = Program(Data('cpu.utilization').publish(label='A'))
+cpu_chart = TimeSeriesChart().with_name('Disk Utilization').with_program(program)
+```
+
+In order to alert on this chart we'll use the `from_chart`  builder for
+detectors:
+
+```python
+from signal_analog.combinators import GT
+from signal_analog.detectors import Detector
+from signal_analog.flow import Detect
+
+# Alert when CPU utilization rises above 95%
+detector = Detector()\
+    .with_name('CPU Detector')\
+    .from_chart(
+        cpu_chart,
+        # `p` is the Program object from the cpu_chart we passed in.
+        lambda p: Detect(GT(p.find_label('A'), 95).publish(label='Info Alert'))
+    )
+```
+
+The above example won't actually alert on anything until we add a `Rule`, which
+you can find examples for in the previous section.
+
+<a name="dashboard-groups"></a>
+### Building Dashboard Groups
+
+`signal_analog` provides abstractions for building dashboard groups in the
+`signal_analog.dashboards` module.
+
+Consult the [upstream documentation][dashboard-groups] for more information on
+the Dashboard Groups API.
+
+Building on the examples described in the previous section, we'd now like to
+build a dashboard group containing our dashboards.
+
+First, lets build a couple of Dashboard objects similar to how we did it in
+the `Building Dashboards` example:
+
+```python
+from signal_analog.dashboards import Dashboard, DashboardGroup
+
+dg = DashboardGroup()
+dash1 = Dashboard().with_name('My Little Dashboard1: Metrics are Magic')\
+    .with_charts(memory_chart)
+dash2 = Dashboard().with_name('My Little Dashboard2: Metrics are Magic')\
+    .with_charts(memory_chart)
+```
+**Note: we do not create Dashboard objects ourselves, the DashboardGroup object
+is responsible for creating all child resources.**
+
+Many of the same methods for dashboards are available on dashboard groups as
+well, so let's give our dashboard group a memorable name and configure it's
+API token:
+
+```python
+
+dg.with_name('My Dashboard Group')\
+    .with_api_token('my-api-token')
+```
+
+Our final task will be to add dashboard to our dashboard group and create it
+in the API!
+
+```python
+response = dg\
+    .with_dashboards(dash1)\
+    .with_api_token('my-api-token')\
+    .create()
+```
+
+Now, storing API keys in source isn't ideal, so if you'd like to see how you
+can pass in your API keys at runtime check the documentation below to see how
+you can [dynamically build a CLI for your resources](#cli-builder).
+
+<a name="dashboard-group-updates"></a>
+### Updating Dashboard Groups
+
+Once you have created a dashboard group, you can update properties like name
+and description of a dashboard group or add/remove dashboards in a group.
+
+*Example 1:*
+
+```python
+dg.with_api_token('my-api-token')\
+    .update(name='updated_dashboard_group_name',
+            description='updated_dashboard_group_description')
+```
+
+*Example 2:*
+
+```python
+dg.with_api_token('my-api-token').with_dashboards(dash1, dash2).update()
+```
 
 <a name="signalflow"></a>
 ### Talking to the SignalFlow API Directly
 
-If you need to process SignalFx data outside of their walled garden it may be
+If you need to process SignalFx data outside the confince of the API it may be
 useful to call the SignalFlow API directly. Note that you may incur time
-penalties when pulling data out due to SignalFx's architecture.
+penalties when pulling data out depending on the source of the data
+(e.g. AWS/CloudWatch).
 
 SignalFlow constructs are contained in the `flow` module. The following is an
 example SignalFlow program that monitors Riposte RPS metrics for the `foo`
@@ -310,12 +457,44 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
             print('{0}: {1}'.format(msg.timestamp_ms, msg.properties))
 ```
 
+<a name="general-resource-guidlines"></a>
+### General `Resource` Guidelines
+
+#### Charts Always Belong to Dashboards
+
+It is always assumed that a Chart belongs to an existing Dashboard. This makes
+it easier for the library to manage the state of the world.
+
+#### Resource Names are Unique per Account
+
+In a `signal_analog` world it is assumed that all resource names are unique.
+That is, if we have two dashboards 'Foo Dashboard', when we attempt to update
+_either_ dashboard via `signal_analog` we expect to see errors.
+
+Resource names are assumed to be unique in order to simplify state management
+by the library itself. In practice we have not found this to be a major
+inconvenience.
+
+#### Configuration is the Source of Truth
+
+When conflicts arise between the state of a resource in your configuration and
+what SignalFx thinks that state should be, this library **always** prefers the
+local configuration.
+
+#### Only "CCRUD" Methods Interact with the SignalFx API
+
+`Resource` objects contain a number of builder methods to enable a "fluent" API
+when describing your project's dashboards in SignalFx. It is assumed that these
+methods do not perform state-affecting actions in the SignalFx API.
+
+Only "CCRUD" (Create, Clone, Read, Update, and Delete) methods will affect the
+state of your resources in SignalFx.
+
 <a name="cli-builder"></a>
-### Creating a CLI for your resources
+### Creating a CLI for your Resources
 
 `signal_analog` provides builders for fully featured command line clients that
-can manage sets of resources. These clients make handling resource updates
-more consistent and provide additional.
+can manage the lifecycle of sets of resources.
 
 #### Simple CLI integration
 
@@ -384,12 +563,14 @@ so via Homebrew (`brew install plantuml`).
 
 This package was created with
 [Cookiecutter](https://github.com/audreyr/cookiecutter) and the
-[nik/nike-python-template](https://bitbucket.nike.com/projects/NIK/repos/nike_python_template/browse)
+[nik/nike_python_template](https://bitbucket.nike.com/projects/NIK/repos/nike_python_template/browse)
 project template.
 
-[upstream documentation]: https://developers.signalfx.com/docs/signalflow-overview
+[signalflow]: https://developers.signalfx.com/docs/signalflow-overview
 [charts]: https://developers.signalfx.com/reference#charts-overview-1
 [sfx-contact]: https://confluence.nike.com/x/GlHiCQ
 [terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
 [dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
+[dashboard-groups]: https://developers.signalfx.com/v2/reference#dashboard-groups-overview
 [signal\_analog\_patterns]: https://bitbucket.nike.com/projects/NIK/repos/signal_analog_patterns/browse
+[detectors]: https://developers.signalfx.com/v2/reference#detector-model
