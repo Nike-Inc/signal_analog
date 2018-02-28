@@ -4,7 +4,7 @@ from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
                                  PublishLabelOptions, PaletteColor,\
                                  SingleValueChart, ListChart, SortBy,\
-                                 HeatmapChart                                 
+                                 HeatmapChart
 from signal_analog.flow import Data
 
 
@@ -40,7 +40,7 @@ def test_chart_with_description():
 def test_chart_with_program():
     expected = Data('Ms. Communication')
     chart = Chart().with_program(expected)
-    assert chart.options['programText'] == str(expected)
+    assert chart.options['programText'] == expected
 
 
 def test_ts_chart_init():

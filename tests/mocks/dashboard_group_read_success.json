@@ -1,0 +1,67 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2018-02-28T16:19:46",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup?name=%5Bprod%5D+Legacyidmapping+Application+Dashboard+Group"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": "{\n  \"count\" : 1,\n  \"results\" : [ {\n    \"created\" : 1519759887382,\n    \"creator\" : \"ClusPSzAYAA\",\n    \"dashboards\" : [ \"DXEMjDLAgAE\", \"DXEMjVkAYAA\", \"DXEMjCgAYAA\", \"DXEMjksAYAA\" ],\n    \"description\" : \"\",\n    \"id\" : \"DXEMeB-AYAA\",\n    \"lastUpdated\" : 1519759887382,\n    \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n    \"name\" : \"[prod] Legacyidmapping Application Dashboard Group\",\n    \"teams\" : [ ]\n  } ]\n}"
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "394"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 28 Feb 2018 16:19:44 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup?name=%5Bprod%5D+Legacyidmapping+Application+Dashboard+Group"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}
