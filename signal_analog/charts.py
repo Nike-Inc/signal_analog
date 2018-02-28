@@ -1,12 +1,12 @@
 """Chart objects representable in the SignalFX API."""
 
-from enum import Enum
 from copy import deepcopy
+from enum import Enum
 
-from signal_analog.resources import Resource
-from signal_analog.errors import ResourceMatchNotFoundError, \
-        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import signal_analog.util as util
+from signal_analog.errors import ResourceMatchNotFoundError, \
+    ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
+from signal_analog.resources import Resource
 
 
 class Chart(Resource):
@@ -19,18 +19,6 @@ class Chart(Resource):
     def __str__(self):
         s = "{0}(options={1})"
         return s.format(self.__class__.__name__, self.options)
-
-    def with_name(self, name):
-        """The name to give this chart."""
-        util.is_valid(name)
-        self.options.update({'name': name})
-        return self
-
-    def with_description(self, description):
-        """The description to attach to this chart."""
-        util.is_valid(description)
-        self.options.update({'description': description})
-        return self
 
     def with_id(self, id):
         """The unique identifier for this chart.
@@ -50,7 +38,7 @@ class Chart(Resource):
         https://developers.signalfx.com/docs/signalflow-overview
         """
         util.is_valid(program)
-        self.options.update({'programText': str(program)})
+        self.options.update({'programText': program})
         return self
 
     def to_dict(self):
@@ -62,27 +50,11 @@ class Chart(Resource):
             'options': curr_chart_opts
         })
 
+        chart_opts_copy.update({
+            'programText': str(chart_opts_copy['programText'])
+        })
+
         return chart_opts_copy
-
-    def delete(self):
-        """Delete the given resource in the SignalFx API.
-        """
-        return self.__action__('delete',
-            self.endpoint + '/' + self.__get__('id'), lambda x: None)
-
-    def read(self):
-        """Attempt to find the given chart in SignalFx.
-
-        Your chances are much higher if you provide the chart id via
-        'with_id'. Otherwise, we will attempt to do a best effort to search for
-        your chart based on name.
-        """
-        if self.__get__('id'):
-            return self.__action__('get',
-                self.endpoint + '/' + self.__get__('id'), lambda x: None)
-        else:
-            return self.__action__('get', self.endpoint, lambda x: None,
-                params={'name': self.__get__('name')})
 
     def create(self, dry_run=False):
         """Create a chart in the SignalFx API.
@@ -92,7 +64,7 @@ class Chart(Resource):
         self.options = self.to_dict()
         return super(Chart, self).create(dry_run=dry_run)
 
-    def update(self, name=None, description=None, dry_run=False):
+    def update(self, name=None, description=None, resource_id=None, dry_run=False):
         """Update a chart in the SignalFx API.
 
         WARNING: Users are strongly discouraged from updating charts outside
@@ -107,7 +79,7 @@ class Chart(Resource):
         if name:
             updated_opts.update({'name': name})
         if description:
-            updated_opts.update({'name': name})
+            updated_opts.update({'description': description})
 
         if dry_run:
             return updated_opts
@@ -118,17 +90,19 @@ class Chart(Resource):
             self.__find_existing_match__(query_result)
 
         except ResourceAlreadyExistsError:
-            chart = self.__filter_matches__(query_result)
+            self.options = self.to_dict()
+            return super(Chart, self).update(name=name, description=description, resource_id=resource_id)
 
-            if name:
-                chart.update({'name': name})
-            if description:
-                chart.update({'description': description})
+        except ResourceHasMultipleExactMatchesError as e:
+            if 'id' in self.options:
+                self.options = self.to_dict()
+                return super(Chart, self).update(name=name, description=description, resource_id=self.options['id'])
+            else:
+                raise e
 
-            return self.__action__('put', self.endpoint + '/' + chart['id'],
-                lambda x: chart)
         except ResourceMatchNotFoundError:
             return self.create(dry_run=dry_run)
+
 
 class UnitPrefix(Enum):
     """Enum for unit prefix types in TimeSeriesCharts."""

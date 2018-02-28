@@ -1,0 +1,64 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2018-02-20T20:38:22",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "DELETE",
+        "uri": "https://api.signalfx.com/v2/dashboardgroup/DWgXZfyAcAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": ""
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Date": [
+            "Tue, 20 Feb 2018 20:38:22 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 204,
+          "message": "No Content"
+        },
+        "url": "https://api.signalfx.com/v2/dashboardgroup/DWgXZfyAcAA"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.0"
+}
