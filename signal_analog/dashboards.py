@@ -1,12 +1,12 @@
 from copy import deepcopy
 
-from signal_analog.charts import Chart
-from signal_analog.resources import Resource
-import signal_analog.util as util
-from signal_analog.errors \
-    import ResourceMatchNotFoundError, ResourceAlreadyExistsError
 import click
-from signal_analog import debug
+
+import signal_analog.util as util
+from signal_analog.charts import Chart
+from signal_analog.errors import ResourceMatchNotFoundError, \
+    ResourceAlreadyExistsError
+from signal_analog.resources import Resource
 
 
 class DashboardGroup(Resource):
@@ -66,7 +66,6 @@ class DashboardGroup(Resource):
                                                                 (self.base_url + self.endpoint),
                                                                 self.options))
             return None
-
         if self.__create_helper__(force=force, interactive=interactive):
             dashboard_group_create_response = self.__action__('post', self.endpoint,
                                                               lambda x: self.options,
@@ -86,26 +85,14 @@ class DashboardGroup(Resource):
 
             if len(self.dashboards) > 0:
                 for dashboard in self.dashboards:
-                    dashboard_create_response = dashboard.with_api_token(self.api_token).update()
+                    dashboard_create_response = dashboard.with_api_token(self.api_token).create(force=True)
                     self.options['dashboards'].append(dashboard_create_response['id'])
                     self.dashboard_group_ids.append(dashboard_create_response['groupId'])
-
-                    msg = "Updating dashboard with name '{0}' and parent " +\
-                          "group id '{1}' for Dashboard Group '{2}' with " +\
-                          "id '{3}'"
-                    debug(msg.format(
-                      dashboard_create_response['name'],
-                      dashboard_create_response['groupId'],
-                      dashboard_group_create_response['name'],
-                      dashboard_group_create_response['id']))
 
                 for dashboard_id in self.options['dashboards']:
                     self.clone(dashboard_id, dashboard_group_create_response['id'])
 
-                dupes = frozenset(self.dashboard_group_ids)
-                debug("These dashboards groups are dupes and will be deleted:")
-                debug(dupes)
-                for dashboardGroupId in dupes:
+                for dashboardGroupId in frozenset(self.dashboard_group_ids):
                     self.with_id(dashboardGroupId).delete()
 
                 if len(dashboard_group_create_response['dashboards']) > 0:
@@ -131,80 +118,93 @@ class DashboardGroup(Resource):
 
         return super(DashboardGroup, self).read()
 
-    def update(self, name=None, description=None, dry_run=False):
+    def __update_dashboard_resources__(self, dashboard_group_state):
+        """Update child resources for this dashboard group.
+        """
+        state = deepcopy(dashboard_group_state)
+
+        remote_dashboard_ids = state['dashboards']
+
+        def get_config_helper(id):
+            res = Dashboard(session=self.session_handler) \
+                .with_api_token(self.api_token).with_id(id).read()
+            return {'id': id, 'name': res['name']}
+
+        remote_dashboards = list(map(get_config_helper, remote_dashboard_ids))
+
+        local_dashboards = self.dashboards
+
+        # Update dashboards that exist in SignalFx
+        for remote_dashboard in remote_dashboards:
+            for local_dashboard in local_dashboards:
+                if remote_dashboard['name'] == local_dashboard.__get__('name'):
+                    local_dashboard \
+                        .with_id(remote_dashboard['id']) \
+                        .with_api_token(self.api_token) \
+                        .update()
+                    break
+
+        # Delete dashboards that exist in SignalFx but not in our local config
+        local_names = list(map(lambda x: x.__get__('name'), local_dashboards))
+        for remote_dashboard in remote_dashboards:
+            if remote_dashboard['name'] not in local_names:
+                Dashboard(session=self.session_handler) \
+                    .with_id(remote_dashboard['id']) \
+                    .with_api_token(self.api_token) \
+                    .delete()
+
+        # Create dashboards that exist in our local config but not in SignalFx
+        remote_names = list(map(lambda x: x['name'], remote_dashboards))
+        for local_dashboard in local_dashboards:
+            if local_dashboard.__get__('name') not in remote_names:
+                resp = local_dashboard \
+                    .with_api_token(self.api_token) \
+                    .create(force=True)
+                self.clone(resp['id'], state['id'])
+                self.with_id(resp['groupId']).delete()
+
+        return state
+
+    def update(self, name=None, description=None, resource_id=None, dry_run=False):
         """Updates a SignalFx dashboard group using the /dashboardgroup/_id_ helper
         endpoint.
 
         See: https://developers.signalfx.com/v2/reference#update-dashboard-group
         """
 
-        debug("Update DashboardGroup")
-        query_result = self.__find_existing_resources__()
+        if 'id' in self.options or resource_id:
+            dashboard_group = super(DashboardGroup, self).read(resource_id=resource_id)
+            self.options = self.__update_dashboard_resources__(dashboard_group)
+            return super(DashboardGroup, self).update(name=name,
+                                                      description=description,
+                                                      resource_id=resource_id)
+        else:
+            query_result = self.__find_existing_resources__()
 
-        try:
-            self.__find_existing_match__(query_result)
+            try:
+                self.__find_existing_match__(query_result)
 
-        except ResourceAlreadyExistsError:
-            dashboard_group = self.__filter_matches__(query_result)
-            msg = "Found existing match with name '{0}' and id '{1}'"
-            debug(msg.format(dashboard_group['name'], dashboard_group['id']))
+            except ResourceAlreadyExistsError:
+                self.options = self.__update_dashboard_resources__(self.__filter_matches__(query_result))
 
-            if name:
-                dashboard_group.update({'name': name})
-            if description:
-                dashboard_group.update({'description': description})
+                if dry_run:
+                    click.echo(
+                        "Updates the Dashboard Group named: \"{0}\". If it doesn't exist, will create a new one.  "
+                        "API call being executed: \n"
+                        "PUT {1} \nRequest Body: \n {2}".format(self.options['name'],
+                                                                (self.base_url + self.endpoint + '/' +
+                                                                 self.options[
+                                                                     'id']),
+                                                                self.options))
+                    return None
 
-            if dry_run:
-                click.echo("Updates the Dashboard Group named: \"{0}\". If it doesn't exist, will create a new one.  "
-                           "API call being executed: \n"
-                           "PUT {1} \nRequest Body: \n {2}".format(self.options['name'],
-                                                                   (self.base_url + self.endpoint + '/' +
-                                                                    dashboard_group[
-                                                                        'id']),
-                                                                   dashboard_group))
-                return None
+                return super(DashboardGroup, self).update(name=name,
+                                                          description=description,
+                                                          resource_id=resource_id)
+            except ResourceMatchNotFoundError:
+                return self.create(dry_run=dry_run)
 
-            if len(self.dashboards) > 0:
-                for dashboard in self.dashboards:
-                    dashboard_create_response = dashboard.with_api_token(self.api_token).update()
-                    self.options['dashboards'].append(dashboard_create_response['id'])
-                    self.dashboard_group_ids.append(dashboard_create_response['groupId'])
-
-                for dashboard_id in self.options['dashboards']:
-                    # Only clone the dashboards that are not part of the existing dashboard group
-                    d_id = Dashboard(session=self.session_handler) \
-                        .with_api_token(self.api_token) \
-                        .with_id(dashboard_id)\
-                        .read()
-
-                    if d_id['groupId'] != dashboard_group['id']:
-                        self.clone(dashboard_id, dashboard_group['id'])
-
-                # Remove the groupId of the current dashboard group from the list of dashboard groups
-                # as we don't want to delete the current dashboard group in the next step
-                while dashboard_group['id'] in self.dashboard_group_ids:
-                    self.dashboard_group_ids.remove(dashboard_group['id'])
-
-                for dashboardGroupId in frozenset(self.dashboard_group_ids):
-                    self.with_id(dashboardGroupId).delete()
-
-                dashboards_to_delete = [x for x in dashboard_group['dashboards'] if x not in self.options['dashboards']]
-                if len(dashboards_to_delete) is not 0:
-                    for dashboard_id in dashboards_to_delete:
-                        Dashboard(session=self.session_handler) \
-                            .with_api_token(self.api_token) \
-                            .with_id(dashboard_id)\
-                            .delete()
-
-            return self.__action__('put', '/dashboardgroup/' + dashboard_group['id'],
-                                   lambda x: dashboard_group)
-        except ResourceMatchNotFoundError:
-            msg = "Couldn't update Dashboard Group with name '{0}', " +\
-                  "creating it instead."
-            debug(msg.format(self.__get__('name')))
-            return self.create(dry_run=dry_run)
-
-    def delete(self, dry_run=False):
+    def delete(self, resource_id=None, dry_run=False):
         """Deletes a SignalFx dashboard group using the /dashboardgroup/<id> helper
         endpoint. Dashboard Group Id is required
 
@@ -215,7 +215,7 @@ class DashboardGroup(Resource):
                        .format(self.options['id'], (self.base_url + self.endpoint + '/' + self.options['id'])))
             return None
 
-        return super(DashboardGroup, self).delete()
+        return super(DashboardGroup, self).delete(resource_id=resource_id)
 
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
         """Clones a SignalFx dashboard using the /dashboardgroup/_id_/dashboard helper
@@ -233,10 +233,7 @@ class DashboardGroup(Resource):
                                                                 self.clone_options))
             return None
 
-        self.clone_options['sourceDashboard'] = dashboard_id
-        return self.__action__('post', self.endpoint + '/' + dashboard_group_id + '/dashboard',
-                               lambda x: self.clone_options, params=None,
-                               dry_run=dry_run)
+        return super(DashboardGroup, self).clone(dashboard_id=dashboard_id, dashboard_group_id=dashboard_group_id)
 
 
 class Dashboard(Resource):
@@ -278,7 +275,7 @@ class Dashboard(Resource):
                                    dry_run=dry_run, interactive=interactive,
                                    force=force)
 
-    def read(self, dry_run=False):
+    def read(self, resource_id=None, dry_run=False):
         """Gets data of a Signalfx dashboard using the /dashboard/<id> helper
         endpoint. Dashboard Id is required
 
@@ -289,7 +286,7 @@ class Dashboard(Resource):
                        .format(self.options['id'], (self.base_url + self.endpoint + '/' + self.options['id'])))
             return None
 
-        return super(Dashboard, self).read()
+        return super(Dashboard, self).read(resource_id=resource_id)
 
     def __update_child_resources__(self, chart_state):
         """Update child resources for this dashboard.
@@ -315,7 +312,7 @@ class Dashboard(Resource):
 
         local_charts = self.__get__('charts', [])
 
-        # Update existing charts
+        # Update charts that exist in SignalFx
         for remote_chart in remote_charts:
             for local_chart in local_charts:
                 if remote_chart['name'] == local_chart.__get__('name'):
@@ -325,7 +322,7 @@ class Dashboard(Resource):
                         .update()
                     break
 
-        # Delete charts that exist in SignalFx but not our local config
+        # Delete charts that exist in SignalFx but not in our local config
         local_names = list(map(lambda x: x.__get__('name'), local_charts))
         for remote_chart in remote_charts:
             if remote_chart['name'] not in local_names:
@@ -337,7 +334,7 @@ class Dashboard(Resource):
                 # call which has adverse effects(throws a 500 error)
                 state[:] = [d for d in state if d.get('chartId') != remote_chart['id']]
 
-        # Create charts in our local environment but not in SignalFx
+        # Create charts that exist in our local config but not in SignalFx
         remote_names = list(map(lambda x: x['name'], remote_charts))
         for local_chart in local_charts:
             if local_chart.__get__('name') not in remote_names:
@@ -364,73 +361,81 @@ class Dashboard(Resource):
                 })
         return state
 
-    def update(self, name=None, description=None, dry_run=False):
+    def update(self, name=None, description=None, resource_id=None, dry_run=False):
         """Updates a Signalfx dashboard using the /dashboard/_id_ helper
         endpoint. A list of chart models is required.
 
         See: https://developers.signalfx.com/v2/reference#update-dashboard
         """
-
-        query_result = self.__find_existing_resources__()
-
-        try:
-            self.__find_existing_match__(query_result)
-
-        except ResourceAlreadyExistsError:
-            dashboard = self.__filter_matches__(query_result)
+        if 'id' in self.options or resource_id:
+            dashboard = self.read()
             dashboard.update({
                 'charts': self.__update_child_resources__(dashboard['charts'])
             })
+            self.options = dashboard
+            return super(Dashboard, self).update(name=name, description=description, resource_id=resource_id)
 
-            if name:
-                dashboard.update({'name': name})
-            if description:
-                dashboard.update({'description': description})
-
-            # TODO ***REMOVED***
-            ***REMOVED***
-            #
-            # 1. We need to update the dashboard config and PUT it back when
-            #    we've updated or added a chart.
-            # 2. We should NOT update the dashboard config and PUT it back when
-            #    we delete a chart.
-            #
-            # Our implementation makes it exceptionally inconvenient to special
-            # case delete behavior. Let's check back in a bit to see what
-            # API changes SignalFx ***REMOVED***.
-            #
-            # https://jira.nike.com/browse/SIP-1062
-            if dry_run:
-                click.echo("Updates the Dashboard named: \"{0}\". If it doesn't exist, will create a new one.  "
-                           "API call being executed: \n"
-                           "PUT {1} \nRequest Body: \n {2}".format(self.options['name'],
-                                                                   (self.base_url + self.endpoint + '/' + dashboard[
-                                                                       'id']),
-                                                                   dashboard))
-                return None
+        else:
+            query_result = self.__find_existing_resources__()
 
             try:
-                return self.__action__('put', '/dashboard/' + dashboard['id'],
-                                       lambda x: dashboard)
-            except RuntimeError:
-                msg = """
-WARNING: signal_analog has caught a potentially fatal runtime error when
-updating a dashboard with the id '{0}'.
+                self.__find_existing_match__(query_result)
 
-This typically happens when we delete a chart from an existing dashboard. It is
-***REMOVED***
-ensure that this is resolved in a future release.
+            except ResourceAlreadyExistsError:
+                dashboard = self.__filter_matches__(query_result)
+                dashboard.update({
+                    'charts': self.__update_child_resources__(dashboard['charts'])
+                })
 
-To track the status of this work subscribe to the following ticket:
-https://jira.nike.com/browse/SIP-1062
-                """
-                click.secho(msg.format(dashboard['id']), fg='yellow')
-                return self.with_id(dashboard['id']).read()
+                if name:
+                    dashboard.update({'name': name})
+                if description:
+                    dashboard.update({'description': description})
 
-        except ResourceMatchNotFoundError:
-            return self.create(dry_run=dry_run)
+                # TODO ***REMOVED***
+                ***REMOVED***
+                #
+                # 1. We need to update the dashboard config and PUT it back when
+                #    we've updated or added a chart.
+                # 2. We should NOT update the dashboard config and PUT it back when
+                #    we delete a chart.
+                #
+                # Our implementation makes it exceptionally inconvenient to special
+                # case delete behavior. Let's check back in a bit to see what
+                # API changes SignalFx ***REMOVED***.
+                #
+                # https://jira.nike.com/browse/SIP-1062
+                if dry_run:
+                    click.echo("Updates the Dashboard named: \"{0}\". If it doesn't exist, will create a new one.  "
+                               "API call being executed: \n"
+                               "PUT {1} \nRequest Body: \n {2}".format(self.options['name'],
+                                                                       (self.base_url + self.endpoint + '/' + dashboard[
+                                                                           'id']),
+                                                                       dashboard))
+                    return None
 
-    def delete(self, dry_run=False):
+                try:
+                    return self.__action__('put', '/dashboard/' + dashboard['id'],
+                                           lambda x: dashboard)
+                except RuntimeError:
+                    msg = """
+    WARNING: signal_analog has caught a potentially fatal runtime error when
+    updating a dashboard with the id '{0}'.
+    
+    This typically happens when we delete a chart from an existing dashboard. It is
+    ***REMOVED***
+    ensure that this is resolved in a future release.
+    
+    To track the status of this work subscribe to the following ticket:
+    https://jira.nike.com/browse/SIP-1062
+                    """
+                    click.secho(msg.format(dashboard['id']), fg='yellow')
+                    return self.with_id(dashboard['id']).read()
+
+            except ResourceMatchNotFoundError:
+                return self.create(dry_run=dry_run)
+
+    def delete(self, resource_id=None, dry_run=False):
         """Deletes a SignalFx dashboard using the /dashboard/<id> helper
         endpoint. Dashboard Group Id is required
 
@@ -447,10 +452,9 @@ https://jira.nike.com/browse/SIP-1062
         orphaned and available to other dashboards. If you wish to delete them at the same time you delete their current 
         dashboard you must send a Delete Chart API call for each chart. And, that's exactly what we are doing here
         """
-        list_of_charts = [charts['chartId'] for charts in self.with_id(self.options['id']).read()['charts']]
-
-        if len(list_of_charts) > 0:
+        list_of_charts = [charts['chartId'] for charts in self.read(resource_id=resource_id)['charts']]
+        if list_of_charts:
             for chart in list_of_charts:
                 Chart(session=self.session_handler).with_api_token(self.api_token).with_id(chart).delete()
 
-        return super(Dashboard, self).delete()
+        return super(Dashboard, self).delete(resource_id=resource_id)
