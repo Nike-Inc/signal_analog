@@ -1,10 +1,12 @@
-import requests
-import signal_analog.util as util
-from signal_analog.errors import ResourceMatchNotFoundError, \
-        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
-import click
 import sys
+
+import click
+import requests
+
+import signal_analog.util as util
 from signal_analog import debug
+from signal_analog.errors import ResourceMatchNotFoundError, \
+    ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 
 # py2/3 compatability hack so that we can consistently handle JSON errors.
 try:
@@ -247,14 +249,14 @@ class Resource(object):
         Your have to provide the resource id via
         'with_id' or you can pass the id as a parameter
         """
-        uid = resource_id if resource_id else self.__get__('id')
+        rid = resource_id if resource_id else self.__get__('id')
         if name:
             self.options.update({'name': name})
         if description:
             self.options.update({'description': description})
-        if uid:
+        if rid:
             return self.__action__(
-                'put', self.endpoint + '/' + uid, lambda x: x)
+                'put', self.endpoint + '/' + rid, lambda x: x)
         else:
             raise ValueError('Id is required for resource updates')
 
@@ -290,6 +292,7 @@ class Resource(object):
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
         """Default implementation for resource cloning."""
 
+        self.options = {'sourceDashboard': dashboard_id}
         return self.__action__(
             'post',
             self.endpoint + '/' + dashboard_group_id + '/dashboard',

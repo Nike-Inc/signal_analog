@@ -1,12 +1,12 @@
 """Chart objects representable in the SignalFX API."""
 
-from enum import Enum
 from copy import deepcopy
+from enum import Enum
 
-from signal_analog.resources import Resource
-from signal_analog.errors import ResourceMatchNotFoundError, \
-        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 import signal_analog.util as util
+from signal_analog.errors import ResourceMatchNotFoundError, \
+    ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
+from signal_analog.resources import Resource
 
 
 class Chart(Resource):
