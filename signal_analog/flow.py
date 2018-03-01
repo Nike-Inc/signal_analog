@@ -214,10 +214,10 @@ class Function(object):
         self.call_stack.append(Map(by=by, over=over))
         return self
 
-    def publish(self, label=None):
+    def publish(self, label=None, enable=None):
         """Publish the output of a stream so that it is visible outside of a
            computation."""
-        self.call_stack.append(Publish(label=label))
+        self.call_stack.append(Publish(label=label, enable=enable))
         return self
 
     def timeshift(self, by=None, over=None):
@@ -669,12 +669,12 @@ class Map(StreamMethod):
 
 class Publish(StreamMethod):
 
-    def __init__(self, label=None):
+    def __init__(self, label=None, enable=None):
         """Publish the output of a stream so that it is visible outside of a
            computation.
         """
         super(Publish, self).__init__("publish")
-        self.args = [KWArg("label", label)]
+        self.args = [KWArg("label", label), KWArg("enable", enable)]
 
 
 class Timeshift(StreamMethod):
