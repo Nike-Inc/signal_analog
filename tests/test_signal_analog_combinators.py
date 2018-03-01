@@ -34,6 +34,18 @@ def test_binary_combinator_or(f, ff):
     assert str(comb.Or(f, ff)) == "{0} or {1}".format(str(f), str(ff))
 
 
+@given(flows(), flows())
+def test_binary_combinator_mul(f, ff):
+    """Mul combinator should always intersperse '*' in the elements."""
+    assert str(comb.Mul(f, ff)) == "{0} * {1}".format(str(f), str(ff))
+
+
+@given(flows(), flows())
+def test_binary_combinator_div(f, ff):
+    """Mul combinator should always intersperse '*' in the elements."""
+    assert str(comb.Div(f, ff)) == "{0} \ {1}".format(str(f), str(ff))
+
+
 @given(flows())
 def test_combinator_not(expr):
     """Not combinator should always prefix 'not' to its expression."""
