@@ -27,7 +27,7 @@ def test_program_init_valid_statements():
 
 
 def test_add_statements():
-    data = Data('foo').publish(label='A')
+    data = Data('foo').publish(label='A', enable='False')
     program = Program()
     program.add_statements(data)
     assert program.statements[0] == data

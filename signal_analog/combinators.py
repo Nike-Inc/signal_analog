@@ -56,6 +56,18 @@ class GT(NAryCombinator):
         super(GT, self).__init__('>', left, right)
 
 
+class Mul(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(Mul, self).__init__('*', left, right)
+
+
+class Div(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(Div, self).__init__('\\', left, right)
+
+
 class Not(object):
 
     def __init__(self, expr):
