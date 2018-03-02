@@ -65,7 +65,7 @@ class Mul(NAryCombinator):
 class Div(NAryCombinator):
 
     def __init__(self, left, right):
-        super(Div, self).__init__('\\', left, right)
+        super(Div, self).__init__('/', left, right)
 
 
 class Not(object):
