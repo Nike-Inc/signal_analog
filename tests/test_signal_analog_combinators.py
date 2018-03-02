@@ -42,7 +42,7 @@ def test_binary_combinator_mul(f, ff):
 
 @given(flows(), flows())
 def test_binary_combinator_div(f, ff):
-    """Div combinator should always intersperse '*' in the elements."""
+    """Div combinator should always intersperse '/' in the elements."""
     assert str(comb.Div(f, ff)) == "{0} / {1}".format(str(f), str(ff))
 
 
