@@ -1,5 +1,11 @@
 # History
 
+## 0.22.0 (2018-03-01)
+
+  * Added Mul and Div combinators for multiplying and dividing streams
+  * Added "enable" option for publishing a stream. Setting enable=False
+    will hide that particular stream in a chart/detector.
+
 ## 0.21.0 (2018-02-28)
 
   * Dashboard Group support has been added giving you the ability group sets of

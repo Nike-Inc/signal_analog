@@ -9,7 +9,7 @@ import os
 
 __author__ = """Fernando Freire"""
 __email__ = '***REMOVED***'
-__version__ = '0.21.0'
+__version__ = '0.22.0'
 
 logging_config = pkg_resources.resource_string(
     __name__, 'logging.yaml').decode('utf-8')
