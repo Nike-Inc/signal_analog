@@ -15,6 +15,9 @@ to PEP 8 standards.
 from numbers import Number
 
 from six import string_types
+from operator import itemgetter
+import sys
+from inspect import getmembers, isclass
 
 # Py 2/3 compatability hack to force `filter` to always return an iterator
 try:
@@ -100,8 +103,6 @@ class Function(object):
 
     def __init__(self, name):
         """Base SignalFlow stream function class."""
-        if not name:
-            raise Exception("Name cannot be None.")
         self.name = name
         self.args = []
         self.call_stack = []
@@ -399,6 +400,61 @@ class VarStrArg(object):
 
     def __str__(self):
         return ",".join(map(lambda x: str(StrArg(x)), self.arg))
+
+
+class Formula(Function):
+    """Base formula class representing the infix operators that support
+       function calls"""
+
+    def __init__(self, name, *combArgs):
+        """Create a new Formula object.
+
+        Arguments:
+            name: the name of the combinator from signal_analog.combinators
+                  to base our Formula on.
+            combArgs: list of arguments we'd like to pass to our combinator.
+        """
+        super(Formula, self).__init__('')
+        module = "signal_analog.combinators"
+        # The combinators module needs to be loaded so that we can inspect
+        # its classes.
+        if module not in sys.modules:
+            import signal_analog.combinators
+
+        # This is a tuple of class name and class constructor.
+        classes = getmembers(sys.modules[module], isclass)
+
+        # Destructure the result of filtering our module classes so that we
+        # get the class constructor for the NAryCombinator that we're looking
+        # for.
+        (name, clazz), *tail = list(filter(
+            lambda x: name.lower() == itemgetter(0)(x).lower(),
+            classes))
+
+        # Exploit the fact that we don't have a function name but still want
+        # to wrap formulas in parens and have a call stack
+        # (e.g. .mean().publish('foo')).
+        self.args = [Arg(clazz(*combArgs))]
+
+
+class MulForm(Formula):
+
+    def __init__(self, left, right):
+        super(MulForm, self).__init__('Mul', left, right)
+
+class DivForm(Formula):
+    def __init__(self, left, right):
+        super(DivForm, self).__init__('Div', left, right)
+
+
+class SubForm(Formula):
+    def __init__(self, left, right):
+        super(SubForm, self).__init__('Sub', left, right)
+
+
+class PlusForm(Formula):
+    def __init__(self, left, right):
+        super(PlusForm, self).__init__('Plus', left, right)
 
 
 class Data(Function):
