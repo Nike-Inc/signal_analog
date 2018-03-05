@@ -44,6 +44,7 @@ class Or(NAryCombinator):
     def __init__(self, *ns):
         super(Or, self).__init__('or', *ns)
 
+
 class LT(NAryCombinator):
 
     def __init__(self, left, right):
@@ -66,6 +67,18 @@ class Div(NAryCombinator):
 
     def __init__(self, left, right):
         super(Div, self).__init__('/', left, right)
+
+
+class Plus(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(Plus, self).__init__('+', left, right)
+
+
+class Sub(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(Sub, self).__init__('-', left, right)
 
 
 class Not(object):
