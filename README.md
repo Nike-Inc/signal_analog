@@ -19,6 +19,7 @@ or tools then please consult the [signal\_analog\_patterns] documentation.
       - [Updating Dashboards](#dashboards-updates)
       - [Creating Detectors](#detectors)
           - [Building Detectors from Existing Charts](#from_chart)
+      - [Using Flow and Combinator Functions In Formulas](#flow)
       - [Building Dashboard Groups](#dashboard-groups)
       - [Updating Dashboard Group](#dashboard-group-updates)
       - [Talking to the SignalFlow API Directly](#signalflow)
@@ -338,6 +339,27 @@ detector = Detector()\
 
 The above example won't actually alert on anything until we add a `Rule`, which
 you can find examples for in the previous section.
+
+<a name="flow"></a>
+### Using Flow and Combinator Functions In Formulas
+
+`signal_analog` also provides functions for combining SignalFlow statements
+into more complex SignalFlow Formulas. These sorts of Formulas can be useful
+when creating more complex detectors and charts. For instance, if you would like
+to multiply one data stream by another and receive the sum of that Formula,
+it can be accomplished using Op and Mul like so:
+
+```python
+from signal_analog.flow import Op, Program, Data
+from signal_analog.combinators import Mul
+
+# Multiply stream A by stream B and sum the result
+    A = Data('request.mean')
+
+    B = Data('request.count')
+
+    C = Op(Mul(A,B)).sum()
+```
 
 <a name="dashboard-groups"></a>
 ### Building Dashboard Groups
