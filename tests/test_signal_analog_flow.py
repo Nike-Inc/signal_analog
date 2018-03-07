@@ -2,7 +2,8 @@
 
 import pytest
 
-from signal_analog.flow import Program, Data, Filter
+from signal_analog.flow import Program, Data, Filter, Op
+from signal_analog.combinators import Mul
 
 @pytest.mark.parametrize("value", [None, "", {'foo':'bar'}])
 def test_program_init_add_statement_invalid(value):
@@ -50,3 +51,12 @@ def test_find_label_published():
 
 def test_find_label_empty():
     assert Program().find_label('A') is None
+
+def test_op_combines_mul():
+    data1 = Data('request.mean')\
+        .publish(label='A')
+    data2 = Data('request.count')\
+        .publish(label='B')
+    muldata = Op(Mul(data1,data2))
+    program = Program(muldata)
+    assert program.statements[0] == muldata

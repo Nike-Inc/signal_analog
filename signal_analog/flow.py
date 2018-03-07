@@ -100,8 +100,6 @@ class Function(object):
 
     def __init__(self, name):
         """Base SignalFlow stream function class."""
-        if not name:
-            raise Exception("Name cannot be None.")
         self.name = name
         self.args = []
         self.call_stack = []
@@ -491,6 +489,18 @@ class Detect(Function):
         """
         super(Detect, self).__init__("detect")
         self.args = [Arg(on), KWArg("off", off), KWArg("mode", mode)]
+
+
+class Op(Function):
+    """Op combines two streams using mathematical operators and function calls
+    into a SignalFlow Formula that can be used in a Chart of Detector.
+
+    A Formula in SignalFlow requires operations such as *, /, +, - and allows function
+    calls such as .sum(), .publish(), etc
+    """
+    def __init__(self, stmt):
+        super(Op, self).__init__("")
+        self.args = [Arg(stmt)]
 
 
 class When(Function):

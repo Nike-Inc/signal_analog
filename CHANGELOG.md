@@ -1,5 +1,10 @@
 # History
 
+## 0.23.0 (2018-03-06)
+
+  * Added Op class in flow.py to allow multiplying and dividing datastreams
+  to create SignalFlow Functions
+
 ## 0.22.0 (2018-03-01)
 
   * Added Mul and Div combinators for multiplying and dividing streams
