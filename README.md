@@ -361,6 +361,9 @@ from signal_analog.combinators import Mul
     C = Op(Mul(A,B)).sum()
 ```
 
+Print(C) in the above example would produce the following output:
+```(data("request.mean") * data("request.count")).sum()```
+
 <a name="dashboard-groups"></a>
 ### Building Dashboard Groups
 

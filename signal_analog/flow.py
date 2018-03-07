@@ -492,7 +492,12 @@ class Detect(Function):
 
 
 class Op(Function):
+    """Op combines two streams using mathematical operators and function calls
+    into a SignalFlow Formula that can be used in a Chart of Detector.
 
+    A Formula in SignalFlow requires operations such as *, /, +, - and allows function
+    calls such as .sum(), .publish(), etc
+    """
     def __init__(self, stmt):
         super(Op, self).__init__("")
         self.args = [Arg(stmt)]
