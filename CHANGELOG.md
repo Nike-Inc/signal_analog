@@ -1,5 +1,9 @@
 # History
 
+## 0.24.0 (2018-03-09)
+
+  * Fix string parsing to not exclude boolean False, which is required for certain functions like .publish()
+
 ## 0.23.0 (2018-03-06)
 
   * Added Op class in flow.py to allow multiplying and dividing datastreams
