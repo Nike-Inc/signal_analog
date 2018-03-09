@@ -105,7 +105,7 @@ class Function(object):
         self.call_stack = []
 
     def __str__(self):
-        str_args = ",".join(map(str, filter(lambda x: x.arg, self.args)))
+        str_args = ",".join(map(str, filter(lambda x: x.arg is not None, self.args)))
         if not self.call_stack:
             str_calls = ""
         else:
@@ -345,7 +345,7 @@ class StreamMethod(object):
         self.args = []
 
     def __str__(self):
-        str_args = ",".join(map(str, filter(lambda x: x.arg, self.args)))
+        str_args = ",".join(map(str, filter(lambda x: x.arg is not None, self.args)))
         return "{0}({1})".format(self.name, str_args)
 
 
