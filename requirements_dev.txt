@@ -1,24 +1,17 @@
---index-url https://maven:ludist@artifactory.nike.com/artifactory/api/pypi/python-virtual/simple
---trusted-host artifactory.nike.com
-pip
-bumpversion
-wheel
-watchdog
-flake8
-tox
-coverage
-Sphinx
-pytest
-pytest-runner
-pytest-html
-six
-requests
-hypothesis
-requests-mock
-enum34
 betamax
 betamax_serializers
+bumpversion
 click
-mock
-pytest-xdist
+coverage
 email_validator
+enum34
+hypothesis
+mock
+pytest
+pytest-html
+pytest-runner
+pytest-xdist
+requests
+requests-mock
+six
+tox
