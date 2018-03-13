@@ -13,8 +13,8 @@ with open('CHANGELOG.md') as history_file:
 
 requirements = [
     # py2/3 compat dependencies
-    'six',
     'enum34',
+    'six',
     # all other modules
     'requests',
     'click',
@@ -22,41 +22,50 @@ requirements = [
 ]
 
 setup_requirements = [
-    'pytest-runner',
+    'bumpversion',
+    'pytest-runner'
 ]
 
 test_requirements = [
-    'pytest',
+    'betamax',
+    'betamax_serializers',
+    'coverage',
     'hypothesis',
-    'requests-mock'
+    'pytest',
+    'pytest-html',
+    'pytest-xdist',
+    'requests-mock',
+    'tox'
 ]
 
 setup(
     name='signal_analog',
     version='0.24.0',
-    description="Troposphere-like library for building and composing SignalFx SignalFlow programs.",
+    description='A troposphere-like library for managing SignalFx'
+                + 'Charts, Dashboards, and Detectors.',
     long_description=readme + '\n\n' + history,
     author="Fernando Freire",
-    author_email='***REMOVED***',
-    url='https://bitbucket.nike.com/projects/NIK/repos/signal_analog',
+    author_email='fernando.freire@nike.com',
+    url='https://github.com/Nike-inc/signal_analog',
     packages=find_packages(include=['signal_analog']),
     include_package_data=True,
     install_requires=requirements,
     zip_safe=False,
-    keywords='signal_analog',
+    keywords='signal_analog signalfx dashboards charts detectors monitoring '
+             + 'signalflow',
     license='BSD 3-Clause License',
     classifiers=[
-        'Intended Audience :: Developers',
-        'Natural Language :: English',
         "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.6',
-        'Programming Language :: Python :: 2.7',
+        'Development Status :: 5 - Production/Stable',
+        'Environment :: Console',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Natural Language :: English',
+        'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
-        'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: 3.5',
-        'Programming Language :: Python :: 3.6',
-        'License :: OSI Approved :: BSD License'
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Software Development :: Libraries',
+        'Topic :: Utilities'
     ],
     test_suite='tests',
     tests_require=test_requirements,
