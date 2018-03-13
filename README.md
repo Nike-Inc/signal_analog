@@ -534,8 +534,8 @@ existing dashboards:
 # how to run your script.
 
 # For more info on the patterns library check out the source here:
-# https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
-from ***REMOVED***.riposte.dashboard import RiposteDashboard
+# https://bitbucket.nike.com/projects/NIK/repos/signal_analog_patterns/browse
+from signal_analog_patterns.riposte.dashboard import RiposteDashboard
 from signal_analog.cli import CliBuilder
 
 lids = RiposteDashboard('LegacyIdMapping', env='test')
@@ -597,5 +597,5 @@ project template.
 [terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
 [dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
 [dashboard-groups]: https://developers.signalfx.com/v2/reference#dashboard-groups-overview
-[signal\_analog\_patterns]: https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
+[signal\_analog\_patterns]: https://bitbucket.nike.com/projects/NIK/repos/signal_analog_patterns/browse
 [detectors]: https://developers.signalfx.com/v2/reference#detector-model

@@ -2,8 +2,8 @@
 
 import pytest
 
-from signal_analog.flow import Program, Data, Filter, Op
-from signal_analog.combinators import Mul
+from signal_analog.flow import Program, Data, Filter, Op, When
+from signal_analog.combinators import Mul, GT
 
 @pytest.mark.parametrize("value", [None, "", {'foo':'bar'}])
 def test_program_init_add_statement_invalid(value):
@@ -60,3 +60,11 @@ def test_op_combines_mul():
     muldata = Op(Mul(data1,data2))
     program = Program(muldata)
     assert program.statements[0] == muldata
+
+
+def test_when():
+    data1 = Data('request.mean')\
+        .publish(label='A')
+    when = When(GT(data1, 50), '5m', 0.5)
+    program = Program(when)
+    assert program.statements[0] == when

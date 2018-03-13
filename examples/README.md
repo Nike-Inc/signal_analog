@@ -9,4 +9,4 @@ in `examples/charts.py`.
 There are more robust examples of this library in use in the
 [signal\_analog\_patterns] library.
 
-[signal\_analog\_patterns]: https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
+[signal\_analog\_patterns]: https://bitbucket.nike.com/projects/NIK/repos/signal_analog_patterns/browse
