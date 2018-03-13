@@ -508,7 +508,7 @@ class When(Function):
     def __init__(self, predicate, lasting=None, at_least=None):
         """Creates a  object for use in  functions."""
         super(When, self).__init__("when")
-        self.args = [StrArg(predicate), KWArg(
+        self.args = [Arg(predicate), KWArg(
             "lasting", lasting), KWArg("at_least", at_least)]
 
 
