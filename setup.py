@@ -44,6 +44,7 @@ setup(
     install_requires=requirements,
     zip_safe=False,
     keywords='signal_analog',
+    license='BSD 3-Clause License',
     classifiers=[
         'Intended Audience :: Developers',
         'Natural Language :: English',
@@ -55,6 +56,7 @@ setup(
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'License :: OSI Approved :: BSD License'
     ],
     test_suite='tests',
     tests_require=test_requirements,
