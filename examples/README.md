@@ -7,6 +7,6 @@ These examples are organized by module; that is, chart examples will be found
 in `examples/charts.py`.
 
 There are more robust examples of this library in use in the
-***REMOVED*** library.
+[signal\_analog\_patterns] library.
 
-***REMOVED***: https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
+[signal\_analog\_patterns]: https://bitbucket.nike.com/projects/NIK/repos/signal_analog_patterns/browse

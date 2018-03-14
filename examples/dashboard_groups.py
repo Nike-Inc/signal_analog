@@ -18,7 +18,7 @@ dashboard_group = DashboardGroup().with_name('Dashboard Group Name')
 Example 2: Creating a new Dashboard Group with Dashboards 
 
 """
-filters = And(Filter('app', '***REMOVED***'), Filter('env', 'test'))
+filters = And(Filter('app', 'shoeadmin'), Filter('env', 'test'))
 
 program = Data('cpu.utilization', filter=filters).publish()
 chart = TimeSeriesChart().with_name('Chart_Name').with_program(program)
