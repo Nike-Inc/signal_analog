@@ -12,11 +12,13 @@ Example 1: Creating a new Dashboard
 
 This creates a new dashboard for the app specified and with the charts provided
 """
-filters = And(Filter('app', 'shoeadmin'), Filter('env', 'test'))
+filters = And(Filter('app', 'my-app'), Filter('env', 'test'))
 program = Data('cpu.utilization', filter=filters).publish()
 chart = TimeSeriesChart().with_name('Chart_Name').with_program(program)
 
-dashboard_with_single_chart = Dashboard().with_name('Dashboard Name').with_charts(chart)
+dashboard_with_single_chart = Dashboard()\
+    .with_name('Dashboard Name')\
+    .with_charts(chart)
 
 
 """
@@ -33,8 +35,9 @@ chart1 = TimeSeriesChart().with_name('Chart_Name').with_program(program)
 program2 = Data('api_errors', filter=filters).publish()
 chart2 = TimeSeriesChart().with_name('Chart_Name').with_program(program)
 
-dashboard_with_multiple_charts = Dashboard().with_name('Dashboard With Multiple Charts')\
-                                 .with_charts(chart, chart1, chart2)
+dashboard_with_multiple_charts = Dashboard()\
+    .with_name('Dashboard With Multiple Charts')\
+    .with_charts(chart, chart1, chart2)
 
 
 """
@@ -42,14 +45,20 @@ Example 3: Update existing dashboard by removing one of the charts
 
 """
 
-dashboard_remove_chart = Dashboard().with_name('Dashboard Name').with_charts(chart, chart1)
+dashboard_remove_chart = Dashboard()\
+    .with_name('Dashboard Name')\
+    .with_charts(chart, chart1)
 
 """
 Example 3: Rename and existing chart
 
 """
-chart1 = TimeSeriesChart().with_name('Chart_Name_Renamed').with_program(program)
-dashboard_rename_chart = Dashboard().with_name('Dashboard Name').with_charts(chart, chart1)
+chart1 = TimeSeriesChart()\
+    .with_name('Chart_Name_Renamed')\
+    .with_program(program)
+dashboard_rename_chart = Dashboard()\
+    .with_name('Dashboard Name')\
+    .with_charts(chart, chart1)
 
 if __name__ == '__main__':
     from signal_analog.cli import CliBuilder
