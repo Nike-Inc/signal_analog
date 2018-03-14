@@ -22,7 +22,7 @@ def test_program_init_valid_empty():
 
 
 def test_program_init_valid_statements():
-    data = Data('cpu.utilization', filter=Filter('app', 'shoeadmin'))
+    data = Data('cpu.utilization', filter=Filter('app', 'test-app'))
     program = Program(data)
     assert program.statements[0] == data
 
@@ -35,14 +35,14 @@ def test_add_statements():
 
 
 def test_find_label_unpublished():
-    data = Data('cpu.utilization', filter=Filter('app', 'shoeadmin'))
+    data = Data('cpu.utilization', filter=Filter('app', 'test-app'))
     program = Program(data)
 
     assert program.find_label('A') is None
 
 
 def test_find_label_published():
-    data = Data('cpu.utilization', filter=Filter('app', 'shoeadmin'))\
+    data = Data('cpu.utilization', filter=Filter('app', 'test-app'))\
         .publish(label='A')
     program = Program(data)
 
