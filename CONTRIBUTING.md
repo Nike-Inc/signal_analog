@@ -115,4 +115,4 @@ To run a subset of tests:
     $ py.test tests.test_signal_analog
 
 
-[python-dev]: ***REMOVED***#WIP:PythonDevelopmentEnvironments-CodeStyle
+[python-dev]: https://confluence.nike.com/x/1kPlCg#WIP:PythonDevelopmentEnvironments-CodeStyle

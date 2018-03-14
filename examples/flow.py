@@ -13,9 +13,9 @@ from signal_analog.flow import Data, Filter, Program
 program = Program()
 
 # A timeseries representing the 'cpu.utilization' metric that is filtered
-# down to just the '***REMOVED***' application. Also analyze the mean over the
+# down to just the 'shoeadmin' application. Also analyze the mean over the
 # previous minute and compare it to the data from last week.
-data = Data('cpu.utilization', filter=Filter('app', '***REMOVED***'))\
+data = Data('cpu.utilization', filter=Filter('app', 'shoeadmin'))\
     .mean(over='1m')\
     .timeshift('1w')\
     .publish('A')

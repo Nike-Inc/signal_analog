@@ -12,7 +12,7 @@ Example 1: Creating a new Dashboard
 
 This creates a new dashboard for the app specified and with the charts provided
 """
-filters = And(Filter('app', '***REMOVED***'), Filter('env', 'test'))
+filters = And(Filter('app', 'shoeadmin'), Filter('env', 'test'))
 program = Data('cpu.utilization', filter=filters).publish()
 chart = TimeSeriesChart().with_name('Chart_Name').with_program(program)
 

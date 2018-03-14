@@ -3,11 +3,8 @@
 A troposphere-like library for managing SignalFx Charts, Dashboards, and
 Detectors.
 
-For more thorough coverage on the above concepts consult the
-[upstream documentation][signalflow].
-
-If you're looking for pre-built dashboards for existing application frameworks
-or tools then please consult the ***REMOVED*** documentation.
+This library assumes a basic familiarity with resources in SignalFx. For a
+good overview of the SignalFx API consult the [upstream documentation][sfxdocs].
 
 ## TOC
 
@@ -26,7 +23,6 @@ or tools then please consult the ***REMOVED*** documentation.
       - [General `Resource` Guidelines](#general-resource-guidlines)
       - [Creating a CLI for your resources](#cli-builder)
   - [Contributing](#contributing)
-  - [Credits](#credits)
 
 <a name="features"></a>
 ## Features
@@ -34,8 +30,9 @@ or tools then please consult the ***REMOVED*** documentation.
   - Provides bindings for the SignalFlow DSL
   - Provides abstractions for:
       - Charts
-      - Dashboards
+      - Dashboards, DashboardGroups
       - Detectors
+  - A CLI builder to wrap resource definitions (useful for automation)
 
 <a name="installation"></a>
 ## Installation
@@ -53,12 +50,6 @@ Then run the following command to update your environment:
 ```
 pip install -r requirements.txt
 ```
-
-If you are unable to install the package then you may need to check your Python
-configuration so that it conforms to Nike's environment. Consult the
-following documentation for more info:
-
-***REMOVED***
 
 <a name="usage"></a>
 ## Usage
@@ -79,10 +70,11 @@ conjunction with the [Signal Flow DSL][signalflow].
 Consult the [upstream documentation][charts] for more information Charts.
 
 Let's consider an example where we would like to build a chart to monitor
-memory utilization for a single Riposte applicaton in a single environment.
+memory utilization for a single applicaton in a single environment.
 
-Riposte reports metrics for application name as `app` and environment as `env`
-with memory utilization reporting via the `memory.utilization` metric name.
+This assumes a service reports metrics for application name as `app` and
+environment as `env` with memory utilization reporting via the
+`memory.utilization` metric name.
 
 In a timeseries chart, all data displayed on the screen comes from at least one
 `data` definition in the SignalFlow language. Let's begin by defining our
@@ -106,22 +98,22 @@ As a convenience, all transformations on stream functions return the callee,
 so in the above example `ts` remains bound to an instance of `Data`.
 
 Now, this timeseries isn't very useful by itself; if we attached this program
-to a chart we would see _all_ timeseries for _all_ Riposte applications
-reporting to SignalFx.
+to a chart we would see _all_ timeseries for _all_ [Riposte] applications
+reporting to SignalFx!
 
 We can restrict our view of the data by adding a filter on application name:
 
 ```python
 from signal_analog.flow import Data, Filter
 
-app_filter = Filter('app', '***REMOVED***')
+app_filter = Filter('app', 'foo')
 
 ts = Data('memory.utilization', filter=app_filter).publish()
 ```
 
 Now if we created a chart with this program we would only be looking at metrics
-that relate to the `***REMOVED***` application. Much better, but we're still
-looking at instance of `***REMOVED***` _regardless_ of the environment it
+that relate to the `foo` application. Much better, but we're still
+looking at instance of `foo` _regardless_ of the environment it
 lives in.
 
 What we'll want to do is combine our `app_filter` with another filter for the
@@ -270,8 +262,8 @@ from signal_analog.flow import Program, Detect, Filter, Data
 from signal_analog.combinators import GT
 
 # This program fires an alert if memory utilization is above 90% for the
-# '***REMOVED***' application.
-data = Data('memory.utilization', filter=Filter('app', '***REMOVED***')).publish(label='A')
+# 'bar' application.
+data = Data('memory.utilization', filter=Filter('app', 'bar')).publish(label='A')
 alert_label = 'Memory Utilization Above 90'
 detect = Detect(GT(data, 90)).publish(label=alert_label)
 
@@ -289,7 +281,7 @@ info_rule = Rule()\
   # From our detector defined above.
   .for_label(alert_label)\
   .with_severity(Severity.Info)\
-  .with_notifications(EmailNotification('***REMOVED***'))
+  .with_notifications(EmailNotification('me@example.com'))
 
 detector.with_rules(info_rule)
 
@@ -362,7 +354,10 @@ from signal_analog.combinators import Mul
 ```
 
 Print(C) in the above example would produce the following output:
-```(data("request.mean") * data("request.count")).sum()```
+
+```
+(data("request.mean") * data("request.count")).sum()
+```
 
 <a name="dashboard-groups"></a>
 ### Building Dashboard Groups
@@ -444,14 +439,14 @@ penalties when pulling data out depending on the source of the data
 (e.g. AWS/CloudWatch).
 
 SignalFlow constructs are contained in the `flow` module. The following is an
-example SignalFlow program that monitors Riposte RPS metrics for the `foo`
-application in the `test` environment.
+example SignalFlow program that monitors an API services (like [Riposte])
+RPS metrics for the `foo` application in the `test` environment.
 
 ```python
 from signal_analog.flow import Data, Filter
 from signal_analog.combinators import And
 
-all_filters = And(Filter('env', 'prod'), Filter('app', '***REMOVED***'))
+all_filters = And(Filter('env', 'prod'), Filter('app', 'foo'))
 
 program = Data('requests.count', filter=all_filters)).publish()
 ```
@@ -467,7 +462,7 @@ import signalfx
 from signal_analog.flow import Data, Filter
 from signal_analog.combinators import And
 
-app_filter = Filter('app', '***REMOVED***')
+app_filter = Filter('app', 'foo')
 env_filter = Filter('env', 'prod')
 program = Data('requests.count', filter=And(app_filter, env_filter)).publish()
 
@@ -533,16 +528,16 @@ existing dashboards:
 # ^ It's always good to include a "hashbang" so that your terminal knows
 # how to run your script.
 
-# For more info on the patterns library check out the source here:
-# https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
-from ***REMOVED***.riposte.dashboard import RiposteDashboard
+from signal_analog.dashboards import Dashboard
 from signal_analog.cli import CliBuilder
 
-***REMOVED*** = RiposteDashboard('***REMOVED***', env='test')
-***REMOVED*** = RiposteDashboard('***REMOVED***', env='test')
+ingest_dashboard = Dashboard().with_name('my-ingest-service')
+service_dashboard = Dashboard().with_name('my-service')
 
 if __name__ == '__main__':
-  cli = CliBuilder().with_resources(***REMOVED***, ***REMOVED***).build()
+  cli = CliBuilder()\
+      .with_resources(ingest_dashboard, service_dashboard)\
+      .build()
   cli()
 ```
 
@@ -576,26 +571,14 @@ This gives you the following features:
 <a name="contributing"></a>
 ## Contributing
 
-Consult the [docs here for more info about contributing](CONTRIBUTING.md).
+Please read our [docs here for more info about contributing](CONTRIBUTING.md).
 
-Activity diagrams for this project are located in the `docs/activity` directory
-and can be generated locally by running the `make activity_diagrams` task in
-the root of the project. If you don't have `plantuml` installed you can do
-so via Homebrew (`brew install plantuml`).
-
-<a name="credits"></a>
-## Credits
-
-This package was created with
-[Cookiecutter](https://github.com/audreyr/cookiecutter) and the
-[nik/nike_python_template](***REMOVED***)
-project template.
-
+[sfxdocs]: https://developers.signalfx.com/docs/signalfx-api-overview
 [signalflow]: https://developers.signalfx.com/docs/signalflow-overview
 [charts]: https://developers.signalfx.com/reference#charts-overview-1
 [sfx-contact]: https://confluence.nike.com/x/GlHiCQ
 [terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
 [dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
 [dashboard-groups]: https://developers.signalfx.com/v2/reference#dashboard-groups-overview
-***REMOVED***: https://bitbucket.nike.com/projects/NIK/repos/***REMOVED***/browse
 [detectors]: https://developers.signalfx.com/v2/reference#detector-model
+[Riposte]: https://github.com/Nike-inc/riposte

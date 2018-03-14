@@ -14,8 +14,8 @@ This is useful when you just want to create a chart and aren't worried
 about re-usability.
 """
 
-# Look at the mean of the cpu.user metric for ***REMOVED*** in the prod environment
-app_filter = And(Filter('app', '***REMOVED***'), Filter('env', 'prod'))
+# Look at the mean of the cpu.user metric for shoeadmin in the prod environment
+app_filter = And(Filter('app', 'shoeadmin'), Filter('env', 'prod'))
 program = Program(
     Data('cpu.user', filter=app_filter).mean().publish('A')
 )
@@ -52,13 +52,13 @@ class CpuUsedPercentByTypeChart(TimeSeriesChart):
         )
 
     def __program__(self, app, env):
-        app_filter = And(Filter('app', '***REMOVED***'), Filter('env', 'prod'))
+        app_filter = And(Filter('app', 'shoeadmin'), Filter('env', 'prod'))
         return Program(
             Data('cpu.user', filter=app_filter).mean().publish('A')
         )
 
 
-chart_from_templ = CpuUsedPercentByTypeChart('***REMOVED***')
+chart_from_templ = CpuUsedPercentByTypeChart('shoeadmin')
 
 
 if __name__ == '__main__':

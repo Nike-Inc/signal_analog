@@ -8,7 +8,7 @@ import yaml
 import os
 
 __author__ = """Fernando Freire"""
-__email__ = '***REMOVED***'
+__email__ = 'Lst-nike.plus.platform.sharedinfrastructure@nike.com'
 __version__ = '0.24.0'
 
 logging_config = pkg_resources.resource_string(
