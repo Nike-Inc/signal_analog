@@ -15,10 +15,10 @@ This creates a new dashboard group
 dashboard_group = DashboardGroup().with_name('Dashboard Group Name')
 
 """
-Example 2: Creating a new Dashboard Group with Dashboards 
+Example 2: Creating a new Dashboard Group with Dashboards
 
 """
-filters = And(Filter('app', 'shoeadmin'), Filter('env', 'test'))
+filters = And(Filter('app', 'my-app'), Filter('env', 'test'))
 
 program = Data('cpu.utilization', filter=filters).publish()
 chart = TimeSeriesChart().with_name('Chart_Name').with_program(program)
@@ -31,11 +31,12 @@ chart2 = TimeSeriesChart().with_name('Chart_Name').with_program(program)
 
 dashboard1 = Dashboard().with_name('Dashboard1').with_charts(chart)
 dashboard2 = Dashboard().with_name('Dashboard2').with_charts(chart, chart1)
-dashboard3 = Dashboard().with_name('Dashboard3').with_charts(chart, chart1, chart2)
+dashboard3 = Dashboard().with_name('Dashboard3')\
+    .with_charts(chart, chart1, chart2)
 
 dashboard_group_with_dashboards = DashboardGroup() \
-                                    .with_name('Dashboard Group Name') \
-                                    .with_dashboards(dashboard1, dashboard2, dashboard3)
+    .with_name('Dashboard Group Name') \
+    .with_dashboards(dashboard1, dashboard2, dashboard3)
 
 """
 Example 3: Update existing dashboard group by removing one of the dashboards
@@ -50,7 +51,8 @@ dashboard_group_remove_dashboard = DashboardGroup()\
 Example 4: Rename an existing Dashboard
 
 """
-dashboard2 = Dashboard().with_name('Dashboard2_Renamed').with_charts(chart, chart1)
+dashboard2 = Dashboard().with_name('Dashboard2_Renamed')\
+    .with_charts(chart, chart1)
 dashboard_group_rename_dashboard = DashboardGroup()\
                                     .with_name('Dashboard Group Name')\
                                     .with_dashboards(dashboard1, dashboard2)

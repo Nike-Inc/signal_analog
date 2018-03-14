@@ -16,7 +16,7 @@ existing chart or dashboard.
 
 alert_label = 'CPU is too low!'
 
-filters = And(Filter('app', 'shoeadmin'), Filter('env', 'test'))
+filters = And(Filter('app', 'my-app'), Filter('env', 'test'))
 data = Data('cpu.utilization', filter=filters).publish(label='A')
 cpu_too_low = Detect(LT(data, 50)).publish(alert_label)
 program = Program(cpu_too_low)
