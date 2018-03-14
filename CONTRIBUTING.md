@@ -3,11 +3,6 @@
 Contributions are welcome, and they are greatly appreciated! Every
 little bit helps, and credit will always be given.
 
-#### A quick note on code style:
-
-This project follows the development practices outlined in this document:
-[Python Development Environments][python-dev]
-
 You can contribute in many ways:
 
 ## Types of Contributions
@@ -23,18 +18,19 @@ If you are reporting a bug, please include:
 
 ### Fix Bugs
 
-Look through issues for bugs in the JIRA SIP project. Anything tagged with
+[Look through our issues] on GitHub. Anything tagged with
 a "bug" ticket type is open to whoever wants to implement it.
 
 ### Implement Features
 
-Look through issues for stories in the SIP JIRA project.
+[Look through our issues] on GitHub. Anything tagged with "enhancement"
+and "help wanted" is open to whoever wants to implement it.
 
 ### Write Documentation
 
-Signal Analog could always use more documentation,
-whether as part of the official Signal Analog docs,
-in docstrings, or even on Confluence in blog posts, articles, and such.
+Signal Analog could always use more documentation, whether as part of the
+official Signal Analog docs, in docstrings, or even on the web in blog posts,
+articles, and such.
 
 ### Submit Feedback
 
@@ -48,13 +44,13 @@ If you are proposing a feature:
 
 ## Get Started!
 
-Ready to contribute? Here's how to set up
-signal_analog for local development.
+Ready to contribute? Here's how to set up `signal_analog` for local
+development.
 
-1.  Fork the signal_analog repo on BitBucket.
+1.  Fork the `signal_analog` repo on GitHub.
 2.  Clone your fork locally:
 
-        $ git clone ssh://git@bitbucket.nike.com/nik/signal_analog.git
+        $ git clone ssh://git@github.com:Nike-inc/signal_analog.git
 
 3.  Install your local copy into a virtualenv. Assuming you have
     at least python3 installed:
@@ -99,7 +95,7 @@ Before you submit a pull request, check that it meets these guidelines:
 2.  If the pull request adds functionality, the docs should be updated.
     Put your new functionality into a function with a docstring, and add
     the feature to the list in README.md.
-3.  The pull request should work for Python 2.7 and 3.6.
+3.  The pull request should work for Python 2.7+ and 3.6+.
 4.  The project version should be updated accordingly
 
       * You can use `bumpversion` for this (installed as part of
@@ -115,4 +111,4 @@ To run a subset of tests:
     $ py.test tests.test_signal_analog
 
 
-[python-dev]: ***REMOVED***#WIP:PythonDevelopmentEnvironments-CodeStyle
+[Look through our issues]: https://github.com/Nike-inc/signal_analog/issues
