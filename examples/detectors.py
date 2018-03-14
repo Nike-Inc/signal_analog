@@ -14,11 +14,11 @@ This is useful when you want to monitor something that isn't tied to an
 existing chart or dashboard.
 """
 
-alert_label = 'CPU is too low!'
+alert_label = 'CPU is too low for 75% of the last 2 minutes!'
 
 filters = And(Filter('app', 'my-app'), Filter('env', 'test'))
 data = Data('cpu.utilization', filter=filters).publish(label='A')
-cpu_too_low = Detect(LT(data, 50)).publish(alert_label)
+cpu_too_low = Detect(When(LT(data, 50), '2m', 0.75)).publish(alert_label)
 program = Program(cpu_too_low)
 
 info_rule = Rule()\
