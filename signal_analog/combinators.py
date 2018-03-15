@@ -68,6 +68,18 @@ class Div(NAryCombinator):
         super(Div, self).__init__('/', left, right)
 
 
+class Add(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(Add, self).__init__('+', left, right)
+
+
+class Sub(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(Sub, self).__init__('-', left, right)
+
+
 class Not(object):
 
     def __init__(self, expr):
