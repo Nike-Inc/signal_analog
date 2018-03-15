@@ -392,8 +392,7 @@ class Dashboard(Resource):
                 if description:
                     dashboard.update({'description': description})
 
-                # TODO we are forced to do this while SignalFx figures out their
-                # API problems. The gist of it is:
+                # TODO temporary workaround in the SignalFx API
                 #
                 # 1. We need to update the dashboard config and PUT it back when
                 #    we've updated or added a chart.
@@ -402,9 +401,7 @@ class Dashboard(Resource):
                 #
                 # Our implementation makes it exceptionally inconvenient to special
                 # case delete behavior. Let's check back in a bit to see what
-                # API changes SignalFx can make for us.
-                #
-                # https://jira.nike.com/browse/SIP-1062
+                # API changes SignalFx makes.
                 if dry_run:
                     click.echo("Updates the Dashboard named: \"{0}\". If it doesn't exist, will create a new one.  "
                                "API call being executed: \n"
@@ -419,16 +416,12 @@ class Dashboard(Resource):
                                            lambda x: dashboard)
                 except RuntimeError:
                     msg = """
-    WARNING: signal_analog has caught a potentially fatal runtime error when
-    updating a dashboard with the id '{0}'.
-    
-    This typically happens when we delete a chart from an existing dashboard. It is
-    considered a defect in the SignalFx API, and the relevant teams are working to
-    ensure that this is resolved in a future release.
-    
-    To track the status of this work subscribe to the following ticket:
-    https://jira.nike.com/browse/SIP-1062
-                    """
+WARNING: signal_analog has caught a potentially fatal runtime error when
+updating a dashboard with the id '{0}'.
+
+This typically happens when we delete a chart from an existing dashboard.
+"""
+
                     click.secho(msg.format(dashboard['id']), fg='yellow')
                     return self.with_id(dashboard['id']).read()
 
