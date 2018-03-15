@@ -46,6 +46,18 @@ def test_binary_combinator_div(f, ff):
     assert str(comb.Div(f, ff)) == "{0} / {1}".format(str(f), str(ff))
 
 
+@given(flows(), flows())
+def test_binary_combinator_add(f, ff):
+    """Add combinator should always intersperse '+' in the elements."""
+    assert str(comb.Add(f, ff)) == "{0} + {1}".format(str(f), str(ff))
+
+
+@given(flows(), flows())
+def test_binary_combinator_sub(f, ff):
+    """Sub combinator should always intersperse '-' in the elements."""
+    assert str(comb.Sub(f, ff)) == "{0} - {1}".format(str(f), str(ff))
+
+
 @given(flows())
 def test_combinator_not(expr):
     """Not combinator should always prefix 'not' to its expression."""
