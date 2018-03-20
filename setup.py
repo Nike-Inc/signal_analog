@@ -18,7 +18,8 @@ requirements = [
     # all other modules
     'requests',
     'click',
-    'email_validator'
+    'email_validator',
+    'pyyaml'
 ]
 
 setup_requirements = [
