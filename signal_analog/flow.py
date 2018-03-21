@@ -206,11 +206,11 @@ class Function(object):
         self.call_stack.append(Publish(label=label, enable=enable))
         return self
 
-    def timeshift(self, by=None, over=None):
+    def timeshift(self, offset=None):
         """Timeshift the datapoints for a stream, offset by a specified time
            period e.g. 1 week (1w), to enable comparison of time series with
            its own past behavior."""
-        self.call_stack.append(Timeshift(by=by, over=over))
+        self.call_stack.append(Timeshift(offset))
         return self
 
     def ewma(self, alpha):
@@ -677,13 +677,13 @@ class Publish(StreamMethod):
 
 class Timeshift(StreamMethod):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, offset):
         """Timeshift the datapoints for a stream, offset by a specified time
            period e.g. 1 week (1w), to enable comparison of time series with
            its own past behavior.
         """
         super(Timeshift, self).__init__("timeshift")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [StrArg(offset)]
 
 
 class Ewma(StreamMethod):
