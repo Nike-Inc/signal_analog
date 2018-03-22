@@ -41,7 +41,7 @@ test_requirements = [
 
 setup(
     name='signal_analog',
-    version='0.24.0',
+    version='0.24.1',
     description='A troposphere-like library for managing SignalFx'
                 + 'Charts, Dashboards, and Detectors.',
     long_description=readme + '\n\n' + history,
