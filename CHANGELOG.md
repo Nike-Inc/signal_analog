@@ -1,5 +1,9 @@
 # History
 
+## 0.24.1 (2018-03-22)
+
+  * The timeshift method's arguments changed. Now accepts a single argument for offset.
+
 ## 0.24.0 (2018-03-09)
 
   * Fix string parsing to not exclude boolean False, which is required for certain functions like .publish()
