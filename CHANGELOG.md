@@ -1,6 +1,6 @@
 # History
 
-## 0.24.1 (2018-03-22)
+## 0.25.1 (2018-03-22)
 
   * The timeshift method's arguments changed. Now accepts a single argument for offset.
 
