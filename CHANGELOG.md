@@ -1,5 +1,10 @@
 # History
 
+## 1.0.0 (2018-04-02)
+
+  * Symbolic release for `signal_analog`. Future version bumps should conform
+  to the `semver` policy outlined [here][deployment].
+
 ## 0.25.1 (2018-03-22)
 
   * The timeshift method's arguments changed. Now accepts a single argument for offset.
@@ -102,3 +107,5 @@
 ## 0.1.0 (2017-09-14)
 
   * Initial release
+
+[deployment]: https://github.com/Nike-Inc/signal_analog/wiki/Developers-::-Deployment
