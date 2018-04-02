@@ -8,3 +8,6 @@ install:
   - pip install -r requirements_dev.txt
 script:
   - make test
+cache:
+  directories:
+    - $HOME/.hypothesis
