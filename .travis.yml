@@ -9,7 +9,7 @@ script:
   - make test
 cache:
   directories:
-    - "$HOME/.hypothesis"
+    - "./.hypothesis"
 deploy:
   provider: pypi
   on:
