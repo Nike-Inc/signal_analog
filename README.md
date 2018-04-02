@@ -1,4 +1,5 @@
-# Signal Analog
+[![Build Status](https://travis-ci.com/Nike-Inc/signal_analog.svg?token=ifpf79nsCVxHsobs3pQ5&branch=master)](https://travis-ci.com/Nike-Inc/signal_analog)
+# signal_analog
 
 A troposphere-like library for managing SignalFx Charts, Dashboards, and
 Detectors.
