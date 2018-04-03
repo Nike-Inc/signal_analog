@@ -23,11 +23,12 @@ def in_given_enum(value, enum):
         raise ValueError(msg.format(value, valid_values))
 
 
-def is_valid(value, error_message=None):
+def is_valid(value, error_message=None, expected_type=None):
     """Void method ensuring value is non-empty.
 
     Arguments:
         value: the value to check
+        expected_type: expected data type of the value. Ex: bool, str
         error_message: an optional error message to provide the user
 
     Returns:
@@ -38,6 +39,13 @@ def is_valid(value, error_message=None):
             raise ValueError(error_message)
         else:
             raise ValueError()
+    elif expected_type:
+        try:
+            if not isinstance(value, expected_type):
+                raise ValueError('Expecting a variable of type {0}. But got a {1}("{2}")'
+                                 .format(expected_type, type(value), value))
+        except TypeError:
+            raise ValueError('"{0}" is not a valid data type'.format(expected_type))
 
 
 def find_duplicates(xs):
