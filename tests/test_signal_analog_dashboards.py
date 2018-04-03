@@ -18,6 +18,7 @@ from signal_analog.errors import ResourceMatchNotFoundError, \
     ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError, \
     SignalAnalogError
 from signal_analog.flow import Data
+from signal_analog.filters import DashboardFilters, FilterVariable
 
 
 # Global config. This will store all recorded requests in the 'mocks' dir
@@ -370,6 +371,218 @@ def test_dashboard_delete_child_chart():
         resp_delete = dashboard.update()
         # We should only have one chart
         assert len(resp_delete['charts']) == 1
+
+
+def test_dashboard_create_with_filters_with_one_variable_success():
+    app_var = FilterVariable().with_alias('app') \
+        .with_property('app') \
+        .with_is_required(True) \
+        .with_value('bar')
+
+    dashboard_filter = DashboardFilters() \
+        .with_variables(app_var)
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_with_one_variable_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
+
+
+def test_dashboard_create_with_filters_with_multiple_variables_success():
+    app_var = FilterVariable().with_alias('app') \
+        .with_property('app') \
+        .with_is_required(True) \
+        .with_value('bar')
+
+    env_var = FilterVariable().with_alias('env') \
+        .with_property('env') \
+        .with_is_required(True) \
+        .with_value('prod')
+
+    dashboard_filter = DashboardFilters() \
+        .with_variables(app_var, env_var)
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_with_multiple_variables_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
+
+
+def test_dashboard_create_with_filters_with_multiple_values_success():
+    app_var = FilterVariable().with_alias('app') \
+        .with_property('app') \
+        .with_is_required(True) \
+        .with_value('bar1', 'bar2')
+
+    dashboard_filter = DashboardFilters() \
+        .with_variables(app_var)
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_with_multiple_values_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
+
+
+def test_dashboard_create_with_filters_with_empty_alias_failure():
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_with_empty_alias_failure',
+                                      serialize_with='prettyjson'):
+        with pytest.raises(ValueError):
+            app_var = FilterVariable().with_alias('') \
+                .with_property('app') \
+                .with_is_required(True) \
+                .with_value('bar')
+
+            dashboard_filter = DashboardFilters() \
+                .with_variables(app_var)
+
+            Dashboard(session=global_session)\
+                .with_name('testy mctesterson')\
+                .with_api_token('foo')\
+                .with_charts(mk_chart('lol'))\
+                .with_filters(dashboard_filter)\
+                .create()
+
+
+def test_dashboard_create_with_filters_with_empty_property_failure():
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_with_empty_property_failure',
+                                      serialize_with='prettyjson'):
+        with pytest.raises(ValueError):
+            app_var = FilterVariable().with_alias('app') \
+                .with_property('') \
+                .with_is_required(True) \
+                .with_value('bar')
+
+            dashboard_filter = DashboardFilters() \
+                .with_variables(app_var)
+
+            Dashboard(session=global_session)\
+                .with_name('testy mctesterson')\
+                .with_api_token('foo')\
+                .with_charts(mk_chart('lol'))\
+                .with_filters(dashboard_filter)\
+                .create()
+
+
+def test_dashboard_create_with_filters_with_missing_alias_failure():
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_with_missing_alias_failure',
+                                      serialize_with='prettyjson'):
+        with pytest.raises(ValueError):
+            app_var = FilterVariable().with_property('app') \
+                .with_is_required(True) \
+                .with_value('bar')
+
+            dashboard_filter = DashboardFilters() \
+                .with_variables(app_var)
+
+            Dashboard(session=global_session)\
+                .with_name('testy mctesterson')\
+                .with_api_token('foo')\
+                .with_charts(mk_chart('lol'))\
+                .with_filters(dashboard_filter)\
+                .create()
+
+
+def test_dashboard_create_with_filters_with_missing_property_failure():
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_with_missing_property_failure',
+                                      serialize_with='prettyjson'):
+        with pytest.raises(ValueError):
+            app_var = FilterVariable().with_alias('app') \
+                .with_is_required(True) \
+                .with_value('bar')
+
+            dashboard_filter = DashboardFilters() \
+                .with_variables(app_var)
+
+            Dashboard(session=global_session)\
+                .with_name('testy mctesterson')\
+                .with_api_token('foo')\
+                .with_charts(mk_chart('lol'))\
+                .with_filters(dashboard_filter)\
+                .create()
+
+
+def test_dashboard_create_with_filters_with_unexpected_data_type_failure():
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_with_unexpected_data_type_failure',
+                                      serialize_with='prettyjson'):
+        with pytest.raises(ValueError):
+            app_var = FilterVariable().with_alias('app') \
+                .with_is_required("THIS SHOULD BE BOOLEAN NOT A STRING") \
+                .with_value('bar')
+
+            dashboard_filter = DashboardFilters() \
+                .with_variables(app_var)
+
+            Dashboard(session=global_session)\
+                .with_name('testy mctesterson')\
+                .with_api_token('foo')\
+                .with_charts(mk_chart('lol'))\
+                .with_filters(dashboard_filter)\
+                .create()
+
+
+def test_dashboard_update_with_filters_success():
+    app_var = FilterVariable().with_alias('app') \
+        .with_property('app') \
+        .with_is_required(True) \
+        .with_value('bar')
+
+    env_var = FilterVariable().with_alias('env') \
+        .with_property('env') \
+        .with_is_required(True) \
+        .with_value('prod')
+
+    dashboard_filter = DashboardFilters() \
+        .with_variables(app_var, env_var)
+
+    with global_recorder.use_cassette('dashboard_update_with_filters_success',
+                                      serialize_with='prettyjson'):
+
+        # This Dashboard does not exist. So, a new dashboard should be created
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .update()
+
+
+def test_dashboard_update_existing_dashboard_with_filters_success():
+
+    app_var = FilterVariable().with_alias('app') \
+        .with_property('app') \
+        .with_is_required(True) \
+        .with_value('bar1', 'bar2')
+
+    dashboard_filter = DashboardFilters() \
+        .with_variables(app_var)
+
+    with global_recorder.use_cassette('dashboard_update_with_filters_success',
+                                      serialize_with='prettyjson'):
+
+        # This Dashboard already exists. So, it will be updated
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .update()
 
 
 def test_dashboard_read_success():

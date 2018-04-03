@@ -86,12 +86,12 @@ class Resource(object):
 
     def __set_endpoint__(self, endpoint):
         """Internal helper for setting valid endpoints."""
-        util.is_valid(endpoint,  "Cannot proceed with an empty endpoint")
+        util.is_valid(endpoint,  error_message="Cannot proceed with an empty endpoint")
         self.endpoint = endpoint
 
     def __set_base_url__(self, base_url):
         """Internal helper for setting valid base_urls."""
-        util.is_valid(base_url, "Cannot proceed with empty base_url")
+        util.is_valid(base_url, error_message="Cannot proceed with empty base_url")
         self.base_url = base_url
 
     def with_api_token(self, token):
