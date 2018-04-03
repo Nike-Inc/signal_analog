@@ -15,6 +15,7 @@ good overview of the SignalFx API consult the [upstream documentation][sfxdocs].
       - [Building Charts](#charts)
       - [Building Dashboards](#dashboards)
       - [Updating Dashboards](#dashboards-updates)
+      - [Dashboard Filters](#dashboard-filters)
       - [Creating Detectors](#detectors)
           - [Building Detectors from Existing Charts](#from_chart)
       - [Using Flow and Combinator Functions In Formulas](#flow)
@@ -232,6 +233,47 @@ dash.update(
 
 `Dashboard` updates will also update any `Chart` configurations it owns.
 
+    Note: If the given dashboard does not already exist, `update` will create a new dashboard for you
+
+<a name="dashboard-filters"></a>
+### Providing Dashboard Filters
+
+Dashboards can be configured to provide various filters that affect the behavior of all configured charts (overriding any conflicting filters at the chart level). You may wish to do this in order to quickly change the environment that you're observing for a given set of charts.
+
+
+```python
+from signal_analog.filters import DashboardFilters, FilterVariable
+app_var = FilterVariable().with_alias('app')\
+.with_property('app')\
+.with_is_required(True)\
+.with_value('foo')
+
+env_var = FilterVariable().with_alias('env')\
+.with_property('env')\
+.with_is_required(True)\
+.with_value('prod')
+
+app_filter = DashboardFilters() \
+.with_variables(app_var, env_var)
+```
+So, here we are creating a couple of filters "app=foo" and "env=prod".
+Now we can pass this config to a dashboard object:
+
+```python
+response = dash\
+.with_charts(memory_chart)\
+.with_api_token('my-api-token')\
+.with_filters(app_filter)\
+.create()
+```
+
+If you are updating an existing dashboard:
+
+```python
+response = dash\
+.with_filters(app_filter)\
+.update()
+```
 <a name="detectors"></a>
 ### Creating Detectors
 

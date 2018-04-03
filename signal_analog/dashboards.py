@@ -246,10 +246,15 @@ class Dashboard(Resource):
         """
         super(Dashboard, self).__init__(endpoint='/dashboard', session=session)
         self.options = {'charts': []}
+        self.filters = {'filters': {}}
 
     def with_charts(self, *charts):
         for chart in charts:
             self.options['charts'].append(deepcopy(chart))
+        return self
+
+    def with_filters(self, filters):
+        self.filters.update({'filters': filters.options})
         return self
 
     def create(self, dry_run=False, force=False, interactive=False):
@@ -269,11 +274,24 @@ class Dashboard(Resource):
             return None
 
         if self.__create_helper__(force=force, interactive=interactive):
-            return self.__action__('post', self.endpoint + '/simple',
-                                   lambda x: util.flatten_charts(self.options),
-                                   params={'name': self.__get__('name')},
-                                   dry_run=dry_run, interactive=interactive,
-                                   force=force)
+
+            dashboard_create_response = self.__action__('post', self.endpoint + '/simple',
+                                                        lambda x: util.flatten_charts(self.options),
+                                                        params={'name': self.__get__('name')},
+                                                        dry_run=dry_run, interactive=interactive,
+                                                        force=force)
+
+            """Check to see if there are any filters defined, If so, update the dashboard with those filters.
+                NOTE: This cannot be done during dashboard creation as we are using /simple endpoint which 
+                doesn't support passing filters
+            """
+            if bool(self.filters['filters']):
+                dashboard_create_response['filters'] = self.filters['filters']
+                self.options = dashboard_create_response
+                return super(Dashboard, self).update()
+
+            else:
+                return dashboard_create_response
 
     def read(self, resource_id=None, dry_run=False):
         """Gets data of a Signalfx dashboard using the /dashboard/<id> helper
@@ -372,6 +390,11 @@ class Dashboard(Resource):
             dashboard.update({
                 'charts': self.__update_child_resources__(dashboard['charts'])
             })
+
+            """ Check to see if there are any filters defined, If so, update the dashboard with those filters."""
+            if bool(self.filters['filters']):
+                dashboard['filters'] = self.filters['filters']
+
             self.options = dashboard
             return super(Dashboard, self).update(name=name, description=description, resource_id=resource_id)
 
@@ -391,6 +414,9 @@ class Dashboard(Resource):
                     dashboard.update({'name': name})
                 if description:
                     dashboard.update({'description': description})
+                """ Check to see if there are any filters defined, If so, update the dashboard with those filters."""
+                if bool(self.filters['filters']):
+                    dashboard['filters'] = self.filters['filters']
 
                 # TODO temporary workaround in the SignalFx API
                 #
