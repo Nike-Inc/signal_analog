@@ -2,6 +2,11 @@ import signal_analog.util as util
 
 
 class FilterVariable(object):
+    """
+    A set of predefined filters that are available by default at the top of the dashboard.
+    The properties of the included objects are indicated as filters.variables[x].propertyName.
+    This notation means the propertyName property is part of the object in each element of the variables array.
+    """
 
     def __init__(self):
         self.options = {}
@@ -54,7 +59,12 @@ class FilterVariable(object):
 
 
 class DashboardFilters(object):
-    """A filters model to be attached to a dashboard."""
+    """
+    A filters model to be attached to a dashboard. Filters allow fine grained control over the data displayed
+    in the charts within the dashboard. They can be adhoc or saved as variables to allow easy reuse of filter criteria.
+    Filters can also be used to apply a custom time window to all of the charts in the dashboard.
+    The properties of the included object are indicated as filters.propertyName.
+    """
 
     def __init__(self):
         """Initialize filters object"""

@@ -436,105 +436,90 @@ def test_dashboard_create_with_filters_with_multiple_values_success():
 
 
 def test_dashboard_create_with_filters_with_empty_alias_failure():
+    with pytest.raises(ValueError):
+        app_var = FilterVariable().with_alias('') \
+            .with_property('app') \
+            .with_is_required(True) \
+            .with_value('bar')
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_with_empty_alias_failure',
-                                      serialize_with='prettyjson'):
-        with pytest.raises(ValueError):
-            app_var = FilterVariable().with_alias('') \
-                .with_property('app') \
-                .with_is_required(True) \
-                .with_value('bar')
+        dashboard_filter = DashboardFilters() \
+            .with_variables(app_var)
 
-            dashboard_filter = DashboardFilters() \
-                .with_variables(app_var)
-
-            Dashboard(session=global_session)\
-                .with_name('testy mctesterson')\
-                .with_api_token('foo')\
-                .with_charts(mk_chart('lol'))\
-                .with_filters(dashboard_filter)\
-                .create()
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
 
 
 def test_dashboard_create_with_filters_with_empty_property_failure():
+    with pytest.raises(ValueError):
+        app_var = FilterVariable().with_alias('app') \
+            .with_property('') \
+            .with_is_required(True) \
+            .with_value('bar')
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_with_empty_property_failure',
-                                      serialize_with='prettyjson'):
-        with pytest.raises(ValueError):
-            app_var = FilterVariable().with_alias('app') \
-                .with_property('') \
-                .with_is_required(True) \
-                .with_value('bar')
+        dashboard_filter = DashboardFilters() \
+            .with_variables(app_var)
 
-            dashboard_filter = DashboardFilters() \
-                .with_variables(app_var)
-
-            Dashboard(session=global_session)\
-                .with_name('testy mctesterson')\
-                .with_api_token('foo')\
-                .with_charts(mk_chart('lol'))\
-                .with_filters(dashboard_filter)\
-                .create()
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
 
 
 def test_dashboard_create_with_filters_with_missing_alias_failure():
+    with pytest.raises(ValueError):
+        app_var = FilterVariable().with_property('app') \
+            .with_is_required(True) \
+            .with_value('bar')
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_with_missing_alias_failure',
-                                      serialize_with='prettyjson'):
-        with pytest.raises(ValueError):
-            app_var = FilterVariable().with_property('app') \
-                .with_is_required(True) \
-                .with_value('bar')
+        dashboard_filter = DashboardFilters() \
+            .with_variables(app_var)
 
-            dashboard_filter = DashboardFilters() \
-                .with_variables(app_var)
-
-            Dashboard(session=global_session)\
-                .with_name('testy mctesterson')\
-                .with_api_token('foo')\
-                .with_charts(mk_chart('lol'))\
-                .with_filters(dashboard_filter)\
-                .create()
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
 
 
 def test_dashboard_create_with_filters_with_missing_property_failure():
+    with pytest.raises(ValueError):
+        app_var = FilterVariable().with_alias('app') \
+            .with_is_required(True) \
+            .with_value('bar')
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_with_missing_property_failure',
-                                      serialize_with='prettyjson'):
-        with pytest.raises(ValueError):
-            app_var = FilterVariable().with_alias('app') \
-                .with_is_required(True) \
-                .with_value('bar')
+        dashboard_filter = DashboardFilters() \
+            .with_variables(app_var)
 
-            dashboard_filter = DashboardFilters() \
-                .with_variables(app_var)
-
-            Dashboard(session=global_session)\
-                .with_name('testy mctesterson')\
-                .with_api_token('foo')\
-                .with_charts(mk_chart('lol'))\
-                .with_filters(dashboard_filter)\
-                .create()
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
 
 
 def test_dashboard_create_with_filters_with_unexpected_data_type_failure():
+    with pytest.raises(ValueError):
+        app_var = FilterVariable().with_alias('app') \
+            .with_is_required("THIS SHOULD BE BOOLEAN NOT A STRING") \
+            .with_value('bar')
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_with_unexpected_data_type_failure',
-                                      serialize_with='prettyjson'):
-        with pytest.raises(ValueError):
-            app_var = FilterVariable().with_alias('app') \
-                .with_is_required("THIS SHOULD BE BOOLEAN NOT A STRING") \
-                .with_value('bar')
+        dashboard_filter = DashboardFilters() \
+            .with_variables(app_var)
 
-            dashboard_filter = DashboardFilters() \
-                .with_variables(app_var)
-
-            Dashboard(session=global_session)\
-                .with_name('testy mctesterson')\
-                .with_api_token('foo')\
-                .with_charts(mk_chart('lol'))\
-                .with_filters(dashboard_filter)\
-                .create()
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
 
 
 def test_dashboard_update_with_filters_success():
