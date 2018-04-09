@@ -5,7 +5,6 @@ import pytest
 
 import signal_analog.combinators as comb
 from .generators import ascii, flows
-import time
 
 
 settings.load_profile("ci")
@@ -20,7 +19,6 @@ def test_binary_combinator_empty_operator(value):
 
 @given(op=ascii(), values=lists(elements=ascii()))
 def test_binary_combinator_str(op, values):
-    time.sleep(9)
     """Binary combinator should always intersperse its op in the elements."""
     assert str(comb.NAryCombinator(op, *values)) == \
         " {0} ".format(op).join(map(str, values))
