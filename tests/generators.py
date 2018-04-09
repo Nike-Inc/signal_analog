@@ -2,8 +2,12 @@
 
 from hypothesis.strategies import \
      text, characters, composite, recursive, sampled_from, floats
+from hypothesis import settings
 
 import signal_analog.flow as flow
+
+
+settings.load_profile("ci")
 
 
 def ascii():

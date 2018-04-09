@@ -1,24 +1,26 @@
 """Tests for `signal_analog.combinators` package."""
-
-from hypothesis import given, settings, unlimited
+from hypothesis import given, settings
 from hypothesis.strategies import one_of, just, none, lists
 import pytest
-import time
 
 import signal_analog.combinators as comb
 from .generators import ascii, flows
+import time
 
-@settings(timeout=unlimited)
+
+settings.load_profile("ci")
+
+
 @given(one_of(none(), just("")))
 def test_binary_combinator_empty_operator(value):
     """Binary combinator should not allow empty operators"""
     with pytest.raises(ValueError):
         comb.NAryCombinator(value)
-        time.sleep(900) #to test the timeout setting.
 
 
 @given(op=ascii(), values=lists(elements=ascii()))
 def test_binary_combinator_str(op, values):
+    time.sleep(9)
     """Binary combinator should always intersperse its op in the elements."""
     assert str(comb.NAryCombinator(op, *values)) == \
         " {0} ".format(op).join(map(str, values))
