@@ -1,6 +1,5 @@
 """Tests for `signal_analog.combinators` package."""
-
-from hypothesis import given
+from hypothesis import given, settings
 from hypothesis.strategies import one_of, just, none, lists
 import pytest
 
@@ -8,9 +7,12 @@ import signal_analog.combinators as comb
 from .generators import ascii, flows
 
 
+settings.load_profile("ci")
+
+
 @given(one_of(none(), just("")))
 def test_binary_combinator_empty_operator(value):
-    """Binary combinator should not allow empty operators"""
+    """Binary combinator should not accept empty operators"""
     with pytest.raises(ValueError):
         comb.NAryCombinator(value)
 
