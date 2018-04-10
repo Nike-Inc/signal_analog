@@ -12,7 +12,7 @@ settings.load_profile("ci")
 
 @given(one_of(none(), just("")))
 def test_binary_combinator_empty_operator(value):
-    """Binary combinator should not allow empty operators"""
+    """Binary combinator should not accept empty operators"""
     with pytest.raises(ValueError):
         comb.NAryCombinator(value)
 
