@@ -98,3 +98,29 @@ class Not(object):
 
     def __str__(self):
         return "not " + str(self.expr)
+
+
+class Assign(object):
+
+    def __init__(self, assignee, expr):
+        """Assign the given expression to the assignee
+
+        Arguments:
+            assignee: the name to which to assign the expression
+            expr: the expression to assign
+
+        Returns:
+            An object that can be serialized to SignalFlow
+        """
+
+        if not assignee:
+            raise ValueError("Assignee cannot be empty in Assign statement.")
+
+        if not expr:
+            raise ValueError("Expression cannot be empty in Assign statement.")
+
+        self.assignee = assignee
+        self.expr = expr
+
+    def __str__(self):
+        return str(self.assignee) + " = " + str(self.expr)
