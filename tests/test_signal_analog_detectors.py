@@ -396,7 +396,7 @@ def test_detector_from_chart_not_program():
 
 def test_detector_with_assign_combinator():
     """ We should correctly generate a detector comprised of two assignment
-        combinators
+        functions
     """
     cpu_util_string = 'cpu.utilization'
     sum_string = 'utilization_sum'
