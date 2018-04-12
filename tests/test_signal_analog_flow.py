@@ -2,8 +2,12 @@
 
 import pytest
 
-from signal_analog.flow import Program, Data, Filter, Op, When, Ref
+from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref
 from signal_analog.combinators import Mul, GT
+
+from hypothesis import given, settings
+from .generators import ascii, flows
+
 
 @pytest.mark.parametrize("value", [None, "", {'foo':'bar'}])
 def test_program_init_add_statement_invalid(value):
@@ -68,6 +72,13 @@ def test_when():
     when = When(GT(data1, 50), '5m', 0.5)
     program = Program(when)
     assert program.statements[0] == when
+
+
+@given(assignee=ascii(), expr=flows())
+def test_assign(assignee, expr):
+    """Assign.__str__ should always return a string matching assignee = expr."""
+    assert str(Assign(assignee, expr)) == \
+        "{0} = {1}".format(str(assignee), str(expr))
 
 
 def test_ref():

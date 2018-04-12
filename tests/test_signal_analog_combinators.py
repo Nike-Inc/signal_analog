@@ -66,13 +66,6 @@ def test_combinator_not(expr):
     assert str(comb.Not(expr)) == "not {0}".format(str(expr))
 
 
-@given(assignee=ascii(), expr=flows())
-def test_combinator_assign(assignee, expr):
-    """Assign combinator should always be assignee = expr."""
-    assert str(comb.Assign(assignee, expr)) == \
-        "{0} = {1}".format(str(assignee), str(expr))
-
-
 @given(flows(), flows())
 def test_mixed_combinators(f, ff):
     """Mixed combinators should preserve order of operations."""

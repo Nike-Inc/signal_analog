@@ -1,7 +1,5 @@
 """Provides n-ary combinators for SignalFlow programs."""
 
-import signal_analog.util as util
-
 
 class NAryCombinator(object):
 
@@ -100,29 +98,3 @@ class Not(object):
 
     def __str__(self):
         return "not " + str(self.expr)
-
-
-class Assign(object):
-
-    def __init__(self, assignee, expr):
-        """Assign the given expression to the assignee
-
-        Arguments:
-            assignee: the name to which to assign the expression
-            expr: the expression to assign
-
-        Returns:
-            An object that can be serialized to SignalFlow
-        """
-
-        # Ensure that assignee is valid and is a string
-        util.is_valid(assignee, str)
-
-        # Ensure that expr is valid
-        util.is_valid(expr)
-
-        self.assignee = assignee
-        self.expr = expr
-
-    def __str__(self):
-        return str(self.assignee) + " = " + str(self.expr)
