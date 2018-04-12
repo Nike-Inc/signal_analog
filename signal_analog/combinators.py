@@ -1,5 +1,7 @@
 """Provides n-ary combinators for SignalFlow programs."""
 
+import signal_analog.util as util
+
 
 class NAryCombinator(object):
 
@@ -113,11 +115,11 @@ class Assign(object):
             An object that can be serialized to SignalFlow
         """
 
-        if not assignee:
-            raise ValueError("Assignee cannot be empty in Assign statement.")
+        # Ensure that assignee is valid and is a string
+        util.is_valid(assignee, str)
 
-        if not expr:
-            raise ValueError("Expression cannot be empty in Assign statement.")
+        # Ensure that expr is valid
+        util.is_valid(expr)
 
         self.assignee = assignee
         self.expr = expr

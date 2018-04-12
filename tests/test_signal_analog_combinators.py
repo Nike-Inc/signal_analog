@@ -66,7 +66,7 @@ def test_combinator_not(expr):
     assert str(comb.Not(expr)) == "not {0}".format(str(expr))
 
 
-@given(flows(), flows())
+@given(assignee=ascii(), expr=flows())
 def test_combinator_assign(assignee, expr):
     """Assign combinator should always be assignee = expr."""
     assert str(comb.Assign(assignee, expr)) == \
