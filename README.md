@@ -349,6 +349,7 @@ count() of the datapoints over a given period of time.
 from signal_analog.flow import \
     Data, \
     Detect, \
+    Ref, \
     When
 
 from signal_analog.combinators import \
@@ -359,8 +360,8 @@ from signal_analog.combinators import \
 program = Program( \
     Assign('my_var', Data('cpu.utilization')) \
     Assign('my_other_var', Data('cpu.utilization').count()) \
-    Assign('mean', Div('my_var', 'my_other_var')) \
-    Detect(When(GT('mean', 2000))) \
+    Assign('mean', Div(Ref('my_var'), Ref('my_other_var'))) \
+    Detect(When(GT(Ref('mean'), 2000))) \
 )
 
 print(program)

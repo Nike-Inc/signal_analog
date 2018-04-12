@@ -2,7 +2,7 @@
 
 import pytest
 
-from signal_analog.flow import Program, Data, Filter, Op, When
+from signal_analog.flow import Program, Data, Filter, Op, When, Ref
 from signal_analog.combinators import Mul, GT
 
 @pytest.mark.parametrize("value", [None, "", {'foo':'bar'}])
@@ -68,3 +68,10 @@ def test_when():
     when = When(GT(data1, 50), '5m', 0.5)
     program = Program(when)
     assert program.statements[0] == when
+
+
+def test_ref():
+    strRef = "example_reference"
+    ref = Ref(strRef)
+
+    assert str(ref) == strRef

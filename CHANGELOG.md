@@ -2,6 +2,7 @@
 
 ## 1.2.0 (2018-04-11)
   * Added an Assign combinator that will enable more complex detectors which are constructed by combining multiple data streams
+  * Added a Ref flow operator that will enable referencing assignments in a way that can be validated at later steps by checking for an Assign object with a match between the reference string and the assignee
 
 ## 1.1.0 (2018-04-04)
   * Introducing Dashboard Filters(only variables as of now) which can be configured to provide various filters that affect the behavior of all configured charts (overriding any conflicting filters at the chart level). You may wish to do this in order to quickly change the environment that you're observing for a given set of charts.
