@@ -337,6 +337,8 @@ detector.with_api_token('foo').create()
 To add multiple alerting rules we would need to use different `detect`
 statements with distinct `label`s to differentiate them from one another.
 
+#### Detectors with Combinators
+
 More complex detectors, like those created as a function of two other data
 streams, require a more complex setup including data stream assignments.
 If we wanted to create a detector that watched for an average above a certain
