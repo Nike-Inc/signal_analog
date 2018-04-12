@@ -4,6 +4,8 @@ from numbers import Number
 
 from six import string_types
 
+import signal_analog.util as util
+
 # Py 2/3 compatability hack to force `filter` to always return an iterator
 try:
     from itertools import ifilter
@@ -509,6 +511,32 @@ class Lasting(Function):
         self.args = [KWArg("lasting", lasting), KWArg("at_least", at_least)]
 
 
+class Assign(Function):
+
+    def __init__(self, assignee, expr):
+        """Assign the given expression to the assignee
+
+        Arguments:
+            assignee: the name to which to assign the expression
+            expr: the expression to assign
+
+        Returns:
+            An object that can be serialized to SignalFlow
+        """
+
+        # Ensure that assignee is valid and is a string
+        util.is_valid(assignee, str)
+
+        # Ensure that expr is valid
+        util.is_valid(expr)
+
+        self.assignee = assignee
+        self.expr = expr
+
+    def __str__(self):
+        return str(self.assignee) + " = " + str(self.expr)
+
+
 class Bottom(StreamMethod):
 
     def __init__(self, by=None, over=None):
@@ -853,3 +881,9 @@ class Promote(StreamMethod):
         """Promotes a metadata property to a dimension."""
         super(Promote, self).__init__("promote")
         self.args = [StrArg(property)]
+
+
+class Ref(Arg):
+
+    def __init__(self, arg):
+        super(self.__class__, self).__init__(arg)

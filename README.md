@@ -337,6 +337,46 @@ detector.with_api_token('foo').create()
 To add multiple alerting rules we would need to use different `detect`
 statements with distinct `label`s to differentiate them from one another.
 
+#### Detectors that Combine Data Streams
+
+More complex detectors, like those created as a function of two other data
+streams, require a more complex setup including data stream assignments.
+If we wanted to create a detector that watched for an average above a certain
+threshold, we may want to use the quotient of the sum() of the data and the
+count() of the datapoints over a given period of time.
+
+```python
+from signal_analog.flow import \
+    Assign, \
+    Data, \
+    Detect, \
+    Ref, \
+    When
+
+from signal_analog.combinators import \
+    Div, \
+    GT
+
+program = Program( \
+    Assign('my_var', Data('cpu.utilization')) \
+    Assign('my_other_var', Data('cpu.utilization').count()) \
+    Assign('mean', Div(Ref('my_var'), Ref('my_other_var'))) \
+    Detect(When(GT(Ref('mean'), 2000))) \
+)
+
+print(program)
+```
+
+The above code generates the following program:
+
+```
+my_var = data('cpu.utilization')
+my_other_var = data('cpu.utilization').count()
+mean = (my_var / my_other_var)
+
+when(detect(mean > 2000))
+```
+
 <a name="from_chart"></a>
 #### Building Detectors from Existing Charts
 

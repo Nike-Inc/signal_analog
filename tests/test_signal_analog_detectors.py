@@ -4,8 +4,8 @@ import re
 import pytest
 
 from email_validator import EmailNotValidError
-from signal_analog.combinators import LT
-from signal_analog.flow import Data, Program, Detect
+from signal_analog.combinators import Div, GT, LT
+from signal_analog.flow import Assign, Data, Detect, Program, Ref, When
 from signal_analog.charts import TimeSeriesChart
 from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
                                     SlackNotification, HipChatNotification, \
@@ -392,3 +392,46 @@ def test_detector_from_chart_not_program():
 
     with pytest.raises(ValueError):
         Detector().from_chart(chart, lambda x: x)
+
+
+def test_detector_with_assign_combinator():
+    """ We should correctly generate a detector comprised of two assignment
+        functions
+    """
+    cpu_util_string = 'cpu.utilization'
+    sum_string = 'utilization_sum'
+    count_string = 'utilization_count'
+    mean_string = 'utilization_mean'
+
+    sum_data = Data(cpu_util_string).sum()
+    count_data = Data(cpu_util_string).count()
+
+    utilization_sum = Assign(sum_string, sum_data)
+    utilization_count = Assign(count_string, count_data)
+
+    mean_data = Div(Ref(sum_string), Ref(count_string))
+
+    utilization_mean = Assign(mean_string, mean_data)
+
+    detect = Detect(When(GT(Ref(mean_string), 50)))
+
+    program = Program( \
+        utilization_sum, \
+        utilization_count, \
+        utilization_mean, \
+        detect \
+    )
+
+    detector = Detector().with_program(program)
+
+    assert detector.options["programText"] == "{0}\n{1}\n{2}\n{3}".format( \
+        str(utilization_sum), \
+        str(utilization_count), \
+        str(utilization_mean), \
+        str(detect) \
+    )
+
+    assert program.statements.pop() == detect
+    assert program.statements.pop() == utilization_mean
+    assert program.statements.pop() == utilization_count
+    assert program.statements.pop() == utilization_sum
