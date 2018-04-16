@@ -12,21 +12,20 @@ good overview of the SignalFx API consult the [upstream documentation][sfxdocs].
   - [Features](#features)
   - [Installation](#installation)
   - [Usage](#usage)
-      - [Building Charts](#charts)
-      - [Building Dashboards](#dashboards)
-      - [Updating Dashboards](#dashboards-updates)
-      - [Dashboard Filters](#dashboard-filters)
-      - [Creating Detectors](#detectors)
-          - [Building Detectors from Existing Charts](#from_chart)
-      - [Using Flow and Combinator Functions In Formulas](#flow)
-      - [Building Dashboard Groups](#dashboard-groups)
-      - [Updating Dashboard Group](#dashboard-group-updates)
-      - [Talking to the SignalFlow API Directly](#signalflow)
-      - [General `Resource` Guidelines](#general-resource-guidlines)
-      - [Creating a CLI for your resources](#cli-builder)
+      - [Building Charts](#building-charts)
+      - [Building Dashboards](#building-dashboards)
+      - [Updating Dashboards](#updating-dashboards)
+      - [Dashboard Filters](#providing-dashboard-filters)
+      - [Creating Detectors](#creating-detectors)
+          - [Building Detectors from Existing Charts](#building-detectors-from-existing-charts)
+      - [Using Flow and Combinator Functions In Formulas](#using-flow-and-combinator-functions-in-formulas)
+      - [Building Dashboard Groups](#building-dashboard-groups)
+      - [Updating Dashboard Group](#updating-dashboard-groups)
+      - [Talking to the SignalFlow API Directly](#talking-to-the-signalflow-api-directly)
+      - [General `Resource` Guidelines](#general-resource-guidelines)
+      - [Creating a CLI for your resources](#creating-a-cli-for-your-resources)
   - [Contributing](#contributing)
 
-<a name="features"></a>
 ## Features
 
   - Provides bindings for the SignalFlow DSL
@@ -36,7 +35,6 @@ good overview of the SignalFx API consult the [upstream documentation][sfxdocs].
       - Detectors
   - A CLI builder to wrap resource definitions (useful for automation)
 
-<a name="installation"></a>
 ## Installation
 
 Add `signal_analog` to the requirements file in your project:
@@ -53,7 +51,6 @@ Then run the following command to update your environment:
 pip install -r requirements.txt
 ```
 
-<a name="usage"></a>
 ## Usage
 
 `signal_analog` provides two kinds of abstractions, one for building resources
@@ -63,7 +60,6 @@ in the SignalFx API and the other for describing metric timeseries through the
 The following sections describe how to use `Resource` abstractions in
 conjunction with the [Signal Flow DSL][signalflow].
 
-<a name="charts"></a>
 ### Building Charts
 
 `signal_analog` provides constructs for building charts in the
@@ -171,7 +167,6 @@ memory_chart = TimeSeriesChart()\
 In the following sections we'll see how we can create dashboards from
 collections of charts.
 
-<a name="dashboards"></a>
 ### Building Dashboards
 
 `signal_analog` provides constructs for building charts in the
@@ -219,7 +214,6 @@ Now, storing API keys in source isn't ideal, so if you'd like to see how you
 can pass in your API keys at runtime check the documentation below to see how
 you can [dynamically build a CLI for your resources](#cli-builder).
 
-<a name="dashboards-updates"></a>
 ### Updating Dashboards
 Once you have created a dashboard you can update properties like name and
 description:
@@ -235,7 +229,6 @@ dash.update(
 
     Note: If the given dashboard does not already exist, `update` will create a new dashboard for you
 
-<a name="dashboard-filters"></a>
 ### Providing Dashboard Filters
 
 Dashboards can be configured to provide various filters that affect the behavior of all configured charts (overriding any conflicting filters at the chart level). You may wish to do this in order to quickly change the environment that you're observing for a given set of charts.
@@ -274,7 +267,7 @@ response = dash\
 .with_filters(app_filter)\
 .update()
 ```
-<a name="detectors"></a>
+
 ### Creating Detectors
 
 `signal_analog` provides a means of managing the lifecycle of `Detectors` in
@@ -337,47 +330,6 @@ detector.with_api_token('foo').create()
 To add multiple alerting rules we would need to use different `detect`
 statements with distinct `label`s to differentiate them from one another.
 
-#### Detectors that Combine Data Streams
-
-More complex detectors, like those created as a function of two other data
-streams, require a more complex setup including data stream assignments.
-If we wanted to create a detector that watched for an average above a certain
-threshold, we may want to use the quotient of the sum() of the data and the
-count() of the datapoints over a given period of time.
-
-```python
-from signal_analog.flow import \
-    Assign, \
-    Data, \
-    Detect, \
-    Ref, \
-    When
-
-from signal_analog.combinators import \
-    Div, \
-    GT
-
-program = Program( \
-    Assign('my_var', Data('cpu.utilization')) \
-    Assign('my_other_var', Data('cpu.utilization').count()) \
-    Assign('mean', Div(Ref('my_var'), Ref('my_other_var'))) \
-    Detect(When(GT(Ref('mean'), 2000))) \
-)
-
-print(program)
-```
-
-The above code generates the following program:
-
-```
-my_var = data('cpu.utilization')
-my_other_var = data('cpu.utilization').count()
-mean = (my_var / my_other_var)
-
-when(detect(mean > 2000))
-```
-
-<a name="from_chart"></a>
 #### Building Detectors from Existing Charts
 
 We can also build up Detectors from an existing chart, which allows us to reuse
@@ -415,7 +367,6 @@ detector = Detector()\
 The above example won't actually alert on anything until we add a `Rule`, which
 you can find examples for in the previous section.
 
-<a name="flow"></a>
 ### Using Flow and Combinator Functions In Formulas
 
 `signal_analog` also provides functions for combining SignalFlow statements
@@ -442,7 +393,6 @@ Print(C) in the above example would produce the following output:
 (data("request.mean") * data("request.count")).sum()
 ```
 
-<a name="dashboard-groups"></a>
 ### Building Dashboard Groups
 
 `signal_analog` provides abstractions for building dashboard groups in the
@@ -493,7 +443,6 @@ Now, storing API keys in source isn't ideal, so if you'd like to see how you
 can pass in your API keys at runtime check the documentation below to see how
 you can [dynamically build a CLI for your resources](#cli-builder).
 
-<a name="dashboard-group-updates"></a>
 ### Updating Dashboard Groups
 
 Once you have created a dashboard group, you can update properties like name
@@ -513,7 +462,6 @@ dg.with_api_token('my-api-token')\
 dg.with_api_token('my-api-token').with_dashboards(dash1, dash2).update()
 ```
 
-<a name="signalflow"></a>
 ### Talking to the SignalFlow API Directly
 
 If you need to process SignalFx data outside the confince of the API it may be
@@ -560,7 +508,6 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
             print('{0}: {1}'.format(msg.timestamp_ms, msg.properties))
 ```
 
-<a name="general-resource-guidlines"></a>
 ### General `Resource` Guidelines
 
 #### Charts Always Belong to Dashboards
@@ -593,7 +540,6 @@ methods do not perform state-affecting actions in the SignalFx API.
 Only "CCRUD" (Create, Clone, Read, Update, and Delete) methods will affect the
 state of your resources in SignalFx.
 
-<a name="cli-builder"></a>
 ### Creating a CLI for your Resources
 
 `signal_analog` provides builders for fully featured command line clients that
@@ -651,7 +597,6 @@ This gives you the following features:
       store them in source control (that's you! don't store your keys in
       source control)
 
-<a name="contributing"></a>
 ## Contributing
 
 Please read our [docs here for more info about contributing](CONTRIBUTING.md).
