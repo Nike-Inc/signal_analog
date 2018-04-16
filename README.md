@@ -235,7 +235,7 @@ Dashboards can be configured to provide various filters that affect the behavior
 
 
 ```python
-from signal_analog.filters import DashboardFilters, FilterVariable
+from signal_analog.filters import DashboardFilters, FilterVariable, FilterSource, FilterTime
 app_var = FilterVariable().with_alias('app')\
 .with_property('app')\
 .with_is_required(True)\
@@ -246,10 +246,18 @@ env_var = FilterVariable().with_alias('env')\
 .with_is_required(True)\
 .with_value('prod')
 
+aws_src = FilterSource().with_property("aws_region").with_value('us-west-2')
+
+time = FilterTime().with_start("-1h").with_end("Now")
+
 app_filter = DashboardFilters() \
-.with_variables(app_var, env_var)
+.with_variables(app_var, env_var) \ 
+.with_sources(aws_src) \
+.with_time(time)
 ```
-So, here we are creating a couple of filters "app=foo" and "env=prod".
+So, here we are creating a few filters "app=foo" and "env=prod", 
+a source filter "aws_region=us-west-2" and
+a time filter "-1h till Now"
 Now we can pass this config to a dashboard object:
 
 ```python
