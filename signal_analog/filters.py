@@ -76,6 +76,7 @@ class FilterSource(object):
         return self
 
     def with_value(self, *values):
+        util.is_valid(*values, error_message='"value" cannot be empty')
         self.options.update({'value': []})
         for value in values:
             self.options['value'].append(value)
@@ -220,4 +221,7 @@ class DashboardFilters(object):
                         raise ValueError("Start time should be smaller than End time")
 
             self.options.update({'time': time.options})
-        return self
+            return self
+        else:
+            raise ValueError("Start and End time are required")
+
