@@ -1,5 +1,9 @@
 # History
 
+## 1.3.0(2018--4-17)
+
+  * Implementing the rest of the Dashboard Filters: `source` and `time`
+  
 ## 1.2.0 (2018-04-11)
   * Added an Assign function that will enable more complex detectors which are constructed by combining multiple data streams
   * Added a Ref flow operator that will enable referencing assignments in a way that can be validated at later steps by checking for an Assign object with a match between the reference string and the assignee

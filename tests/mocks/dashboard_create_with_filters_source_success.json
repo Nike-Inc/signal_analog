@@ -1,0 +1,215 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2018-04-16T22:01:44",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/dashboard?name=testy+mctesterson"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAKvmUlBQSs4vzStRUrBSMNABcYtSi0tzSopBAtEKsVy1APL4sYckAAAA",
+          "encoding": null
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "51"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Mon, 16 Apr 2018 22:01:44 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard?name=testy+mctesterson"
+      }
+    },
+    {
+      "recorded_at": "2018-04-16T22:01:45",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "[{\"name\": \"lol\", \"programText\": \"data(\\\"cpu.utilization\\\").publish()\", \"options\": {\"type\": \"TimeSeriesChart\"}}]"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "111"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=testy+mctesterson"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAHWSUU/CMBSF3/0VS599YCIovk3BxMQEEkFjiA+1vWyN3brctuAg/HfbbriNhKdl37l3Ped0h6soItSaTKHYA/9AYQA1iR6ig1OcZoDm4X0dfV3XyOpmxCFHjh4TllE0Uyi0MJXXyHT2nKxel6RVm53mwwG98HqW3o3y5T75TBLSHMKUtHnh1UFDMhBpZjyJG4Jq1x3YCW4yD8beVW2XMARqIBwTj26Gk3gcD24nw/tWVBg8PEmrF2+tB8KsNipfoCoBjYDgvrBSBpGDZihKI1TwSOoVLjRTW8BqHpT+CmyhMHOnSlr1lY2QZ61rZZH1j/R3IXI4Q1uKgn7LdvT/QlJUtuz2+z5P2Cmb6PJFkp64pNqsSn65sc7AY9ULIRX7qbc2VGoILKe/U3BxfWoUvGeeFLRO434xbaooZ/7panCNBl2DBMf47GJvhqZt7uMflxmK78sCAAA=",
+          "encoding": null
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "353"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Mon, 16 Apr 2018 22:01:44 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard/simple?name=testy+mctesterson"
+      }
+    },
+    {
+      "recorded_at": "2018-04-16T22:01:45",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"authorizedWriters\": {\"teams\": [], \"users\": []}, \"chartDensity\": \"DEFAULT\", \"charts\": [{\"chartId\": \"Da75mTzAYAA\", \"column\": 0, \"height\": 1, \"row\": 0, \"width\": 6}], \"created\": 1523916104938, \"creator\": \"ClusPSzAYAA\", \"customProperties\": null, \"description\": \"\", \"discoveryOptions\": null, \"eventOverlays\": null, \"filters\": {\"sources\": [{\"property\": \"aws_region\", \"value\": [\"us-west-2\"]}]}, \"groupId\": \"Da75mVOAcAA\", \"id\": \"Da75mVPAgAA\", \"lastUpdated\": 1523916104938, \"lastUpdatedBy\": null, \"locked\": false, \"maxDelayOverride\": null, \"name\": \"testy mctesterson\", \"selectedEventOverlays\": null, \"tags\": null}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "605"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "PUT",
+        "uri": "https://api.signalfx.com/v2/dashboard/Da75mVPAgAA"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAHWSW0/CQBCF3/0VzT5Dwl3xrQomJMaSCBpjiFm3Q7tx2232AhTCf3e321IK+tT0OzOd6TlzuPE8hLWKuaB7CN8FVSAk8u69g1GMpgAnxXuqGWs5pmVZY5lBR8sRibFQE0glVbkV0WT65C+fF6hWi6bP6tMFmoWuFt8Ok8Xe//B9VE4hnOkktWqnJDHQKFaWdEsi+Pa8YEtDFVswslt5KzdZAFZQjOkOe/1xd9TtDMb9u1rkotjhkWk5f613QERLxZO54BkIRaFhAwpBEkEzRXmxI3ItIZWEb0DkQaE0W2ADqQqMynDeVNaUXfguuRYEGoYZ+hIsLFljJqFVQZxlLJ+tpzsqncNNOXP7u0zwVn4JiOzSp4INZhrcIBNtewtStXvIWxV66aK9BJrAxSFssKD4m8H1MUSC6+w827fAJ5Wv9JzP/ajiDEu1zMKrtIa9Qeey4CH/OzPGyY9rP7mAErybgPHcWi9o2PgLlGL3W+bSpcq9hNinyaJ0CElgYFg4/Tc8haPagOMvPvvhl1IDAAA=",
+          "encoding": null
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "410"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Mon, 16 Apr 2018 22:01:45 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/dashboard/Da75mVPAgAA"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.1"
+}

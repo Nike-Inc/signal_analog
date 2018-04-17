@@ -55,13 +55,13 @@ class Resource(object):
 
     def with_name(self, name):
         """The name to give this resource."""
-        util.is_valid(name)
+        util.assert_valid(name)
         self.options.update({'name': name})
         return self
 
     def with_description(self, description):
         """The description to attach to this resource."""
-        util.is_valid(description)
+        util.assert_valid(description)
         self.options.update({'description': description})
         return self
 
@@ -70,7 +70,7 @@ class Resource(object):
 
         Useful for creates/deletes.
         """
-        util.is_valid(ident)
+        util.assert_valid(ident)
         self.options.update({'id': ident})
         return self
 
@@ -81,17 +81,17 @@ class Resource(object):
         Either pass one in at Resource instantiation time or provide one
         via the `with_api_token` method."""
 
-        util.is_valid(token, message)
+        util.assert_valid(token, message)
         self.api_token = token
 
     def __set_endpoint__(self, endpoint):
         """Internal helper for setting valid endpoints."""
-        util.is_valid(endpoint,  error_message="Cannot proceed with an empty endpoint")
+        util.assert_valid(endpoint, error_message="Cannot proceed with an empty endpoint")
         self.endpoint = endpoint
 
     def __set_base_url__(self, base_url):
         """Internal helper for setting valid base_urls."""
-        util.is_valid(base_url, error_message="Cannot proceed with empty base_url")
+        util.assert_valid(base_url, error_message="Cannot proceed with empty base_url")
         self.base_url = base_url
 
     def with_api_token(self, token):
@@ -127,7 +127,7 @@ class Resource(object):
                 opts.update({'charts': util.flatten_charts(self.options)})
             return opts
 
-        util.is_valid(self.api_token)
+        util.assert_valid(self.api_token)
 
         response = self.session_handler.request(
             action,

@@ -46,7 +46,7 @@ Example 3: Update existing dashboard by removing one of the charts
 """
 
 dashboard_remove_chart = Dashboard()\
-    .with_name('Dashboard Name')\
+    .with_name('Dashboard With Multiple Charts')\
     .with_charts(chart, chart1)
 
 """
@@ -57,7 +57,7 @@ chart1 = TimeSeriesChart()\
     .with_name('Chart_Name_Renamed')\
     .with_program(program)
 dashboard_rename_chart = Dashboard()\
-    .with_name('Dashboard Name')\
+    .with_name('Dashboard With Multiple Charts')\
     .with_charts(chart, chart1)
 
 if __name__ == '__main__':
