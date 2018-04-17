@@ -61,7 +61,7 @@ def test_resource_init_api_token():
 
 def test_is_valid_without_message():
         with pytest.raises(ValueError) as error:
-                util.is_valid(None, error_message=None)
+                util.assert_valid(None, error_message=None)
                 assert error.message is None
 
 

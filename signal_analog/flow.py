@@ -525,10 +525,10 @@ class Assign(Function):
         """
 
         # Ensure that assignee is valid and is a string
-        util.is_valid(assignee, str)
+        util.assert_valid(assignee, str)
 
         # Ensure that expr is valid
-        util.is_valid(expr)
+        util.assert_valid(expr)
 
         self.assignee = assignee
         self.expr = expr

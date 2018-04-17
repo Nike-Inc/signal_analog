@@ -12,12 +12,12 @@ class FilterVariable(object):
         self.options = {}
 
     def with_alias(self, alias):
-        util.is_valid(alias, error_message='"alias" cannot be empty', expected_type=str)
+        util.assert_valid(alias, error_message='"alias" cannot be empty', expected_type=str)
         self.options.update({'alias': alias})
         return self
 
     def with_apply_if_exists(self, apply_if_exists):
-        util.is_valid(apply_if_exists, expected_type=bool)
+        util.assert_valid(apply_if_exists, expected_type=bool)
         self.options.update({'apply_if_exists': apply_if_exists})
         return self
 
@@ -32,22 +32,22 @@ class FilterVariable(object):
         return self
 
     def with_property(self, property):
-        util.is_valid(property, error_message='"property" cannot be empty', expected_type=str)
+        util.assert_valid(property, error_message='"property" cannot be empty', expected_type=str)
         self.options.update({'property': property})
         return self
 
     def with_replace_only(self, replace_only):
-        util.is_valid(replace_only, expected_type=bool)
+        util.assert_valid(replace_only, expected_type=bool)
         self.options.update({'replaceOnly': replace_only})
         return self
 
     def with_is_required(self, required):
-        util.is_valid(required, expected_type=bool)
+        util.assert_valid(required, expected_type=bool)
         self.options.update({'required': required})
         return self
 
     def with_is_restricted(self, restricted):
-        util.is_valid(restricted, expected_type=bool)
+        util.assert_valid(restricted, expected_type=bool)
         self.options.update({'restricted': restricted})
         return self
 
@@ -71,19 +71,19 @@ class FilterSource(object):
         self.options = {}
 
     def with_property(self, property):
-        util.is_valid(property, error_message='"property" cannot be empty', expected_type=str)
+        util.assert_valid(property, error_message='"property" cannot be empty', expected_type=str)
         self.options.update({'property': property})
         return self
 
     def with_value(self, *values):
-        util.is_valid(*values, error_message='"value" cannot be empty')
+        util.assert_valid(*values, error_message='"value" cannot be empty')
         self.options.update({'value': []})
         for value in values:
             self.options['value'].append(value)
         return self
 
     def with_is_not(self, is_not):
-        util.is_valid(is_not, expected_type=bool, error_message='"NOT" cannot be empty. It should be a boolean')
+        util.assert_valid(is_not, expected_type=bool, error_message='"NOT" cannot be empty. It should be a boolean')
         self.options.update({'NOT': is_not})
         return self
 
@@ -97,12 +97,12 @@ class FilterTime(object):
         self.options = {}
 
     def with_start(self, start):
-        util.is_valid(start, error_message='"start" cannot be empty')
+        util.assert_valid(start, error_message='"start" cannot be empty')
         self.options.update({'start': start})
         return self
 
     def with_end(self, end):
-        util.is_valid(end, error_message='"end" cannot be empty')
+        util.assert_valid(end, error_message='"end" cannot be empty')
         self.options.update({'end': end})
         return self
 

@@ -25,7 +25,7 @@ class Chart(Resource):
 
         Useful when updating/deleting charts.
         """
-        util.is_valid(id)
+        util.assert_valid(id)
         self.options.update({'id': id})
         return self
 
@@ -37,7 +37,7 @@ class Chart(Resource):
 
         https://developers.signalfx.com/docs/signalflow-overview
         """
-        util.is_valid(program)
+        util.assert_valid(program)
         self.options.update({'programText': program})
         return self
 
@@ -228,7 +228,7 @@ class PublishLabelOptions(ChartOption):
             display_name: an alternate name to show in the legend
         """
         for arg in [label, display_name]:
-            util.is_valid(arg)
+            util.assert_valid(arg)
         util.in_given_enum(palette_index, PaletteColor)
         util.in_given_enum(plot_type, PlotType)
         if y_axis not in [0, 1]:
@@ -254,21 +254,21 @@ class DisplayOptionsMixin(object):
 
     def with_color_by(self, color_by):
         """Determine how timeseries are colored in this chart."""
-        util.is_valid(color_by)
+        util.assert_valid(color_by)
         util.in_given_enum(color_by, ColorBy)
         self.chart_options.update({'colorBy': color_by.value})
         return self
 
     def with_sort_by(self, sort_by):
         """Determine how values are sorted."""
-        util.is_valid(sort_by)
+        util.assert_valid(sort_by)
         util.in_given_enum(sort_by, SortBy)
         self.chart_options.update({'sortBy': sort_by.value})
         return self
 
     def with_unit_prefix(self, prefix):
         """Add a unit prefix to this chart."""
-        util.is_valid(prefix)
+        util.assert_valid(prefix)
         util.in_given_enum(prefix, UnitPrefix)
         self.chart_options.update({'unitPrefix': prefix.value})
         return self
@@ -293,8 +293,8 @@ class DisplayOptionsMixin(object):
             This TimeSeriesChart with program options.
         """
 
-        util.is_valid(min_resolution)
-        util.is_valid(max_delay)
+        util.assert_valid(min_resolution)
+        util.assert_valid(max_delay)
         program_opts = {
             'minimumResolution': min_resolution,
             'maxDelay': max_delay,
@@ -305,7 +305,7 @@ class DisplayOptionsMixin(object):
 
     def with_publish_label_options(self, *publish_opts):
         """Plot-level customization, associated with a publish statement."""
-        util.is_valid(publish_opts)
+        util.assert_valid(publish_opts)
         opt = list(map(lambda o: o.to_dict(), publish_opts))
         self.chart_options.update({'publishLabelOptions': opt})
         return self
@@ -327,7 +327,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
         Returns:
             This TimeSeriesChart with absolute time config
         """
-        util.is_valid(range)
+        util.assert_valid(range)
         opts = {'type': 'relative', 'range': range}
         self.chart_options.update({'time': opts})
         return self
@@ -342,8 +342,8 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
         Returns:
             This TimeSeriesChart with a relative time config.
         """
-        util.is_valid(start)
-        util.is_valid(end)
+        util.assert_valid(start)
+        util.assert_valid(end)
         opts = {'type': 'absolute', 'start': start, 'end': end}
         self.chart_options.update({'time': opts})
         return self
@@ -354,7 +354,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
         Don't leave your axes laying about or this guy might show up:
         https://youtu.be/V2FygG84bg8
         """
-        util.is_valid(axes)
+        util.assert_valid(axes)
         self.chart_options.update({
             'axes': list(map(lambda x: x.to_dict(), axes))
         })
@@ -362,7 +362,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
 
     def with_legend_options(self, field_opts):
         """Options for the behavior of this chart's legend."""
-        util.is_valid(field_opts)
+        util.assert_valid(field_opts)
         opts = {'fields': list(map(lambda x: x.to_dict(), field_opts))}
         self.chart_options.update({'legendOptions': opts})
         return self
@@ -415,20 +415,20 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
 
     def with_default_plot_type(self, plot_type):
         """The default plot display style for the visualization."""
-        util.is_valid(plot_type)
+        util.assert_valid(plot_type)
         util.in_given_enum(plot_type, PlotType)
         self.chart_options.update({'defaultPlotType': plot_type.value})
         return self
 
     def with_axis_precision(self, num):
         """Force a specific number of significant digits in the y-axis."""
-        util.is_valid(num)
+        util.assert_valid(num)
         self.chart_options.update({'axisPrecision': num})
         return self
 
     def with_chart_legend_options(self, dimension, show_legend=False):
         """Show the on-chart legend using the given dimension."""
-        util.is_valid(dimension)
+        util.assert_valid(dimension)
         opts = {
             'showLegend': show_legend,
             'dimensionInLegend': dimension
@@ -445,13 +445,13 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
 
     def with_refresh_interval(self, interval):
         """How often (in milliseconds) to refresh the values of the list."""
-        util.is_valid(interval)
+        util.assert_valid(interval)
         self.chart_options.update({'refreshInterval': interval})
         return self
 
     def with_maximum_precision(self, precision):
         """The maximum precision to for values displayed in the list."""
-        util.is_valid(precision)
+        util.assert_valid(precision)
         self.chart_options.update({'maximumPrecision': precision})
         return self
 
@@ -474,7 +474,7 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
                       the highest specified value. If true, values are red if
                       they are below the lowest specified value.
         """
-        util.is_valid(thresholds)
+        util.assert_valid(thresholds)
         thresholds.sort(reverse=True)
         opts = {'thresholds': thresholds, 'inverted': inverted}
         self.chart_options.update({'colorScale': opts})
@@ -489,13 +489,13 @@ class ListChart(Chart, DisplayOptionsMixin):
 
     def with_refresh_interval(self, interval):
         """How often (in milliseconds) to refresh the values of the list."""
-        util.is_valid(interval)
+        util.assert_valid(interval)
         self.chart_options.update({'refreshInterval': interval})
         return self
 
     def with_maximum_precision(self, precision):
         """The maximum precision to for values displayed in the list."""
-        util.is_valid(precision)
+        util.assert_valid(precision)
         self.chart_options.update({'maximumPrecision': precision})
         return self
 
@@ -512,7 +512,7 @@ class HeatmapChart(Chart, DisplayOptionsMixin):
         Arguments:
             thresholds: The thresholds to set for the color range being used.
         """
-        util.is_valid(thresholds)
+        util.assert_valid(thresholds)
         thresholds.sort(reverse=True)
         opts = {'thresholds': thresholds}
         self.chart_options.update({'colorScale': opts})

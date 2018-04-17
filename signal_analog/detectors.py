@@ -52,7 +52,7 @@ class PagerDutyNotification(Notification):
         Arguments:
             pd_id: the id of the PagerDuty integration to include.
         """
-        util.is_valid(pd_id)
+        util.assert_valid(pd_id)
         self.options = {'type': 'PagerDuty', 'credentialId': pd_id}
 
 
@@ -73,8 +73,8 @@ class SlackNotification(Notification):
             slack_id: the slack integration id to use
             channel_name: the name of the channel to send alerts to
         """
-        util.is_valid(slack_id)
-        util.is_valid(channel_name)
+        util.assert_valid(slack_id)
+        util.assert_valid(channel_name)
 
         self.options = {
             'type': 'Slack',
@@ -101,8 +101,8 @@ class HipChatNotification(Notification):
             room_name: the HipChat room name to post integrations to
         """
 
-        util.is_valid(hp_id)
-        util.is_valid(room_name)
+        util.assert_valid(hp_id)
+        util.assert_valid(room_name)
 
         self.options = {
             'type': 'HipChat',
@@ -124,7 +124,7 @@ class ServiceNowNotification(Notification):
         Arguments:
             sn_id: the ServiceNow integration id to use
         """
-        util.is_valid(sn_id)
+        util.assert_valid(sn_id)
 
         self.options = {
             'type': 'ServiceNow',
@@ -146,8 +146,8 @@ class VictorOpsNotification(Notification):
             vo_id: the VictorOps integration id to use
             routing_key: a VictorOps routing key
         """
-        util.is_valid(vo_id)
-        util.is_valid(routing_key)
+        util.assert_valid(vo_id)
+        util.assert_valid(routing_key)
 
         self.options = {
             'type': 'VictorOps',
@@ -169,7 +169,7 @@ class WebhookNotification(Notification):
                     HMAC-SHA1 digest of the request body using the shared
                     secret.
         """
-        util.is_valid(url)
+        util.assert_valid(url)
 
         self.options = {
             'type': 'Webhook',
@@ -191,7 +191,7 @@ class TeamNotification(Notification):
         Arguments:
             team_id: the id of the team to message.
         """
-        util.is_valid(team_id)
+        util.assert_valid(team_id)
 
         self.options = {
             'type': 'Team',
@@ -210,7 +210,7 @@ class TeamEmailNotification(Notification):
         Arguments:
             team_id: the id of the team to e-mail.
         """
-        util.is_valid(team_id)
+        util.assert_valid(team_id)
 
         self.options = {
             'type': 'TeamEmail',
@@ -237,13 +237,13 @@ class Rule(object):
 
     def for_label(self, label):
         """A label matching a `detect` label within the program text."""
-        util.is_valid(label)
+        util.assert_valid(label)
         self.options.update({'detectLabel': label})
         return self
 
     def with_description(self, description):
         """Human-readable description for this rule."""
-        util.is_valid(description)
+        util.assert_valid(description)
         self.options.update({'description': description})
         return self
 
@@ -280,7 +280,7 @@ class Rule(object):
            Available variables can be found here:
            https://docs.signalfx.com/en/latest/detect-alert/set-up-detectors.html#message-variables
         """
-        util.is_valid(body)
+        util.assert_valid(body)
         self.options.update({'parameterizedBody': body})
         return self
 
@@ -290,7 +290,7 @@ class Rule(object):
 
         See the documentation for `with_parameterized_body` for more detail.
         """
-        util.is_valid(subject)
+        util.assert_valid(subject)
         self.options.update({'parameterizedSubject': subject})
         return self
 
@@ -300,7 +300,7 @@ class Rule(object):
         This can be used with custom notification messages. It can be
         referenced using the {{runbookUrl}} template var.
         """
-        util.is_valid(url)
+        util.assert_valid(url)
         self.options.update({'runbookUrl': url})
         return self
 
@@ -311,7 +311,7 @@ class Rule(object):
         This can be used with custom notification messages. It can be
         referenced using the {{tip}} template var.
         """
-        util.is_valid(tip)
+        util.assert_valid(tip)
         self.options.update({'tip': tip})
         return self
 
@@ -334,7 +334,7 @@ class TimeConfig(object):
         return self
 
     def __add_millis__(self, millis, key):
-        util.is_valid(millis)
+        util.assert_valid(millis)
         self.options.update({key: millis})
         return self
 
@@ -430,7 +430,7 @@ class Detector(Resource):
 
     def with_max_delay(self, delay):
         """Used to handle late datapoints."""
-        util.is_valid(delay)
+        util.assert_valid(delay)
         self.options.update({'maxDelay': delay})
         return self
 
