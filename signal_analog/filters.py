@@ -185,7 +185,6 @@ class DashboardFilters(object):
                 st = time.options['start']
                 et = time.options['end']
                 st_type = type(st)
-                et_type = type(et)
 
                 # We have to validate bool separately as it is a subclass of int
                 if not isinstance(st, (str, int)) or isinstance(st, bool):
@@ -197,8 +196,8 @@ class DashboardFilters(object):
                     elif st[-1:] not in ['m', 'h', 'd', 'w']:
                         raise ValueError(
                             "Start time value must end with a units indicator. Allowed units indicators are "
-                            "m, h, d, w representing minutes, hours, days, and weeks respectively. Instead, "
-                            "got '{0}'".format(st[-1:]))
+                            "m, h, d, w(case-sensitive) representing minutes, hours, days, and weeks respectively. "
+                            "Instead, got '{0}'".format(st[-1:]))
                     else:
                         try:
                             val = int(st[1:-1])
@@ -208,8 +207,9 @@ class DashboardFilters(object):
                         except ValueError:
                             raise ValueError("A positive integer must follow the negative sign for Start time. "
                                              "Instead, got '{0}'".format(st[1:-1]))
-                    if et.title() != "Now":
-                        raise ValueError('End time value should be "Now" when Start time is defined as a string')
+                    if et != "Now":
+                        raise ValueError('End time value should be "Now"(case-sensitive) when Start time '
+                                         'is defined as a string. Instead, got "{0}"'.format(et))
                 elif isinstance(st, int):
                     if st < 0 and et < 0:
                         raise ValueError("Start time and End time cannot be Negative values")
