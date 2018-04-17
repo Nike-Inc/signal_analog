@@ -18,7 +18,7 @@ from signal_analog.errors import ResourceMatchNotFoundError, \
     ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError, \
     SignalAnalogError
 from signal_analog.flow import Data
-from signal_analog.filters import DashboardFilters, FilterVariable
+from signal_analog.filters import DashboardFilters, FilterVariable, FilterSource, FilterTime
 
 
 # Global config. This will store all recorded requests in the 'mocks' dir
@@ -519,6 +519,446 @@ def test_dashboard_create_with_filters_with_unexpected_data_type_failure():
             .with_api_token('foo')\
             .with_charts(mk_chart('lol'))\
             .with_filters(dashboard_filter)\
+            .create()
+
+
+def test_dashboard_create_with_filters_source_success():
+    aws_src = FilterSource()\
+        .with_property("aws_region")\
+        .with_value("us-west-2")
+
+    dashboard_filter = DashboardFilters()\
+        .with_sources(aws_src)
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_source_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
+
+
+def test_dashboard_create_with_filters_source_NOT_success():
+    aws_src = FilterSource()\
+        .with_property("aws_region")\
+        .with_value("us-west-2") \
+        .with_is_not(True)
+
+    dashboard_filter = DashboardFilters()\
+        .with_sources(aws_src)
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_source_NOT_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
+
+
+def test_dashboard_create_with_filters_source_with_empty_property_failure():
+    with pytest.raises(ValueError):
+        aws_src = FilterSource() \
+            .with_property("") \
+            .with_value("us-west-2")
+
+        dashboard_filter = DashboardFilters() \
+            .with_sources(aws_src)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_source_with_empty_value_failure():
+    with pytest.raises(ValueError):
+        aws_src = FilterSource() \
+            .with_property("aws_region") \
+            .with_value("")
+
+        dashboard_filter = DashboardFilters() \
+            .with_sources(aws_src)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_source_with_empty_is_not_failure():
+    with pytest.raises(ValueError):
+        aws_src = FilterSource() \
+            .with_property("aws_region") \
+            .with_value("") \
+            .with_is_not('')
+
+        dashboard_filter = DashboardFilters() \
+            .with_sources(aws_src)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_source_with_missing_property_failure():
+    with pytest.raises(ValueError):
+        aws_src = FilterSource() \
+            .with_value("us-west-2")
+
+        dashboard_filter = DashboardFilters() \
+            .with_sources(aws_src)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_source_with_missing_value_failure():
+    with pytest.raises(ValueError):
+        aws_src = FilterSource() \
+            .with_property("aws_region")
+
+        dashboard_filter = DashboardFilters() \
+            .with_sources(aws_src)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_source_with_missing_property_and_value_failure():
+    with pytest.raises(ValueError):
+        aws_src = FilterSource()
+
+        dashboard_filter = DashboardFilters() \
+            .with_sources(aws_src)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_as_string_success():
+    time = FilterTime()\
+        .with_start("-1h")\
+        .with_end("Now")
+
+    dashboard_filter = DashboardFilters()\
+        .with_time(time)
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_time_as_string_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
+
+
+def test_dashboard_create_with_filters_time_as_integer_success():
+    time = FilterTime()\
+        .with_start(1523721600000)\
+        .with_end(1523808000000)
+
+    dashboard_filter = DashboardFilters()\
+        .with_time(time)
+
+    with global_recorder.use_cassette('dashboard_create_with_filters_time_as_integer_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .with_filters(dashboard_filter)\
+            .create()
+
+
+def test_dashboard_create_with_filters_time_empty_start_time_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime() \
+            .with_start('') \
+            .with_end('Now')
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_empty_end_time_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime() \
+            .with_start('-1h') \
+            .with_end('')
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_missing_start_time_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime() \
+            .with_end('Now')
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_missing_end_time_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime() \
+            .with_start('-1h')
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_missing_start_and_end_time_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_start_and_end_time_as_different_data_types_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start(1523808000000)\
+            .with_end("Now")
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_start_and_end_time_as_unsupported_data_type_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start(True)\
+            .with_end(False)
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_start_first_character_is_not_negative_sign_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start("1h")\
+            .with_end("Now")
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_start_unexpected_last_character_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start("-1z")\
+            .with_end("Now")
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_start_no_positive_integer_after_negative_sign_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start("--1h")\
+            .with_end("Now")
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_start_no_integer_after_negative_sign_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start("-zh")\
+            .with_end("Now")
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_end_time_is_not_Now_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start("-1h")\
+            .with_end("Not Now")
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_start_and_end_time_are_negative_integers_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start(-1523808000000)\
+            .with_end(-1523894400000)
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_start_time_is_negative_integer_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start(-1523808000000)\
+            .with_end(1523894400000)
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_end_time_is_negative_integer_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start(1523808000000)\
+            .with_end(-1523894400000)
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
+            .create()
+
+
+def test_dashboard_create_with_filters_time_start_time_is_not_less_than_end_time_failure():
+    with pytest.raises(ValueError):
+        time = FilterTime()\
+            .with_start(1523894400000)\
+            .with_end(1523808000000)
+
+        dashboard_filter = DashboardFilters() \
+            .with_time(time)
+
+        Dashboard(session=global_session) \
+            .with_name('testy mctesterson') \
+            .with_api_token('foo') \
+            .with_charts(mk_chart('lol')) \
+            .with_filters(dashboard_filter) \
             .create()
 
 

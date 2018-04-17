@@ -23,7 +23,7 @@ def in_given_enum(value, enum):
         raise ValueError(msg.format(value, valid_values))
 
 
-def is_valid(value, error_message=None, expected_type=None):
+def assert_valid(value, error_message=None, expected_type=None):
     """Void method ensuring value is non-empty.
 
     Arguments:
@@ -34,7 +34,7 @@ def is_valid(value, error_message=None, expected_type=None):
     Returns:
         Nothing.
     """
-    if not value:
+    if value is '' or value is None:
         if error_message:
             raise ValueError(error_message)
         else:
