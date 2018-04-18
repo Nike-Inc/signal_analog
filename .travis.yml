@@ -12,6 +12,8 @@ cache:
     - "./.hypothesis"
 deploy:
   provider: pypi
+  user: nikeoss
+  password:
+    secure: "VpWt2LFnPlVDlAjr2XAexnfPvx9Xj2RiCqXjBEzTEqJUb3SE8hsc7iBWdH6o2xiACDFNeq4OnTfsfJtRvjRbm3/xgvwLMDnAinFMVsrvktAtJW+FFSSJVsIJZ3D+drtfzuPJUwZCis0s5V0EuX6eWyBlgAfxLNwylhN8Nkna/Yr9JXueftnKxNj3sSsaRvDtDTNAQzOiGpKZPcm7oVs+H7lomL3rR7CcfvsfFlDs+ZSKe1XOCC50/gbL2XYEvTNyaA8/rJL2fYE1b5vYPiBZRXxpWrR6S/hcrDYb3Sq86mjXOzysDOh7toFUgTKD83CyGXOcabFwtrUbi6MBzwnsfnfLVDlB826TFz3Qg/2zaaLo65YeaTq7+JLGIU9bsbUJ97SpbWCP9Txdh8TmZGHuiD9nvMJJbW5YP5ovFGOFzowEMclFWsN/6TRe4Z6dwvgegap0BDZoTYmO2CdyD4d+eOUPCcrbzs4CYjrTTI8K2dhq4T3pOae2vaU90xcWIfR9V8PvkgHOmXXIlIVGc9QKQHHKSq//HEbaahZ17DrJjRRqqHnDBJ3ret1AfRFvrkQOHY/Cmj4RclTKEkugFBxFoy+hJkNSOCa4H8DihJd06RVv5jRlPvLG6/09ZgeUmkAqscA4YxbOUbCaTI9xYprKxNGCgDBjJ7ZxSyLOQnTDM44="  
   on:
-    repo: Nike-Inc/signal_analog
     tags: true
