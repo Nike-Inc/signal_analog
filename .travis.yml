@@ -15,7 +15,5 @@ deploy:
   on:
     repo: Nike-Inc/signal_analog
     tags: true
-  user:
-    secure: "testuser"
-  password:
-    secure: "testpass"
+  user: "testuser"
+  password: "testpass"
