@@ -247,6 +247,8 @@ class Dashboard(Resource):
         super(Dashboard, self).__init__(endpoint='/dashboard', session=session)
         self.options = {'charts': []}
         self.filters = {'filters': {}}
+        self.events = {'eventOverlays': []}
+        self.selectedevents = {'selectedEventOverlays': []}
 
     def with_charts(self, *charts):
         for chart in charts:
@@ -255,6 +257,16 @@ class Dashboard(Resource):
 
     def with_filters(self, filters):
         self.filters.update({'filters': filters.options})
+        return self
+
+    def with_event_overlay(self, *eventoverlays):
+        for eventoverlay in eventoverlays:
+            self.events['eventOverlays'].append(deepcopy(eventoverlay))
+        return self
+
+    def with_selected_event_overlay(self, *selectedeventoverlays):
+        for selectedeventoverlay in selectedeventoverlays:
+            self.selectedevents['selectedEventOverlays'].append(deepcopy(selectedeventoverlay))
         return self
 
     def create(self, dry_run=False, force=False, interactive=False):
@@ -281,10 +293,26 @@ class Dashboard(Resource):
                                                         dry_run=dry_run, interactive=interactive,
                                                         force=force)
 
-            """Check to see if there are any filters defined, If so, update the dashboard with those filters.
-                NOTE: This cannot be done during dashboard creation as we are using /simple endpoint which 
+            """Check to see if there are any filters, event overlays, or "selected" event overlays defined, 
+                If so, update the dashboard with those filters and/or event overlays.
+                NOTE: This cannot be done for filters during dashboard creation as we are using /simple endpoint which 
                 doesn't support passing filters
             """
+            if self.events is not None and self.selectedevents is not None:
+                dashboard_create_response['eventOverlays'] = self.events['eventOverlays']
+                dashboard_create_response['selectedEventOverlays'] = self.selectedevents['selectedEventOverlays']
+                self.options = dashboard_create_response
+
+            if self.events is not None:
+                dashboard_create_response['eventOverlays'] = self.events['eventOverlays']
+                self.options = dashboard_create_response
+                return super(Dashboard, self).update()
+
+            if self.selectedevents is not None:
+                dashboard_create_response['selectedEventOverlays'] = self.selectedevents['selectedEventOverlays']
+                self.options = dashboard_create_response
+                return super(Dashboard, self).update()
+
             if bool(self.filters['filters']):
                 dashboard_create_response['filters'] = self.filters['filters']
                 self.options = dashboard_create_response
@@ -417,6 +445,13 @@ class Dashboard(Resource):
                 """ Check to see if there are any filters defined, If so, update the dashboard with those filters."""
                 if bool(self.filters['filters']):
                     dashboard['filters'] = self.filters['filters']
+
+                """ Check to see if there are any overlays defined, If so, update the dashboard with those overlays."""
+                if self.events is not None:
+                    dashboard['eventOverlays'] = self.events['eventOverlays']
+
+                if self.selectedevents is not None:
+                    dashboard['selectedEventOverlays'] = self.selectedevents['selectedEventOverlays']
 
                 # TODO temporary workaround in the SignalFx API
                 #
