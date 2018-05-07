@@ -298,18 +298,22 @@ class Dashboard(Resource):
                 NOTE: This cannot be done for filters during dashboard creation as we are using /simple endpoint which 
                 doesn't support passing filters
             """
-            if self.events is not None and self.selectedevents is not None:
-                dashboard_create_response['eventOverlays'] = self.events['eventOverlays']
-                dashboard_create_response['selectedEventOverlays'] = self.selectedevents['selectedEventOverlays']
+            if self.events['eventOverlays'] != list() and self.selectedevents['selectedEventOverlays'] != list():
+                dashboard_create_response['eventOverlays'] = list(map(lambda e: e.to_dict(),
+                                                                      self.events['eventOverlays']))
+                dashboard_create_response['selectedEventOverlays'] = list(map(lambda e: e.to_dict(),
+                                                                              self.selectedevents['selectedEventOverlays']))
                 self.options = dashboard_create_response
 
-            if self.events is not None:
-                dashboard_create_response['eventOverlays'] = self.events['eventOverlays']
+            if self.events['eventOverlays'] != list():
+                dashboard_create_response['eventOverlays'] = list(map(lambda e: e.to_dict(),
+                                                                      self.events['eventOverlays']))
                 self.options = dashboard_create_response
                 return super(Dashboard, self).update()
 
-            if self.selectedevents is not None:
-                dashboard_create_response['selectedEventOverlays'] = self.selectedevents['selectedEventOverlays']
+            if self.selectedevents['selectedEventOverlays'] != list():
+                dashboard_create_response['selectedEventOverlays'] = list(map(lambda e: e.to_dict(),
+                                                                         self.selectedevents['selectedEventOverlays']))
                 self.options = dashboard_create_response
                 return super(Dashboard, self).update()
 
@@ -447,11 +451,13 @@ class Dashboard(Resource):
                     dashboard['filters'] = self.filters['filters']
 
                 """ Check to see if there are any overlays defined, If so, update the dashboard with those overlays."""
-                if self.events is not None:
-                    dashboard['eventOverlays'] = self.events['eventOverlays']
+                if self.events['eventOverlays'] != list():
+                    dashboard['eventOverlays'] = list(map(lambda e: e.to_dict(),
+                                                     self.events['eventOverlays']))
 
-                if self.selectedevents is not None:
-                    dashboard['selectedEventOverlays'] = self.selectedevents['selectedEventOverlays']
+                if self.selectedevents['selectedEventOverlays'] != list():
+                    dashboard['selectedEventOverlays'] = list(map(lambda e: e.to_dict(),
+                                                     self.selectedevents['selectedEventOverlays']))
 
                 # TODO temporary workaround in the SignalFx API
                 #
