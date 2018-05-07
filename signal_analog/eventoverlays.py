@@ -23,6 +23,8 @@ class EventSignals(object):
         util.assert_valid(event_type, error_message='"event_type" cannot be empty. '
                                                     'Supported values are: "detectorEvent" and "eventTimeSeries"',
                           expected_type=str)
+        if event_type not in ('eventTimeSeries', 'detectorEvent'):
+            raise ValueError('"event_type" expects either "detectorEvent" or "eventTimeSeries"')
         self.options.update({'eventType': event_type})
         return self
 
@@ -37,6 +39,9 @@ class EventOverlays(object):
         return self.opts
 
     def with_event_signals(self, eventsignals):
+        util.assert_valid(eventsignals, error_message='"eventsignals" cannot be empty. '
+                                                    'expects EventSignals()',
+                          expected_type=dict)
         self.opts.update({'eventSignal': eventsignals})
         return self
 
@@ -68,5 +73,8 @@ class SelectedEventOverlays(object):
         return self.opts
 
     def with_event_signals(self, eventsignals):
+        util.assert_valid(eventsignals, error_message='"eventsignals" cannot be empty. '
+                                                    'expects EventSignals()',
+                          expected_type=dict)
         self.opts.update({'eventSignal': eventsignals})
         return self
