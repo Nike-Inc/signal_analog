@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Examples for the `signal_analog.filters` module."""
+"""Examples for the `signal_analog.eventoverlays` module."""
 
 from signal_analog.flow import Data
 from signal_analog.charts import TimeSeriesChart
