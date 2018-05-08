@@ -16,6 +16,7 @@ good overview of the SignalFx API consult the [upstream documentation][sfxdocs].
       - [Building Dashboards](#building-dashboards)
       - [Updating Dashboards](#updating-dashboards)
       - [Dashboard Filters](#providing-dashboard-filters)
+      - [Dashboard Event Overlays](#Dashboard-Event-Overlays-and-Selected-Event-Overlays)
       - [Creating Detectors](#creating-detectors)
           - [Detectors That Combine Data Streams](#detectors-that-combine-data-streams)
           - [Building Detectors from Existing Charts](#building-detectors-from-existing-charts)
@@ -275,6 +276,60 @@ If you are updating an existing dashboard:
 response = dash\
 .with_filters(app_filter)\
 .update()
+```
+
+### Dashboard Event Overlays and Selected Event Overlays
+
+To view events overlayed on your charts within a dashboard requires an event to be viewed, a chart with showEventLines
+enabled, and a dashboard with the correct eventOverlays settings (and selectedEventOverlays to show events by default).
+
+Assuming that the events you would like to see exist; you would make a chart with showEventLines like so:
+
+```python
+from signal_analog.flow import Data
+from signal_analog.charts import TimeSeriesChart
+program = Data('cpu.utilization').publish()
+chart = TimeSeriesChart().with_name('Chart With Event Overlays')\
+    .with_program(program).show_event_lines(True)
+```
+With our chart defined, we are ready to prepare our event overlays and selected event overlays for the dashboard.
+First we define the event signals we would like to match (in this case we will look for an event named "test").
+Next we use those event signals to create our eventOverlays, making sure to include a color index for our event's symbol,
+and setting event line to True.
+We also pass our event signals along to the selectedEventOverlays, which will tell the dashboard to display matching
+events by default.
+
+```python
+from signal_analog.eventoverlays import EventSignals, EventOverlays, SelectedEventOverlays
+events = EventSignals().with_event_search_text("test")\
+    .with_event_type("eventTimeSeries")
+
+eventoverlay = EventOverlays().with_event_signals(events)\
+    .with_event_color_index(1)\
+    .with_event_line(True)
+
+selectedeventoverlay = SelectedEventOverlays()\
+    .with_event_signals(events)
+```
+
+Next we combine our chart, our event overlay, and our selected event overlay into a dashboard object:
+
+```python
+from signal_analog.dashboards import Dashboard
+dashboard_with_event_overlays = Dashboard().with_name('Dashboard With Overlays')\
+    .with_charts(chart)\
+    .with_event_overlay(eventoverlay)\
+    .with_selected_event_overlay(selectedeventoverlay)
+```
+
+Finally we build our resources in SignalFX with the cli builder:
+
+```python
+if __name__ == '__main__':
+    from signal_analog.cli import CliBuilder
+    cli = CliBuilder().with_resources(dashboard_with_event_overlays)\
+        .build()
+    cli()
 ```
 
 ### Creating Detectors
