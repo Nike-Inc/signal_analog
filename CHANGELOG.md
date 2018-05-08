@@ -1,6 +1,10 @@
 # History
 
-## 1.3.0(2018--4-17)
+## 1.4.0(2018-05-08)
+
+  * Implement functionality to add event overlays and selected (default) event overlays to dashboards at creation or through updates.
+
+## 1.3.0(2018-04-17)
 
   * Implementing the rest of the Dashboard Filters: `source` and `time`
   
