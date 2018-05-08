@@ -41,7 +41,7 @@ class EventOverlays(object):
     def with_event_signals(self, eventsignals):
         util.assert_valid(eventsignals, error_message='"eventsignals" cannot be empty. '
                                                     'expects EventSignals()',
-                          expected_type=str)
+                          expected_type=object)
         ev = eventsignals.to_dict()
         self.opts.update({'eventSignal': ev})
         return self
@@ -76,7 +76,7 @@ class SelectedEventOverlays(object):
     def with_event_signals(self, eventsignals):
         util.assert_valid(eventsignals, error_message='"eventsignals" cannot be empty. '
                                                     'expects EventSignals()',
-                          expected_type=str)
+                          expected_type=object)
         ev = eventsignals.to_dict()
         self.opts.update({'eventSignal': ev})
         return self
