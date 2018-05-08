@@ -16,7 +16,7 @@ good overview of the SignalFx API consult the [upstream documentation][sfxdocs].
       - [Building Dashboards](#building-dashboards)
       - [Updating Dashboards](#updating-dashboards)
       - [Dashboard Filters](#providing-dashboard-filters)
-      - [Dashboard Event Overlays](#Dashboard-Event-Overlays-and-Selected-Event-Overlays)
+      - [Dashboard Event Overlays](#dashboard-event-overlays-and-selected-event-overlays)
       - [Creating Detectors](#creating-detectors)
           - [Detectors That Combine Data Streams](#detectors-that-combine-data-streams)
           - [Building Detectors from Existing Charts](#building-detectors-from-existing-charts)
