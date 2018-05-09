@@ -1,15 +1,15 @@
 language: python
 python:
-  - '2.7'
-  - '3.6'
+- '2.7'
+- '3.6'
 install:
-  - pip install .
-  - pip install -r requirements_dev.txt
+- pip install .
+- pip install -r requirements_dev.txt
 script:
-  - make test
+- make test
 cache:
   directories:
-    - "./.hypothesis"
+  - "./.hypothesis"
 deploy:
   provider: pypi
   user:
@@ -18,3 +18,6 @@ deploy:
     secure: SnbXU539rBCsgs9Q/yIR/ZNoPZ7T+qfTBogYhIHAgodntZw2VuffzK8Eb85bDlVCSXIrg7ezhzNJCDSVmYwyeOqdNqItfql/+Qo0RGvWKG5adfdxC7uA+OLM71YjzqSUfsPVMgKQwWQZdLvVhZKaGNLYDyuTqS6nban59C8W4w8cXUnaaNMFqNLzcjqU5UgjqXFHadFOq2GY965rTGqMgjM9+JxyQ6DU+G/c6u9ldxdNGojo+mFTrYhUYsnT1PfaCCoGKAhl7SAh6yHlIQ1Dmorx2tSm/jtlCboRKyXxJQoRiAvZLBRG/vDOivqrugwGc1oc6oM2LbQsHtVRbdnjpWBqEKWp3w0B9y7lnFzr5gdlQFbBwWy8/gMrkDRQqOsl8XAw0liJqR+1kBFL3OZfUeR+EMinuW1Ou8659qPewXE6yiRRmqtz1zbpQ3WR6xDiqMu44UNpp1B/SbxQEDV1RtQa4CSL2xteab+4UwP55QA+czbr7lPThI8w8BKbQQm8k+6uo8e+qhkjQea7VFzqkkhYD1xMdNxN/Q2IEzTRKLZEqn7k8B0AloiohbQHI722JhfZkX5Td7KTNj3O1K4QmRGIwHG1FVprlZbsadbSAbo2TngtX55/S1EWipGx9H7czRH/zonzsYTLM1Pa+5jlwQkcqxfBI0h2HOTW0Idw0iI=
   on:
     tags: true
+notifications:
+  slack:
+    secure: AnSQUJPUO0kp/YsYL3Vh1Zy02OhLujjOpLrAWSk++55hTSyFOHbVL2Vq8ng0qSyPD7CAAi4mIBE7pzaxKEdH+umwOHFLgHlqvtPhdCiyiXYeYVvAwX1wzpw29DfWGZn4T3wlf+2izb+gMe1B254dOjqaFoc0VaaDnghnbn6jwZFuNPfeYa4noTNt6Xy+DO3c6lIULi50ILeFnvQgSJ+C5oV9NCE+NssZDd3BG17oNl4sge/KLURrFMdSr+kCzlNx8OXM0oApnL4LLqFGrTCAsKn2+Mbh2s3Tz82L1R+fNncHsQMEOLqy+KCpUyGBnllWimC41voBWxIZec3Kyi9gwo/e/sSBWiLpYy983CiXNjPEfsYHo6DHlE6RUDG01qcVJ1d+jqKxPxtbVpO+rlL4h0erw6DqlPRLq71whybgF/qyZHe5MLeTzgQlf1Umw3J4h9miuPDXga/ym7YpNvgVMu+twKaLEzoQB22RqJuuA+F/OU1Am7acE+NuFYUD0gbto5/3MlpcH3Pn/+RqKNAUg/rxpzTOpcQ6+6osVsNe9JJFOvLpOYBQCQw8hxIGTOlPUi8yS+nH3S835/4qSycbzs2Y4+fY4hLsQvt0Idrhh4NrHUdufQOoYGNZom5ZJRKPn3lOsuneZ+lCUITkbwLqTgPya4/2ZjsYDq1jQs1Bss8=
