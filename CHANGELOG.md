@@ -1,6 +1,13 @@
 # History
 
-## 1.3.0(2018--4-17)
+## 1.4.0(2018-05-08)
+
+  * _(Beta Feature)_ Implements functionality to add event overlays and selected (default) event overlays to dashboards 
+  at dashboard creation or update. Currently, event overlays will only do literal matching of event text for events 
+  displayed on dashboards, except in drop down menu suggestions. Keep this in mind when using these features; until such 
+  time as SignalFX adds partial matching to events displayed on the dashboard. 
+
+## 1.3.0(2018-04-17)
 
   * Implementing the rest of the Dashboard Filters: `source` and `time`
   
