@@ -1,5 +1,9 @@
 # History
 
+## 1.5.0(2018-05-16)
+
+  * Added `include_zero` method to `TimeSeriesChart` to allow setting the `includeZero` option.
+
 ## 1.4.0(2018-05-08)
 
   * Implements functionality to add event overlays and selected (default) event overlays to dashboards 
