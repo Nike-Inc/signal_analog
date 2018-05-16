@@ -293,7 +293,8 @@ chart = TimeSeriesChart().with_name('Chart With Event Overlays')\
     .with_program(program).show_event_lines(True)
 ```
 With our chart defined, we are ready to prepare our event overlays and selected event overlays for the dashboard.
-First we define the event signals we would like to match (in this case we will look for an event named "test").
+First we define the event signals we would like to match. In this case, we will look for an event named "test" (include
+ leading and/or trailing asterisks as wildcards if you need partial matching).
 Next we use those event signals to create our eventOverlays, making sure to include a color index for our event's symbol,
 and setting event line to True.
 We also pass our event signals along to the selectedEventOverlays, which will tell the dashboard to display matching
@@ -301,7 +302,7 @@ events by default.
 
 ```python
 from signal_analog.eventoverlays import EventSignals, EventOverlays, SelectedEventOverlays
-events = EventSignals().with_event_search_text("test")\
+events = EventSignals().with_event_search_text("*test*")\
     .with_event_type("eventTimeSeries")
 
 eventoverlay = EventOverlays().with_event_signals(events)\
