@@ -96,7 +96,13 @@ Before you submit a pull request, check that it meets these guidelines:
     Put your new functionality into a function with a docstring, and add
     the feature to the list in README.md.
 3.  The pull request should work for Python 2.7+ and 3.6+.
-4.  New changes should be added to CHANGELOG.md
+4.  The project version should be updated accordingly
+
+      * You can use `bumpversion` for this (installed as part of
+      requirements_dev.txt). Either `major`, `minor`, or `patch` depending on
+      the feature added. If you're unsure, request help in the Pull Request!
+
+5.  New changes should be added to CHANGELOG.md
 
 ## Tips
 
