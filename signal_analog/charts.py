@@ -410,7 +410,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
 
     def stack_chart(self, boolean):
         """Should area/bar charts in the visualization be stacked."""
-        self.chart_options.update({'stacked': str(boolean).lower()})
+        self.chart_options.update({'stacked': boolean})
         return self
 
     def with_default_plot_type(self, plot_type):
@@ -434,6 +434,10 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
             'dimensionInLegend': dimension
         }
         self.chart_options.update({'onChartLegendOptions': opts})
+        return self
+
+    def with_include_zero(self, include_zero=False):
+        self.chart_options.update({'includeZero': include_zero})
         return self
 
 

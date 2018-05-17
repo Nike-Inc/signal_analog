@@ -80,7 +80,7 @@ def test_ts_chart_show_event_lines():
 
 def test_ts_chart_stack_chart():
     chart = TimeSeriesChart().stack_chart(False)
-    assert chart.chart_options['stacked'] == 'false'
+    assert chart.chart_options['stacked'] is False
 
 
 def test_ts_chart_with_axis_precision():
@@ -203,6 +203,11 @@ def test_ts_chart_with_legend_options():
     chart = TimeSeriesChart()\
         .with_chart_legend_options('foo', show_legend=True)
     assert chart.chart_options['onChartLegendOptions'] == opts
+
+
+def test_ts_chart_include_zero_options():
+    chart = TimeSeriesChart().with_include_zero(True)
+    assert chart.chart_options['includeZero'] is True
 
 
 def test_sv_chart_with_refresh_interval():
