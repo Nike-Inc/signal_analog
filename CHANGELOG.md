@@ -1,5 +1,9 @@
 # History
 
+## 1.5.1 (2018-06-21)
+
+  * Fix detector update logic to include all fields instead of just name/description
+
 ## 1.5.0(2018-05-16)
 
   * Added `include_zero` method to `TimeSeriesChart` to allow setting the `includeZero` option.
