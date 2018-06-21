@@ -1,0 +1,283 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2018-06-21T16:59:48",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/detector?name=test_update"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAKvmUlBQSs4vzStRUrBSMNABcYtSi0tzSopBAtEKsVy1APL4sYckAAAA",
+          "encoding": null
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "51"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Thu, 21 Jun 2018 16:59:48 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/detector?name=test_update"
+      }
+    },
+    {
+      "recorded_at": "2018-06-21T16:59:49",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"name\": \"test_update\", \"programText\": \"detect(data(\\\"cpu.utilization\\\") > 90).publish(label=\\\"foo\\\")\", \"rules\": [{\"detectLabel\": \"foo\", \"severity\": \"Major\", \"notifications\": [{\"type\": \"Email\", \"email\": \"foo.bar@example.com\"}]}]}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "229"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://api.signalfx.com/v2/detector"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAHVTwW4aMRC98xUrn4hUIUrVKlRqFRJ6S5SoJKqiUlWz3oE42Ni1xxSI+Pd6bS/Jbpqj35t5M29m/NQrCgaeHrQVe6x+WEFoHSs+F0+BCRwhqPj+Wfx6lyDvckiAAnKoYcYtAmFVw+8/jsafhsMPp6fj0eiZ1LYm2YX07ma2n9xPJiyR3pFWN1YbtCQwFc+qFTpuhSGh1zE5ZYhYhk2X13+M3kzup38TLqFE+R2dlr7OiEprL2UmHd2Z6u0mXwSc7/7fqtR8ldIXIB1GTMF2ihJ2rWJrUBglCB399lE1SegN2qvb2aVQgtpCBvgKljgzyMVCcDhayK6N1UsL6ha3MTHMhpBTP0hDf8648YPgWop9TJyzk+JrMR6eDIwvpXAP/TicL3O20DqQSdJ6iXmTed2dgTeGiqbcZa0Sywcd1lDCQSk7g6mnoKntpClT39XOpAl9UyBkVgo4xmcuMCjBnuEWlJE44Fo9h3XSI3w4XqiBMKjQb7zpc13tOl5a/MyXj8FZJ8T6dan16s7KDuEwbFBQupAreAxnnRkSpontHbthBMuX/+fVh2Ib4Tw0e7s2rcvtHf4By3CBmaEDAAA=",
+          "encoding": null
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "455"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Thu, 21 Jun 2018 16:59:48 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/detector"
+      }
+    },
+    {
+      "recorded_at": "2018-06-21T16:59:52",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/detector?name=test_update"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAHVTXW8aMRB851ec/ESkCF2IWoVKrUpK3xIlKomqqFTVnm8hDr6za68pEPHfa/s+4HLto2d2Z3fG9usgSRhXriSWfEguzsPRoHWSbAB+JK8e8Rg4elZG7DH/bgShiWzFeZYQirr+53kDOluXeTBih4pi3CAQ5nHgu/HkfZpeXl1NxuNTWplAsy/S2fv5fvo0nbKGdpZUcW+URkMCq0Va7RwtN0KTUGUUaLpEHMdmq7vfWm2mT7M/DSMhQ/kNrZIudHWNLZUKZ79imnY8SLD0qPOej8nlxbhfcr37nxup+LqSWIK0WKMFbGcoIXaVTsoaLqHAKERo6ZeL2o2Q2qC5fZjfiELQWzkNfA0rnGvkYik4tD7beLRRKwPFA25js4+RkNPQD4DhgnHtRj4cKfaxdcHOkk/JJD0baZdJYZ+HMcOPixCXJxtR4yR2XlH/fo7mkmboTdCKS4Twj6SwkMleVCEVRV1Xx3Hhae50ldnXAoRs9TyDEagHjTIwn3ELhZY44qo4LXwjUROHk6euwYfnt48f5Frlu563TsXcZS/eaa/IuDJTav1oZI+y6O9XUPWObuHF/4+WI6Gb+kFnM0aw6n7Lf/xUthHWQXO3d7qNsdbzaoPDX6b/yAEnBAAA",
+          "encoding": null
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "486"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Thu, 21 Jun 2018 16:59:52 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/detector?name=test_update"
+      }
+    },
+    {
+      "recorded_at": "2018-06-21T16:59:53",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"authorizedWriters\": {\"teams\": [], \"users\": []}, \"created\": 1529600388922, \"creator\": \"ClusPSzAYAA\", \"customProperties\": {}, \"description\": \"\", \"id\": \"DgOqpovAYDw\", \"labelResolutions\": {\"foo\": 60000}, \"lastUpdated\": 1529600389312, \"lastUpdatedBy\": \"ClusPSzAYAA\", \"locked\": false, \"maxDelay\": null, \"name\": \"test_update\", \"overMTSLimit\": false, \"packageSpecifications\": \"\", \"programText\": \"detect(data(\\\"cpu.utilization\\\") > 99).publish(label=\\\"foo\\\")\", \"rules\": [{\"detectLabel\": \"foo\", \"severity\": \"Major\", \"notifications\": [{\"type\": \"Email\", \"email\": \"foo.bar@example.com\"}]}], \"tags\": [], \"teams\": [], \"visualizationOptions\": null}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "634"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.18.4"
+          ],
+          "X-SF-Token": [
+            "foo"
+          ]
+        },
+        "method": "PUT",
+        "uri": "https://api.signalfx.com/v2/detector/DgOqpovAYDw"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAG1T204bMRB95ytWfgoSisJSKFsJRCB9A4EaEEKkqma9k2Bix8aXNAnKv+PL7kK2ffQ5M2dmzozf97KMgLMvUrMNVo+aWdSGZD+yd894ziKI+H7Ofh8kyJk6xEMe2QaYUI1gsQrw4XFenAwGR6enRZ5/klIHklxxZ+7Gm+HTcEgS6YyV4k5LhdoyTMVr1QoN1UxZJhcxOWWwWIaMZrdvSi6HT6O/CedQIv+FRnIXMr6OMZUyvHxbg0HbMwdjH1TV7bvIv33PuwGX6/93zyWdp/QpcIMRE7AaIYeYsXCcR3ABAqOERWP/uKiaJOQS9c39+JoJZneFFNA5zHCskLIpo9BOVRuhtJxpEPe4ioneLovU9rw09CaEKtf3RnC2iYkTsp+dZ0Wx31eu5My89KJfZ5NgjieTpHYc6+XW1nV20AyUNeWug0osH0xuKGag5B1jggvS7k7SlAmntlbJoZ8CGK+VPI7xWRfol6AvcAVCcexTKT7DOukR3rZHq8Ab5fuNZ34pq3Vnlh1+7MpXP1knRLtFKeX8QfMOYdBvkNl0ITfw6i+9ZixTTexe2w2xMPv6pf75Y2TJjINmb7eqNSvqbD8AFhhHBLQDAAA=",
+          "encoding": null
+        },
+        "headers": {
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "467"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Thu, 21 Jun 2018 16:59:52 GMT"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/detector/DgOqpovAYDw"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.1"
+}
