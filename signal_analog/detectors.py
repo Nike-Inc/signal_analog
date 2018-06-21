@@ -540,10 +540,7 @@ Request Body:
         except ResourceAlreadyExistsError:
             detector = self.__filter_matches__(query_result)
 
-            if name:
-                detector.update({'name': name})
-            if description:
-                detector.update({'description': description})
+            detector.update(updated_opts)
 
             return self.__action__('put', self.endpoint + '/' + detector['id'],
                                    lambda x: detector)
