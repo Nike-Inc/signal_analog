@@ -3,7 +3,9 @@
 import pytest
 
 from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref, Top, KWArg
-from signal_analog.combinators import Mul, GT
+from signal_analog.combinators import Mul, GT, Div
+from signal_analog.errors import \
+    ProgramDoesNotPublishTimeseriesError
 
 from hypothesis import given, settings
 from .generators import ascii, flows
@@ -92,3 +94,48 @@ def test_ref():
     ref = Ref(strRef)
 
     assert str(ref) == strRef
+
+
+def test_valid_publish_statements_default():
+    data = Data('requests.mean')
+
+    with pytest.raises(ProgramDoesNotPublishTimeseriesError):
+        Program(data).validate()
+
+
+def test_valid_publish_statements_happy():
+    data = Data('requests.mean').publish(label='foo')
+    Program(data).validate()
+
+
+def test_valid_publish_statements_multi():
+    Program(
+        Data('requests.mean'),
+        Data('foo').publish(label='foo')
+    ).validate()
+
+
+def test_valid_publish_statements_assign_happy():
+    Program(
+        Assign('A', Data('foo').publish(label='lol'))
+    ).validate()
+
+
+def test_valid_publish_statements_assign_invalid():
+    with pytest.raises(ProgramDoesNotPublishTimeseriesError):
+        Program(
+            Assign('A', Data('foo'))
+        ).validate()
+
+
+def test_valid_publish_statements_comb_invalid():
+    with pytest.raises(ProgramDoesNotPublishTimeseriesError):
+        Program(
+            Op(Div(Data('foo'), Data('bar')))
+        ).validate()
+
+
+def test_valid_publish_statement_comb_valid():
+    Program(
+        Op(Div(Data('foo'), Data('bar'))).publish(label='foobar')
+    ).validate()

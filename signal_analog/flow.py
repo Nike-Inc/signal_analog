@@ -5,6 +5,8 @@ from numbers import Number
 from six import string_types
 
 import signal_analog.util as util
+from signal_analog.combinators import NAryCombinator
+from signal_analog.errors import ProgramDoesNotPublishTimeseriesError
 
 # Py 2/3 compatability hack to force `filter` to always return an iterator
 try:
@@ -31,6 +33,32 @@ class Program(object):
 
     def __str__(self):
         return '\n'.join(map(str, self.statements))
+
+    def validate(self, *validations):
+        """Validate this Program.
+
+        If no validations are provided this Program will validate against all
+        validation functions from self.DEFAULT_VALIDATIONS.
+
+        A validation function is one that inspects the given Programs
+        statements and returns nothing if verified, an appropriate Exception
+        otherwise.
+
+        Arguments:
+            validations: if provided, override the default validations for this
+                         program.
+
+        Returns:
+            An appropriate Excpetion if invalid, None otherwise.
+        """
+        defaults = [
+            Program.validate_publish_statements
+        ]
+
+        valid_fns = validations if validations else defaults
+
+        for validation in valid_fns:
+            validation(self.statements)
 
     def __valid_statement__(self, stmt):
         """Type check the provided statement."""
@@ -84,6 +112,29 @@ class Program(object):
 
         # Only return the first match from the filter iterator.
         return next(filter(label_predicate, self.statements), None)
+
+    @staticmethod
+    def validate_publish_statements(statements):
+        """Validate that at least 1 statement is published for this Program."""
+        def find_publish(statement):
+
+            # Inspect the left hand side of the assignment
+            if isinstance(statement, Assign):
+                statement = statement.expr
+
+            # We technically shouldn't see naked combinators in a Program
+            # object, but out of an abundance of caution...
+            if isinstance(statement, NAryCombinator):
+                return False
+
+            for call in statement.call_stack:
+                if isinstance(call, Publish):
+                    return True
+
+        publish_statements = list(filter(find_publish, statements))
+
+        if len(publish_statements) < 1:
+            raise ProgramDoesNotPublishTimeseriesError(statements)
 
 
 class Function(object):

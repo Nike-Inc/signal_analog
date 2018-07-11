@@ -426,22 +426,22 @@ def test_detector_with_assign_combinator():
 
     utilization_mean = Assign(mean_string, mean_data)
 
-    detect = Detect(When(GT(Ref(mean_string), 50)))
+    detect = Detect(When(GT(Ref(mean_string), 50))).publish(label='detector')
 
-    program = Program( \
-        utilization_sum, \
-        utilization_count, \
-        utilization_mean, \
-        detect \
+    program = Program(
+        utilization_sum,
+        utilization_count,
+        utilization_mean,
+        detect
     )
 
     detector = Detector().with_program(program)
 
-    assert detector.options["programText"] == "{0}\n{1}\n{2}\n{3}".format( \
-        str(utilization_sum), \
-        str(utilization_count), \
-        str(utilization_mean), \
-        str(detect) \
+    assert detector.options["programText"] == "{0}\n{1}\n{2}\n{3}".format(
+        str(utilization_sum),
+        str(utilization_count),
+        str(utilization_mean),
+        str(detect)
     )
 
     assert program.statements.pop() == detect
