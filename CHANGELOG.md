@@ -1,6 +1,19 @@
 # History
 
-## 1.3.0(2018--4-17)
+## 1.5.1 (2018-06-21)
+
+  * Fix detector update logic to include all fields instead of just name/description
+
+## 1.5.0(2018-05-16)
+
+  * Added `include_zero` method to `TimeSeriesChart` to allow setting the `includeZero` option.
+
+## 1.4.0(2018-05-08)
+
+  * Implements functionality to add event overlays and selected (default) event overlays to dashboards 
+  at dashboard creation or update. Includes wildcard matching using the asterisk (*) symbol. 
+
+## 1.3.0(2018-04-17)
 
   * Implementing the rest of the Dashboard Filters: `source` and `time`
   

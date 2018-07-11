@@ -232,9 +232,9 @@ class Function(object):
         self.call_stack.append(Sum(by=by, over=over))
         return self
 
-    def top(self, by=None, over=None):
+    def top(self, count=None, percentage=None, by=None):
         """Get the top values in the stream."""
-        self.call_stack.append(Top(by=by, over=over))
+        self.call_stack.append(Top(count=count, percentage=percentage, by=by))
         return self
 
     def variance(self, by=None, over=None):
@@ -430,6 +430,8 @@ class KWArg(object):
             str_arg = str(self.arg)
         return "%s=%s" % (self.keyword, str_arg)
 
+    def __eq__(self, other):
+        return self.arg == other.arg and self.arg == other.arg
 
 class VarStrArg(object):
 
@@ -712,10 +714,10 @@ class Sum(StreamMethod):
 
 class Top(StreamMethod):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, count=None, percentage=None, by=None):
         """Get the top values in the stream."""
         super(Top, self).__init__("top")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [KWArg("count", count), KWArg("percentage", percentage), KWArg("by", by)]
 
 
 class Variance(StreamMethod):

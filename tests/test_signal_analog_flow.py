@@ -2,7 +2,7 @@
 
 import pytest
 
-from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref
+from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref, Top, KWArg
 from signal_analog.combinators import Mul, GT, Div
 from signal_analog.errors import \
     ProgramDoesNotPublishTimeseriesError
@@ -54,6 +54,12 @@ def test_find_label_published():
 
     assert program.find_label('A') == data
 
+def test_top_function():
+    data = Data('cpu.utilization', filter=Filter('app', 'test-app'))\
+        .top(count=3,  percentage=22.3, by=["env", "datacenter"])\
+        .publish(label='A')
+    program = Program(data)
+    assert data.call_stack[0].args  == [KWArg("count", 3), KWArg("percentage", 22.3), KWArg("by", ["env", "datacenter"])]
 
 def test_find_label_empty():
     assert Program().find_label('A') is None
