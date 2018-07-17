@@ -54,12 +54,16 @@ def test_find_label_published():
 
     assert program.find_label('A') == data
 
-def test_top_function():
+def test_count_percentage_by_methods():
+    # TODO consider making this test use dynamic fn calls to test all stream
+    #      methods with the same signature.
     data = Data('cpu.utilization', filter=Filter('app', 'test-app'))\
         .top(count=3,  percentage=22.3, by=["env", "datacenter"])\
+        .bottom(count=4, percentage=22.4, by=["env", "datacenter"])\
         .publish(label='A')
-    program = Program(data)
+
     assert data.call_stack[0].args  == [KWArg("count", 3), KWArg("percentage", 22.3), KWArg("by", ["env", "datacenter"])]
+    assert data.call_stack[1].args  == [KWArg("count", 4), KWArg("percentage", 22.4), KWArg("by", ["env", "datacenter"])]
 
 def test_find_label_empty():
     assert Program().find_label('A') is None

@@ -154,9 +154,9 @@ class Function(object):
 
         return "{0}({1}){2}".format(self.name, str_args, str_calls)
 
-    def bottom(self, by=None, over=None):
+    def bottom(self, count=None, percentage=None, by=None):
         """Get the bottom values in the stream."""
-        self.call_stack.append(Bottom(by=by, over=over))
+        self.call_stack.append(Bottom(count=count, percentage=percentage, by=by))
         return self
 
     def count(self, by=None, over=None):
@@ -592,10 +592,10 @@ class Assign(Function):
 
 class Bottom(StreamMethod):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, count=None, percentage=None, by=None):
         """Get the bottom values in the stream."""
         super(Bottom, self).__init__("bottom")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [KWArg("by", count), KWArg("percentage", percentage), KWArg("by", by)]
 
 
 class Count(StreamMethod):
