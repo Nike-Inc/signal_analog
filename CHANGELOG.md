@@ -9,6 +9,7 @@
   * `count` has been updated to raise an error if both `by` and `over` are
   defined in the same method call
   * `delta` has been updated to no longer accept any method arguments
+  * `ewma` has been updated to support the `over` key
 
 ### New Features
 

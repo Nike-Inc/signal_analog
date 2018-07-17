@@ -2,7 +2,8 @@
 
 import pytest
 
-from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref, Top, KWArg
+from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref, \
+                               Top, KWArg, StrArg
 from signal_analog.combinators import Mul, GT, Div
 from signal_analog.errors import \
     ProgramDoesNotPublishTimeseriesError
@@ -165,3 +166,14 @@ def test_dimensions_method_happy():
 def test_dimensions_invalid():
     with pytest.raises(ValueError):
         data = Data('bar').dimensions(aliases={}, renames={})
+
+def test_ewma_happy():
+    data = Data('foo').ewma(1)
+    assert data.call_stack[0].args[0].arg == 1
+
+    data = Data('foo').ewma(over='1m')
+    assert data.call_stack[0].args[0] == KWArg("over", '1m')
+
+def test_ewma_invalid():
+    with pytest.raises(ValueError):
+        Data('foo').ewma(1, '1m')

@@ -291,10 +291,10 @@ class Function(object):
         self.call_stack.append(Timeshift(offset))
         return self
 
-    def ewma(self, alpha):
+    def ewma(self, alpha=None, over=None):
         """Calculates the exponentially weighted moving average of the stream.
         """
-        self.call_stack.append(Ewma(alpha))
+        self.call_stack.append(Ewma(alpha, over=over))
         return self
 
     def abs(self):
@@ -796,11 +796,20 @@ class Timeshift(StreamMethod):
 
 class Ewma(StreamMethod):
 
-    def __init__(self, alpha):
+    def __init__(self, alpha=None, over=None):
         """Calculates the exponentially weighted moving average of the stream.
 ewma(alpha)Returns a new  object."""
         super(Ewma, self).__init__("ewma")
-        self.args = [StrArg(alpha)]
+
+        if alpha and over:
+            raise ValueError("You may only define alpha or 'over' when calling ewma.")
+
+        self.args = []
+
+        if alpha:
+            self.args.append(StrArg(alpha))
+
+        self.args.append(KWArg("over", over))
 
 
 class Abs(StreamMethod):
