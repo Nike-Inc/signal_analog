@@ -2,11 +2,17 @@
 
 ## Unreleased Changes
 
+### Fixes
+
   * `top` and `bottom` method signatures have been fixed to use `count`, `by`,
   and `percentage` arguments
   * `count` has been updated to raise an error if both `by` and `over` are
   defined in the same method call
   * `delta` has been updated to no longer accept any method arguments
+
+### New Features
+
+  * Add support for `dimensions` method
 
 ## 1.5.1 (2018-06-21)
 

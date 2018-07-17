@@ -154,3 +154,14 @@ def test_over_by_methods_single_invocation():
 
     assert data_by.call_stack[0].args[0].arg == 'foo'
     assert data_over.call_stack[0].args[1].arg == '1m'
+
+def test_dimensions_method_happy():
+    data = Data('bar').dimensions(aliases={'foo': 'baz'}).publish(label='foo')
+    assert data.call_stack[0].args[0] == KWArg("aliases", {'foo': 'baz'})
+
+    data = Data('bar').dimensions(renames={'foo': 'baz'}).publish(label='foo')
+    assert data.call_stack[0].args[1] == KWArg("renames", {'foo': 'baz'})
+
+def test_dimensions_invalid():
+    with pytest.raises(ValueError):
+        data = Data('bar').dimensions(aliases={}, renames={})

@@ -172,6 +172,31 @@ class Function(object):
         self.call_stack.append(Delta())
         return self
 
+    def dimensions(self, aliases=None, renames=None):
+        """The dimensions method duplicates or renames metadata of time series
+           in the stream.
+
+           The aliases and renames parameters are optional, but at least one
+           must be specified. Any supplied parameter must be a dictionary of
+           strings to strings.  The keys of the dictionaries specify the names
+           of the new metadata dimensions.  The values of the dictionaries
+           specify the corresponding names of existing metadata dimensions or
+           custom properties from which the new dimensions are derived.
+
+           The difference between aliases and renames is that aliases introduce
+           new dimensions while leaving the existing dimensions as is, whereas
+           renames replace existing dimensions.
+
+           The return value is a data stream whose time series have altered
+           metadata dimensions
+
+        Arguments:
+            aliases: dictionary of strings of strings
+            renames: dictionary of strings of strings
+        """
+        self.call_stack.append(Dimensions(aliases=aliases, renames=renames))
+        return self
+
     def mean(self, by=None, over=None):
         """Find the mean on a stream."""
         self.call_stack.append(Mean(by=by, over=over))
@@ -942,3 +967,12 @@ class Ref(Arg):
 
     def __init__(self, arg):
         super(self.__class__, self).__init__(arg)
+
+class Dimensions(StreamMethod):
+
+    def __init__(self, aliases=None, renames=None):
+        super(Dimensions, self).__init__("dimensions")
+        if not aliases and not renames:
+            raise ValueError("Either aliases or renames must be defined, but not both.")
+
+        self.args = [KWArg("aliases", aliases), KWArg("renames", renames)]
