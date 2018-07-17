@@ -164,12 +164,12 @@ class Function(object):
         self.call_stack.append(Count(by=by, over=over))
         return self
 
-    def delta(self, by=None, over=None):
+    def delta(self):
         """Calculates the difference between the current value and the
            previous value for each time interval.
 
         Delta operates independently on each time series."""
-        self.call_stack.append(Delta(by=by, over=over))
+        self.call_stack.append(Delta())
         return self
 
     def mean(self, by=None, over=None):
@@ -610,12 +610,12 @@ class Count(StreamMethod):
 
 class Delta(StreamMethod):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self):
         """Calculates the difference between the current value and the previous
            value for each time interval.
         """
         super(Delta, self).__init__("delta")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = []
 
 
 class Mean(StreamMethod):
