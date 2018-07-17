@@ -273,11 +273,6 @@ class Function(object):
         self.call_stack.append(Integrate(by=by, over=over))
         return self
 
-    def map(self, by=None, over=None):
-        """Apply a lambda function to a stream."""
-        self.call_stack.append(Map(by=by, over=over))
-        return self
-
     def publish(self, label=None, enable=None):
         """Publish the output of a stream so that it is visible outside of a
            computation."""
@@ -976,6 +971,7 @@ class Ref(Arg):
 
     def __init__(self, arg):
         super(self.__class__, self).__init__(arg)
+
 
 class Dimensions(StreamMethod):
 

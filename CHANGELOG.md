@@ -2,6 +2,16 @@
 
 ## Unreleased Changes
 
+### Added
+
+  * Add support for the `dimensions` method
+
+### Removed
+
+  * `map` method support has been removed
+      * It didn't work properly to begin with, and will require some finaggling
+      to get right given our approach to building SignalFlow statements
+
 ### Fixes
 
   * `top` and `bottom` method signatures have been fixed to use `count`, `by`,
@@ -11,9 +21,6 @@
   * `delta` has been updated to no longer accept any method arguments
   * `ewma` has been updated to support the `over` key
 
-### New Features
-
-  * Add support for `dimensions` method
 
 ## 1.5.1 (2018-06-21)
 
