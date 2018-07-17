@@ -603,6 +603,8 @@ class Count(StreamMethod):
     def __init__(self, by=None, over=None):
         """Counts the number of inputs that have data."""
         super(Count, self).__init__("count")
+        if by and over:
+            raise ValueError("Count cannot be defined with both 'by' and 'over' arguments in the same call.")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
 

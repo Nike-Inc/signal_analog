@@ -143,3 +143,14 @@ def test_valid_publish_statement_comb_valid():
     Program(
         Op(Div(Data('foo'), Data('bar'))).publish(label='foobar')
     ).validate()
+
+def test_over_by_methods_single_invocation():
+    """Ensure that by/over methods don't allow you to supply both in a single call."""
+    with pytest.raises(ValueError):
+        Data('foo').count(by='dimension', over='1m')
+
+    data_by = Data('bar').count(by='foo')
+    data_over = Data('baz').count(over='1m')
+
+    assert data_by.call_stack[0].args[0].arg == 'foo'
+    assert data_over.call_stack[0].args[1].arg == '1m'
