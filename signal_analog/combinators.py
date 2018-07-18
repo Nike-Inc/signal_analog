@@ -44,6 +44,7 @@ class Or(NAryCombinator):
     def __init__(self, *ns):
         super(Or, self).__init__('or', *ns)
 
+
 class LT(NAryCombinator):
 
     def __init__(self, left, right):
@@ -54,6 +55,18 @@ class GT(NAryCombinator):
 
     def __init__(self, left, right):
         super(GT, self).__init__('>', left, right)
+
+
+class LTE(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(LTE, self).__init__('<=', left, right)
+
+
+class GTE(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(GTE, self).__init__('>=', left, right)
 
 
 class Mul(NAryCombinator):
