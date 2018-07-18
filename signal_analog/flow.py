@@ -154,9 +154,9 @@ class Function(object):
 
         return "{0}({1}){2}".format(self.name, str_args, str_calls)
 
-    def bottom(self, by=None, over=None):
+    def bottom(self, count=None, percentage=None, by=None):
         """Get the bottom values in the stream."""
-        self.call_stack.append(Bottom(by=by, over=over))
+        self.call_stack.append(Bottom(count=count, percentage=percentage, by=by))
         return self
 
     def count(self, by=None, over=None):
@@ -164,12 +164,37 @@ class Function(object):
         self.call_stack.append(Count(by=by, over=over))
         return self
 
-    def delta(self, by=None, over=None):
+    def delta(self):
         """Calculates the difference between the current value and the
            previous value for each time interval.
 
         Delta operates independently on each time series."""
-        self.call_stack.append(Delta(by=by, over=over))
+        self.call_stack.append(Delta())
+        return self
+
+    def dimensions(self, aliases=None, renames=None):
+        """The dimensions method duplicates or renames metadata of time series
+           in the stream.
+
+           The aliases and renames parameters are optional, but at least one
+           must be specified. Any supplied parameter must be a dictionary of
+           strings to strings.  The keys of the dictionaries specify the names
+           of the new metadata dimensions.  The values of the dictionaries
+           specify the corresponding names of existing metadata dimensions or
+           custom properties from which the new dimensions are derived.
+
+           The difference between aliases and renames is that aliases introduce
+           new dimensions while leaving the existing dimensions as is, whereas
+           renames replace existing dimensions.
+
+           The return value is a data stream whose time series have altered
+           metadata dimensions
+
+        Arguments:
+            aliases: dictionary of strings of strings
+            renames: dictionary of strings of strings
+        """
+        self.call_stack.append(Dimensions(aliases=aliases, renames=renames))
         return self
 
     def mean(self, by=None, over=None):
@@ -248,11 +273,6 @@ class Function(object):
         self.call_stack.append(Integrate(by=by, over=over))
         return self
 
-    def map(self, by=None, over=None):
-        """Apply a lambda function to a stream."""
-        self.call_stack.append(Map(by=by, over=over))
-        return self
-
     def publish(self, label=None, enable=None):
         """Publish the output of a stream so that it is visible outside of a
            computation."""
@@ -266,10 +286,10 @@ class Function(object):
         self.call_stack.append(Timeshift(offset))
         return self
 
-    def ewma(self, alpha):
+    def ewma(self, alpha=None, over=None):
         """Calculates the exponentially weighted moving average of the stream.
         """
-        self.call_stack.append(Ewma(alpha))
+        self.call_stack.append(Ewma(alpha, over=over))
         return self
 
     def abs(self):
@@ -592,10 +612,10 @@ class Assign(Function):
 
 class Bottom(StreamMethod):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, count=None, percentage=None, by=None):
         """Get the bottom values in the stream."""
         super(Bottom, self).__init__("bottom")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [KWArg("by", count), KWArg("percentage", percentage), KWArg("by", by)]
 
 
 class Count(StreamMethod):
@@ -603,17 +623,19 @@ class Count(StreamMethod):
     def __init__(self, by=None, over=None):
         """Counts the number of inputs that have data."""
         super(Count, self).__init__("count")
+        if by and over:
+            raise ValueError("Count cannot be defined with both 'by' and 'over' arguments in the same call.")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
 
 class Delta(StreamMethod):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self):
         """Calculates the difference between the current value and the previous
            value for each time interval.
         """
         super(Delta, self).__init__("delta")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = []
 
 
 class Mean(StreamMethod):
@@ -769,11 +791,20 @@ class Timeshift(StreamMethod):
 
 class Ewma(StreamMethod):
 
-    def __init__(self, alpha):
+    def __init__(self, alpha=None, over=None):
         """Calculates the exponentially weighted moving average of the stream.
 ewma(alpha)Returns a new  object."""
         super(Ewma, self).__init__("ewma")
-        self.args = [StrArg(alpha)]
+
+        if alpha and over:
+            raise ValueError("You may only define alpha or 'over' when calling ewma.")
+
+        self.args = []
+
+        if alpha:
+            self.args.append(StrArg(alpha))
+
+        self.args.append(KWArg("over", over))
 
 
 class Abs(StreamMethod):
@@ -940,3 +971,13 @@ class Ref(Arg):
 
     def __init__(self, arg):
         super(self.__class__, self).__init__(arg)
+
+
+class Dimensions(StreamMethod):
+
+    def __init__(self, aliases=None, renames=None):
+        super(Dimensions, self).__init__("dimensions")
+        if not aliases and not renames:
+            raise ValueError("Either aliases or renames must be defined, but not both.")
+
+        self.args = [KWArg("aliases", aliases), KWArg("renames", renames)]

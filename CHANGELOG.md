@@ -1,5 +1,27 @@
 # History
 
+## Unreleased Changes
+
+### Added
+
+  * Add support for the `dimensions` method
+
+### Removed
+
+  * `map` method support has been removed
+      * It didn't work properly to begin with, and will require some finagling
+      to get right given our approach to building SignalFlow statements
+
+### Fixes
+
+  * `top` and `bottom` method signatures have been fixed to use `count`, `by`,
+  and `percentage` arguments
+  * `count` has been updated to raise an error if both `by` and `over` are
+  defined in the same method call
+  * `delta` has been updated to no longer accept any method arguments
+  * `ewma` has been updated to support the `over` key
+
+
 ## 1.5.1 (2018-06-21)
 
   * Fix detector update logic to include all fields instead of just name/description
@@ -16,7 +38,7 @@
 ## 1.3.0(2018-04-17)
 
   * Implementing the rest of the Dashboard Filters: `source` and `time`
-  
+
 ## 1.2.0 (2018-04-11)
   * Added an Assign function that will enable more complex detectors which are constructed by combining multiple data streams
   * Added a Ref flow operator that will enable referencing assignments in a way that can be validated at later steps by checking for an Assign object with a match between the reference string and the assignee

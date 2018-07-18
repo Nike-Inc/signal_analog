@@ -2,7 +2,8 @@
 
 import pytest
 
-from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref, Top, KWArg
+from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref, \
+                               Top, KWArg, StrArg
 from signal_analog.combinators import Mul, GT, Div
 from signal_analog.errors import \
     ProgramDoesNotPublishTimeseriesError
@@ -54,12 +55,16 @@ def test_find_label_published():
 
     assert program.find_label('A') == data
 
-def test_top_function():
+def test_count_percentage_by_methods():
+    # TODO consider making this test use dynamic fn calls to test all stream
+    #      methods with the same signature.
     data = Data('cpu.utilization', filter=Filter('app', 'test-app'))\
         .top(count=3,  percentage=22.3, by=["env", "datacenter"])\
+        .bottom(count=4, percentage=22.4, by=["env", "datacenter"])\
         .publish(label='A')
-    program = Program(data)
+
     assert data.call_stack[0].args  == [KWArg("count", 3), KWArg("percentage", 22.3), KWArg("by", ["env", "datacenter"])]
+    assert data.call_stack[1].args  == [KWArg("count", 4), KWArg("percentage", 22.4), KWArg("by", ["env", "datacenter"])]
 
 def test_find_label_empty():
     assert Program().find_label('A') is None
@@ -139,3 +144,36 @@ def test_valid_publish_statement_comb_valid():
     Program(
         Op(Div(Data('foo'), Data('bar'))).publish(label='foobar')
     ).validate()
+
+def test_over_by_methods_single_invocation():
+    """Ensure that by/over methods don't allow you to supply both in a single call."""
+    with pytest.raises(ValueError):
+        Data('foo').count(by='dimension', over='1m')
+
+    data_by = Data('bar').count(by='foo')
+    data_over = Data('baz').count(over='1m')
+
+    assert data_by.call_stack[0].args[0].arg == 'foo'
+    assert data_over.call_stack[0].args[1].arg == '1m'
+
+def test_dimensions_method_happy():
+    data = Data('bar').dimensions(aliases={'foo': 'baz'}).publish(label='foo')
+    assert data.call_stack[0].args[0] == KWArg("aliases", {'foo': 'baz'})
+
+    data = Data('bar').dimensions(renames={'foo': 'baz'}).publish(label='foo')
+    assert data.call_stack[0].args[1] == KWArg("renames", {'foo': 'baz'})
+
+def test_dimensions_invalid():
+    with pytest.raises(ValueError):
+        data = Data('bar').dimensions(aliases={}, renames={})
+
+def test_ewma_happy():
+    data = Data('foo').ewma(1)
+    assert data.call_stack[0].args[0].arg == 1
+
+    data = Data('foo').ewma(over='1m')
+    assert data.call_stack[0].args[0] == KWArg("over", '1m')
+
+def test_ewma_invalid():
+    with pytest.raises(ValueError):
+        Data('foo').ewma(1, '1m')
