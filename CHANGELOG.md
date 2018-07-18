@@ -9,7 +9,7 @@
 ### Removed
 
   * `map` method support has been removed
-      * It didn't work properly to begin with, and will require some finaggling
+      * It didn't work properly to begin with, and will require some finagling
       to get right given our approach to building SignalFlow statements
 
 ### Fixes
