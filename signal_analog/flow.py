@@ -619,7 +619,7 @@ class AggregationTransformationMixin(object):
 
     def check_pre_conditions(self):
         # We only want these pre-conditions to be checked if this mixin is
-        # used in conjunction with StreaMethod.
+        # used in conjunction with StreamMethod.
         if StreamMethod not in self.__class__.__bases__:
             msg = "AggregationTransformationMixin cannout be used outside" +\
                   "of a StreamMethod. This is likely a library error and" +\
