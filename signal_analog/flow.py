@@ -610,7 +610,7 @@ class Assign(Function):
         return str(self.assignee) + " = " + str(self.expr)
 
 class AggregationTransformationMixin(object):
-    """Mixin providing pre-condition checks for StreaMethods that perform
+    """Mixin providing pre-condition checks for StreamMethods that perform
        both aggregations and transformations.
     """
 
