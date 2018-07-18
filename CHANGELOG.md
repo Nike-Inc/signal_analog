@@ -1,5 +1,9 @@
 # History
 
+## 1.6.0 (2018-07-18)
+
+  * Add combinators for less-than-or-equal-to (`LTE`) and greater-than-or-equal-to (`GTE`)
+
 ## 1.5.1 (2018-06-21)
 
   * Fix detector update logic to include all fields instead of just name/description
