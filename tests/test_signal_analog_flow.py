@@ -3,7 +3,10 @@
 import pytest
 
 from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref, \
-                               Top, KWArg, StrArg
+                               Top, KWArg, StrArg, Count, Mean, \
+                               Mean_plus_stddev, Median, Min, Max, Size, \
+                               Stddev, Sum, Variance, \
+                               AggregationTransformationMixin
 from signal_analog.combinators import Mul, GT, Div
 from signal_analog.errors import \
     ProgramDoesNotPublishTimeseriesError
@@ -145,6 +148,7 @@ def test_valid_publish_statement_comb_valid():
         Op(Div(Data('foo'), Data('bar'))).publish(label='foobar')
     ).validate()
 
+
 def test_over_by_methods_single_invocation():
     """Ensure that by/over methods don't allow you to supply both in a single call."""
     with pytest.raises(ValueError):
@@ -156,6 +160,7 @@ def test_over_by_methods_single_invocation():
     assert data_by.call_stack[0].args[0].arg == 'foo'
     assert data_over.call_stack[0].args[1].arg == '1m'
 
+
 def test_dimensions_method_happy():
     data = Data('bar').dimensions(aliases={'foo': 'baz'}).publish(label='foo')
     assert data.call_stack[0].args[0] == KWArg("aliases", {'foo': 'baz'})
@@ -163,9 +168,11 @@ def test_dimensions_method_happy():
     data = Data('bar').dimensions(renames={'foo': 'baz'}).publish(label='foo')
     assert data.call_stack[0].args[1] == KWArg("renames", {'foo': 'baz'})
 
+
 def test_dimensions_invalid():
     with pytest.raises(ValueError):
         data = Data('bar').dimensions(aliases={}, renames={})
+
 
 def test_ewma_happy():
     data = Data('foo').ewma(1)
@@ -174,6 +181,34 @@ def test_ewma_happy():
     data = Data('foo').ewma(over='1m')
     assert data.call_stack[0].args[0] == KWArg("over", '1m')
 
+
 def test_ewma_invalid():
     with pytest.raises(ValueError):
         Data('foo').ewma(1, '1m')
+
+
+@pytest.mark.parametrize("clazz", [Count, Mean, Mean_plus_stddev, Median, Min,
+                                   Max, Size, Stddev, Sum, Variance])
+def test_transform_aggregation_happy(clazz):
+
+    assert clazz(by='foo').args[0].arg == 'foo'
+    assert clazz(over='bar').args[1].arg == 'bar'
+
+
+@pytest.mark.parametrize("clazz", [Count, Mean, Mean_plus_stddev, Median, Min,
+                                   Max, Size, Stddev, Sum, Variance])
+def test_transform_aggregation_invalid(clazz):
+    with pytest.raises(ValueError):
+        clazz(by='foo', over='bar')
+
+
+def test_transform_aggregation_not_stream_method():
+
+    class Foo(object):
+        pass
+
+    class Bar(Foo, AggregationTransformationMixin):
+        pass
+
+    with pytest.raises(ValueError):
+        Bar().check_pre_conditions()

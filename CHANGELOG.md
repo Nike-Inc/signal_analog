@@ -16,8 +16,10 @@
 
   * `top` and `bottom` method signatures have been fixed to use `count`, `by`,
   and `percentage` arguments
-  * `count` has been updated to raise an error if both `by` and `over` are
-  defined in the same method call
+  * The following functions have been updated to raise an error if both
+  `by` and `over` are defined in the same method call:
+      * `count`, `max`, `mean`, `mean_plus_stddev`, `median`, `min`,
+      `percentile`, `random`, `size`, `stddev`, `sum`, `variance`
   * `delta` has been updated to no longer accept any method arguments
   * `ewma` has been updated to support the `over` key
 

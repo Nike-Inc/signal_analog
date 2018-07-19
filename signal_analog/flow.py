@@ -222,14 +222,14 @@ class Function(object):
         self.call_stack.append(Max(by=by, over=over))
         return self
 
-    def percentile(self, by=None, over=None):
+    def percentile(self, percentage, by=None, over=None):
         """Calculates the n-th percentile of inputs in the stream."""
-        self.call_stack.append(Percentile(by=by, over=over))
+        self.call_stack.append(Percentile(percentage, by=by, over=over))
         return self
 
-    def random(self, by=None, over=None):
+    def random(self, count, by=None, over=None):
         """Get random values in the stream by count or percentage."""
-        self.call_stack.append(Random(by=by, over=over))
+        self.call_stack.append(Random(count, by=by, over=over))
         return self
 
     def sample_stddev(self, by=None, over=None):
@@ -609,6 +609,33 @@ class Assign(Function):
     def __str__(self):
         return str(self.assignee) + " = " + str(self.expr)
 
+class AggregationTransformationMixin(object):
+    """Mixin providing pre-condition checks for StreamMethods that perform
+       both aggregations and transformations.
+    """
+
+    def __init__(self):
+        pass
+
+    def check_pre_conditions(self):
+        # We only want these pre-conditions to be checked if this mixin is
+        # used in conjunction with StreamMethod.
+        if StreamMethod not in self.__class__.__bases__:
+            msg = "AggregationTransformationMixin cannout be used outside" +\
+                  "of a StreamMethod. This is likely a library error and" +\
+                  "not a user error. Please file a ticket:\n" +\
+                  "https://github.com/Nike-inc/signal_analog/issues"
+            raise ValueError(msg)
+
+        # A StreamMethod may have positional arguments and by/over kwargs.
+        # In such cases we only want to inspect the first two kwargs defined.
+        kwargs = filter(lambda x: issubclass(KWArg, x.__class__), self.args)
+        (by, over) = map(lambda x: x.arg, kwargs)
+
+        if by and over:
+            msg = '{0} cannot define both "by" and "over" at the same time.'
+            raise ValueError(msg.format(self.__class__.__name__))
+
 
 class Bottom(StreamMethod):
 
@@ -618,14 +645,13 @@ class Bottom(StreamMethod):
         self.args = [KWArg("by", count), KWArg("percentage", percentage), KWArg("by", by)]
 
 
-class Count(StreamMethod):
+class Count(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Counts the number of inputs that have data."""
         super(Count, self).__init__("count")
-        if by and over:
-            raise ValueError("Count cannot be defined with both 'by' and 'over' arguments in the same call.")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
 class Delta(StreamMethod):
@@ -638,60 +664,66 @@ class Delta(StreamMethod):
         self.args = []
 
 
-class Mean(StreamMethod):
+class Mean(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the mean on a stream."""
         super(Mean, self).__init__("mean")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Mean_plus_stddev(StreamMethod):
+class Mean_plus_stddev(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Calculates the mean + n standard deviations."""
         super(Mean_plus_stddev, self).__init__("mean_plus_stddev")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
-
-class Median(StreamMethod):
+class Median(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the median on a stream."""
         super(Median, self).__init__("median")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Min(StreamMethod):
+class Min(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the minimum value on a stream."""
         super(Min, self).__init__("min")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Max(StreamMethod):
+class Max(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the maximum value on a stream."""
         super(Max, self).__init__("max")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Percentile(StreamMethod):
+class Percentile(StreamMethod, AggregationTransformationMixin):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, percentage, by=None, over=None):
         """Calculates the n-th percentile of inputs in the stream."""
         super(Percentile, self).__init__("percentile")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [StrArg(percentage), KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Random(StreamMethod):
+class Random(StreamMethod, AggregationTransformationMixin):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, count, by=None, over=None):
         """Get random values in the stream by count or percentage."""
         super(Random, self).__init__("random")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [StrArg(count), KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
 class Sample_stddev(StreamMethod):
@@ -710,28 +742,31 @@ class Sample_variance(StreamMethod):
         self.args = [KWArg("by", by), KWArg("over", over)]
 
 
-class Size(StreamMethod):
+class Size(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Counts the number of inputs in the stream."""
         super(Size, self).__init__("size")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Stddev(StreamMethod):
+class Stddev(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Calculates the standard deviation of inputs in the stream."""
         super(Stddev, self).__init__("stddev")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Sum(StreamMethod):
+class Sum(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the sum on a stream."""
         super(Sum, self).__init__("sum")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
 class Top(StreamMethod):
@@ -742,12 +777,13 @@ class Top(StreamMethod):
         self.args = [KWArg("count", count), KWArg("percentage", percentage), KWArg("by", by)]
 
 
-class Variance(StreamMethod):
+class Variance(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Calculates the variance of inputs in the stream."""
         super(Variance, self).__init__("variance")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
 class Integrate(StreamMethod):
@@ -757,14 +793,6 @@ class Integrate(StreamMethod):
            (in seconds) of the computation.
         """
         super(Integrate, self).__init__("integrate")
-        self.args = [KWArg("by", by), KWArg("over", over)]
-
-
-class Map(StreamMethod):
-
-    def __init__(self, by=None, over=None):
-        """Apply a lambda function to a stream."""
-        super(Map, self).__init__("map")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
 
