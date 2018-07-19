@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """This module provides bindings for the SignalFx SignalFlow DSL."""
 
 from numbers import Number
@@ -394,6 +396,37 @@ class Function(object):
         """Promotes a metadata property to a dimension."""
         self.call_stack.append(Promote(property))
         return self
+    
+    def fill(self, value=None, duration=None):
+        """Fills in missing values for time series in a stream. See
+        https://developers.signalfx.com/reference#fill-stream-method
+        """
+        self.call_stack.append(Fill(value, duration))
+        return self
+    
+    def integrate(self):
+        """Multiplies the values of each input time series by the resolution (in seconds) of the computation.
+        See https://developers.signalfx.com/reference#integrate-method
+        """
+        self.call_stack.append(Integrate())
+        return self
+    
+    def kpss(self, over=None, mode='level'):
+        """Calculates the Kwiatkowski–Phillips–Schmidt–Shin (KPSS) statistic on the specified time window of the stream
+        see https://developers.signalfx.com/reference#kpss-stream-method
+        """
+        self.call_stack.append(Kpss(over, mode))
+        return self
+    
+    def rateofchange(self):
+        """Calculates the difference between the current value and the previous value for each time interval
+        See https://developers.signalfx.com/reference#rateofchange-method
+        """
+        self.call_stack.append(RateOfChange())
+        return self
+
+        
+        
 
 
 class StreamMethod(object):
@@ -452,6 +485,9 @@ class KWArg(object):
 
     def __eq__(self, other):
         return self.arg == other.arg and self.arg == other.arg
+
+    def __repr__(self):
+        return self.__str__()
 
 class VarStrArg(object):
 
@@ -994,6 +1030,36 @@ class Promote(StreamMethod):
         super(Promote, self).__init__("promote")
         self.args = [StrArg(property)]
 
+class Fill(StreamMethod):
+    def __init__(self, value, duration):
+        """Fills in missing values for time series in a stream."""
+        super(Fill, self).__init__("fill")
+        self.args = [
+            KWArg("value", value),
+            KWArg("duration", duration),
+        ]
+
+class Integrate(StreamMethod):
+    def __init__(self):
+        super(Integrate, self).__init__("integrate")
+        self.args = []
+
+class Kpss(StreamMethod):
+    def __init__(self, over, mode):
+        """Fills in missing values for time series in a stream."""
+        super(Kpss, self).__init__("kpss")
+        if mode not in set(['level', 'trend']):
+            raise ValueError('kpss mode must be level|trend')
+
+        self.args = [
+            KWArg("over", over),
+            KWArg("mode", mode),
+        ]
+
+class RateOfChange(StreamMethod):
+    def __init__(self):
+        super(RateOfChange, self).__init__("rateofchange")
+        self.args = []    
 
 class Ref(Arg):
 

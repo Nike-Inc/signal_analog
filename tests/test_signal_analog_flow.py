@@ -69,6 +69,54 @@ def test_count_percentage_by_methods():
     assert data.call_stack[0].args  == [KWArg("count", 3), KWArg("percentage", 22.3), KWArg("by", ["env", "datacenter"])]
     assert data.call_stack[1].args  == [KWArg("count", 4), KWArg("percentage", 22.4), KWArg("by", ["env", "datacenter"])]
 
+def test_fill():
+    data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
+        .fill(value=42, duration="1m")\
+        .publish(label = 'a')
+    
+    assert data.call_stack[0].name =='fill'
+    assert data.call_stack[0].args == [KWArg("value", 42), KWArg("duration", '1m')]
+
+def test_integrate():
+    data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
+        .integrate()\
+        .publish(label = 'a')
+
+    assert data.call_stack[0].name == 'integrate'
+    assert data.call_stack[0].args == []
+
+def test_kpss():
+    data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
+        .kpss(over='1h')\
+        .publish(label = 'a')
+
+    assert data.call_stack[0].name == 'kpss'
+    # mode should default to level
+    assert data.call_stack[0].args == [KWArg("over", '1h'), KWArg("mode", 'level')]
+
+    data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
+        .kpss(over='2m', mode='trend')\
+        .publish(label = 'a')
+
+    # should allow trend
+    assert data.call_stack[0].args == [KWArg("over", '2m'), KWArg("mode", 'trend')]
+
+    try:
+        Data("cpu.utilization", filter=Filter('app', 'test-app'))\
+            .kpss(over='2m', mode='tr3nd')
+        assert False
+    except ValueError as ve:
+        assert str(ve) == 'kpss mode must be level|trend'
+
+def test_rateofchange():
+    data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
+        .rateofchange()\
+        .publish(label = 'a')
+
+    assert data.call_stack[0].name == 'rateofchange'
+    assert data.call_stack[0].args == []
+
+
 def test_find_label_empty():
     assert Program().find_label('A') is None
 
