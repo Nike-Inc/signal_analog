@@ -4,7 +4,8 @@
 
 ### Added
 
-  * Add support for the `dimensions` method
+  * Add support for the `dimensions`, `fill`, `integrate`, `kpss`, `rateofchange` methods
+  
 
 ### Removed
 
