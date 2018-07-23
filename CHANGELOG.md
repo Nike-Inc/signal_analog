@@ -2,6 +2,9 @@
 
 ## Unreleased Changes
 
+For assistance migrating from 1.x to 2.x please consult the
+[migration guide][migration-1x].
+
 ### Added
 
   * Add support for the `dimensions`, `fill`, `integrate`, `kpss`, `rateofchange` methods
@@ -158,3 +161,4 @@
   * Initial release
 
 [deployment]: https://github.com/Nike-Inc/signal_analog/wiki/Developers-::-Deployment
+[migration-1x]: ./docs/migrating_from_1.x.md
