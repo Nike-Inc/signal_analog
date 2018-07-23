@@ -281,7 +281,7 @@ class Function(object):
         self.call_stack.append(Publish(label=label, enable=enable))
         return self
 
-    def timeshift(self, offset=None):
+    def timeshift(self, offset):
         """Timeshift the datapoints for a stream, offset by a specified time
            period e.g. 1 week (1w), to enable comparison of time series with
            its own past behavior."""
@@ -392,11 +392,11 @@ class Function(object):
         self.call_stack.append(Not_equals(value, replacement=replacement))
         return self
 
-    def promote(self, property):
+    def promote(self, *properties):
         """Promotes a metadata property to a dimension."""
-        self.call_stack.append(Promote(property))
+        self.call_stack.append(Promote(*properties))
         return self
-    
+
     def fill(self, value=None, duration=None):
         """Fills in missing values for time series in a stream. See
         https://developers.signalfx.com/reference#fill-stream-method
@@ -1025,10 +1025,10 @@ class Not_equals(StreamMethod):
 
 class Promote(StreamMethod):
 
-    def __init__(self, property):
+    def __init__(self, *properties):
         """Promotes a metadata property to a dimension."""
         super(Promote, self).__init__("promote")
-        self.args = [StrArg(property)]
+        self.args = [Arg(list(properties))]
 
 class Fill(StreamMethod):
     def __init__(self, value, duration):
