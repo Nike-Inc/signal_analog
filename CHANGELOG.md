@@ -27,6 +27,9 @@ For assistance migrating from 1.x to 2.x please consult the
   * `delta` has been updated to no longer accept any method arguments
   * `ewma` has been updated to support the `over` key
 
+## 1.6.0 (2018-07-18)
+
+  * Add combinators for less-than-or-equal-to (`LTE`) and greater-than-or-equal-to (`GTE`)
 
 ## 1.5.1 (2018-06-21)
 
