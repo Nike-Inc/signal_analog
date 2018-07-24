@@ -1,5 +1,32 @@
 # History
 
+## Unreleased Changes
+
+For assistance migrating from 1.x to 2.x please consult the
+[migration guide][migration-1x].
+
+### Added
+
+  * Add support for the `dimensions`, `fill`, `integrate`, `kpss`, `rateofchange` methods
+  
+
+### Removed
+
+  * `map` method support has been removed
+      * It didn't work properly to begin with, and will require some finagling
+      to get right given our approach to building SignalFlow statements
+
+### Fixes
+
+  * `top` and `bottom` method signatures have been fixed to use `count`, `by`,
+  and `percentage` arguments
+  * The following functions have been updated to raise an error if both
+  `by` and `over` are defined in the same method call:
+      * `count`, `max`, `mean`, `mean_plus_stddev`, `median`, `min`,
+      `percentile`, `random`, `size`, `stddev`, `sum`, `variance`
+  * `delta` has been updated to no longer accept any method arguments
+  * `ewma` has been updated to support the `over` key
+
 ## 1.6.0 (2018-07-18)
 
   * Add combinators for less-than-or-equal-to (`LTE`) and greater-than-or-equal-to (`GTE`)
@@ -20,7 +47,7 @@
 ## 1.3.0(2018-04-17)
 
   * Implementing the rest of the Dashboard Filters: `source` and `time`
-  
+
 ## 1.2.0 (2018-04-11)
   * Added an Assign function that will enable more complex detectors which are constructed by combining multiple data streams
   * Added a Ref flow operator that will enable referencing assignments in a way that can be validated at later steps by checking for an Assign object with a match between the reference string and the assignee
@@ -137,3 +164,4 @@
   * Initial release
 
 [deployment]: https://github.com/Nike-Inc/signal_analog/wiki/Developers-::-Deployment
+[migration-1x]: ./docs/migrating_from_1.x.md

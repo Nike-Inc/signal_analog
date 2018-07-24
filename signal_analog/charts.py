@@ -7,6 +7,7 @@ import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
     ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 from signal_analog.resources import Resource
+from signal_analog.flow import Program
 
 
 class Chart(Resource):
@@ -38,6 +39,11 @@ class Chart(Resource):
         https://developers.signalfx.com/docs/signalflow-overview
         """
         util.assert_valid(program)
+        # Chart's don't require you to use a Program object, so make a best
+        # effort to validate if we can.
+        if isinstance(program, Program):
+            program.validate()
+
         self.options.update({'programText': program})
         return self
 
