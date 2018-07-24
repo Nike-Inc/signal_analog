@@ -60,6 +60,30 @@ def test_binary_combinator_sub(f, ff):
     assert str(comb.Sub(f, ff)) == "{0} - {1}".format(str(f), str(ff))
 
 
+@given(flows(), flows())
+def test_binary_combinator_lt(f, ff):
+    """LT combinator should always intersperse '<' in the elements."""
+    assert str(comb.LT(f, ff)) == "{0} < {1}".format(str(f), str(ff))
+
+
+@given(flows(), flows())
+def test_binary_combinator_gt(f, ff):
+    """GT combinator should always intersperse '>' in the elements."""
+    assert str(comb.GT(f, ff)) == "{0} > {1}".format(str(f), str(ff))
+
+
+@given(flows(), flows())
+def test_binary_combinator_lte(f, ff):
+    """LTE combinator should always intersperse '<=' in the elements."""
+    assert str(comb.LTE(f, ff)) == "{0} <= {1}".format(str(f), str(ff))
+
+
+@given(flows(), flows())
+def test_binary_combinator_gte(f, ff):
+    """GTE combinator should always intersperse '>=' in the elements."""
+    assert str(comb.GTE(f, ff)) == "{0} >= {1}".format(str(f), str(ff))
+
+
 @given(flows())
 def test_combinator_not(expr):
     """Not combinator should always prefix 'not' to its expression."""
