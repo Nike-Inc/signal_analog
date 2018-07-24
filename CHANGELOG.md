@@ -1,14 +1,15 @@
 # History
 
-## Unreleased Changes
+## 2.0.0 (2018-07-24)
 
 For assistance migrating from 1.x to 2.x please consult the
 [migration guide][migration-1x].
 
 ### Added
 
-  * Add support for the `dimensions`, `fill`, `integrate`, `kpss`, `rateofchange` methods
-  
+  * Add support for the `dimensions`, `fill`, `integrate`, `kpss`,
+  `rateofchange` methods
+
 
 ### Removed
 
