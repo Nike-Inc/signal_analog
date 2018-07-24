@@ -51,7 +51,7 @@ class Program(object):
                          program.
 
         Returns:
-            An appropriate Excpetion if invalid, None otherwise.
+            An appropriate Exception if invalid, None otherwise.
         """
         defaults = [
             Program.validate_publish_statements
