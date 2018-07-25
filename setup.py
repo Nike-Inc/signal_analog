@@ -45,6 +45,7 @@ setup(
     description='A troposphere-like library for managing SignalFx'
                 + 'Charts, Dashboards, and Detectors.',
     long_description=readme + '\n\n' + history,
+    long_description_content_type="text/markdown",
     author="Fernando Freire",
     author_email='fernando.freire@nike.com',
     url='https://github.com/Nike-inc/signal_analog',
