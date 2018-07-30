@@ -1,8 +1,9 @@
 [![Build Status](https://travis-ci.com/Nike-Inc/signal_analog.svg?token=ifpf79nsCVxHsobs3pQ5&branch=master)](https://travis-ci.com/Nike-Inc/signal_analog)
 # signal_analog
 
-A troposphere-like library for managing SignalFx Charts, Dashboards, and
-Detectors.
+A [`troposphere`](https://github.com/cloudtools/troposphere)-inspired library
+for programmatic, declarative definition and management of SignalFx Charts,
+Dashboards, and Detectors.
 
 This library assumes a basic familiarity with resources in SignalFx. For a
 good overview of the SignalFx API consult the [upstream documentation][sfxdocs].
