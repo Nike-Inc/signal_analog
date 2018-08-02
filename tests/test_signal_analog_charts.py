@@ -5,7 +5,7 @@ from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
                                  PublishLabelOptions, PaletteColor,\
                                  SingleValueChart, ListChart, SortBy,\
-                                 HeatmapChart, SignalFxFieldOption
+                                 HeatmapChart, SignalFxFieldOption, TextChart
 from signal_analog.flow import Data
 
 
@@ -309,7 +309,6 @@ def test_sfx_field_options_happy():
     assert ts.chart_options['legendOptions'] == expected
 
 
-
 def test_sfx_field_options_invalid():
     """Other enums should not be allowed."""
 
@@ -321,3 +320,17 @@ def test_sfx_field_options_invalid():
                 .with_legend_options([
                     FieldOption(InvalidEnum.foo, enabled=False)
                 ])
+
+
+def test_text_chart_init():
+    assert TextChart().chart_options['type'] == 'Text'
+
+
+def test_text_chart_with_text():
+    chart = TextChart().with_markdown("Strong emphasis, aka bold, with **asterisks** or __underscores__.<ol>")
+    assert chart.chart_options['markdown'] == 'Strong emphasis, aka bold, with **asterisks** or __underscores__.<ol>'
+
+
+def test_text_chart_with_empty_text():
+    with pytest.raises(ValueError):
+        TextChart().with_markdown("")
