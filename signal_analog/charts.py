@@ -317,7 +317,23 @@ class DisplayOptionsMixin(object):
         return self
 
 
-class TimeSeriesChart(Chart, DisplayOptionsMixin):
+class LegendOptionsMixin(object):
+    """A mixin for chart types that share legend options setting.
+
+    The assumption is made that all classes using this mixin have
+    a member dict called 'chart_options'.
+    """
+
+    def with_legend_options(self, field_opts):
+        """Options for the behavior of this chart's legend."""
+        util.assert_valid(field_opts)
+        opts = {'fields': list(map(lambda x: x.to_dict(), field_opts))}
+        self.chart_options.update({'legendOptions': opts})
+        return self
+
+
+
+class TimeSeriesChart(Chart, DisplayOptionsMixin, LegendOptionsMixin):
     """A time series chart."""
 
     def __init__(self, session=None):
@@ -364,13 +380,6 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
         self.chart_options.update({
             'axes': list(map(lambda x: x.to_dict(), axes))
         })
-        return self
-
-    def with_legend_options(self, field_opts):
-        """Options for the behavior of this chart's legend."""
-        util.assert_valid(field_opts)
-        opts = {'fields': list(map(lambda x: x.to_dict(), field_opts))}
-        self.chart_options.update({'legendOptions': opts})
         return self
 
     def show_event_lines(self, boolean):
@@ -491,7 +500,7 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
         return self
 
 
-class ListChart(Chart, DisplayOptionsMixin):
+class ListChart(Chart, DisplayOptionsMixin, LegendOptionsMixin):
 
     def __init__(self, session=None):
         super(ListChart, self).__init__(session=session)
