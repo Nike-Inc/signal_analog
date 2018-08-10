@@ -1,5 +1,14 @@
 # History
 
+## Unreleased Changes
+
+### Added
+
+  * ListCharts learned how to filter legend options via the
+  `with_legend_options` builder
+  * Future chart types that can filter legend options may now take advantage
+  of the `signal_analog.charts.LegendOptionsMixin` class
+
 ## 2.0.0 (2018-07-24)
 
 For assistance migrating from 1.x to 2.x please consult the

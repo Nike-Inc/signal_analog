@@ -266,3 +266,20 @@ def test_hm_chart_with_colorscale():
     opts = {'thresholds': [70, 50]}
     chart = HeatmapChart().with_colorscale([70, 50])
     assert chart.chart_options['colorScale'] == opts
+
+def test_ts_list_charts_mixin():
+    """TimeSeries and ListCharts can set legend options. But not others."""
+
+    opt = {'fields': [{'property': 'foo', 'enabled': False}]}
+
+    ts = TimeSeriesChart()\
+            .with_legend_options([FieldOption('foo', enabled=False)])
+    assert ts.chart_options['legendOptions'] == opt
+
+    lc = ListChart()\
+            .with_legend_options([FieldOption('foo', enabled=False)])
+    assert lc.chart_options['legendOptions'] == opt
+
+    with pytest.raises(Exception):
+        SingleValueChart().with_legend_options(FieldOption('foo', enabled=False))
+
