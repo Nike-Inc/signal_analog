@@ -1,10 +1,11 @@
 import pytest
+from enum import Enum
 
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
                                  PublishLabelOptions, PaletteColor,\
                                  SingleValueChart, ListChart, SortBy,\
-                                 HeatmapChart
+                                 HeatmapChart, SignalFxFieldOption
 from signal_analog.flow import Data
 
 
@@ -283,3 +284,40 @@ def test_ts_list_charts_mixin():
     with pytest.raises(Exception):
         SingleValueChart().with_legend_options(FieldOption('foo', enabled=False))
 
+
+def test_sfx_field_options_enum():
+    """We expect values from the SignalFxFieldOption enum to be serialized.
+    """
+    expected = {'fields': [{'property': 'sf_originatingMetric', 'enabled': False}]}
+
+    ts = TimeSeriesChart()\
+            .with_legend_options([
+                FieldOption(SignalFxFieldOption.plot_name, enabled=False)
+            ])
+
+    assert ts.chart_options['legendOptions'] == expected
+
+
+def test_sfx_field_options_happy():
+    """We also expect that string values are still valid."""
+
+    expected = {'fields': [{'property': 'foo', 'enabled': False}]}
+
+    ts = TimeSeriesChart()\
+            .with_legend_options([FieldOption('foo', enabled=False)])
+
+    assert ts.chart_options['legendOptions'] == expected
+
+
+
+def test_sfx_field_options_invalid():
+    """Other enums should not be allowed."""
+
+    class InvalidEnum(Enum):
+        foo = 'bar'
+
+    with pytest.raises(ValueError):
+        ts = TimeSeriesChart()\
+                .with_legend_options([
+                    FieldOption(InvalidEnum.foo, enabled=False)
+                ])

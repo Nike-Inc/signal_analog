@@ -8,6 +8,10 @@
   `with_legend_options` builder
   * Future chart types that can filter legend options may now take advantage
   of the `signal_analog.charts.LegendOptionsMixin` class
+  * The `FieldOption` class has learned to accept `SignalFxFieldOption`s which
+  provide mappings between field options seen in the UI and those used in the
+  API
+      * e.g. `Plot Name` in the UI and `sf_originatingMetric` in the API
 
 ## 2.0.0 (2018-07-24)
 
