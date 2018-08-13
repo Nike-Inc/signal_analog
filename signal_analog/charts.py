@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from enum import Enum
+from six import string_types
 
 import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
@@ -202,6 +203,23 @@ class AxisOption(ChartOption):
         }
 
 
+class SignalFxFieldOption(Enum):
+    """Common SignalFx field options intended to be combined with FieldOption.
+
+    When using these values via the API it's non-obvious how you would filter
+    them out of your charts. Using 'Plot Name' in your FieldOption would not
+    hide 'Plot Name' in the UI, you would use 'sf_originatingMetric' instead.
+    This enum is intended to make the behavior of the UI consistent with the
+    UI.
+
+    Values:
+        metric: the 'sf_metric' field option.
+        plot_name: the 'Plot Name' field option.
+    """
+    metric = 'sf_metric'
+    plot_name = 'sf_originatingMetric'
+
+
 class FieldOption(ChartOption):
     """Field options used to display columns in a chart's table."""
 
@@ -216,7 +234,17 @@ class FieldOption(ChartOption):
         if not property:
             raise ValueError('Field option cannot be blank')
 
-        self.opts = {'property': property, 'enabled': enabled}
+        if isinstance(property, SignalFxFieldOption):
+            # <insert home buying joke here>
+            value = property.value
+        elif isinstance(property, string_types):
+            value = property
+        else:
+            msg = 'FieldOption property should be a string or' +\
+                  'SignalFxFieldOption, got "{0}" instead.'
+            raise ValueError(msg.format(property))
+
+        self.opts = {'property': value, 'enabled': enabled}
 
 
 class PublishLabelOptions(ChartOption):
