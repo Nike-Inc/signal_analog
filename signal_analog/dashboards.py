@@ -394,8 +394,8 @@ class Dashboard(Resource):
 
                 # We need different row and column values when we are creating new charts so that they won't overlap
                 # with one another
-                row_nums = [state['row'] for state in state]
-                column_nums = [state['column'] for state in state]
+                row_nums = [chart['row'] for chart in state]
+                column_nums = [chart['column'] for chart in state]
                 row_num_to_set = 0
                 column_num_to_set = 0
                 if 0 in row_nums:
