@@ -16,3 +16,4 @@ requests-mock
 six
 tox
 pyyaml
+markdown

@@ -564,3 +564,16 @@ class HeatmapChart(Chart, DisplayOptionsMixin):
         opts = {'thresholds': thresholds}
         self.chart_options.update({'colorScale': opts})
         return self
+
+
+class TextChart(Chart, DisplayOptionsMixin):
+
+    def __init__(self, session=None):
+        super(TextChart, self).__init__(session=session)
+        self.chart_options = {'type': 'Text'}
+
+    def with_markdown(self, markdown):
+        """The markdown text that needs to be displayed"""
+        util.check_markdown(markdown, error_message='"text" cannot be empty. ')
+        self.chart_options.update({'markdown': markdown})
+        return self
