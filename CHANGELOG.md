@@ -12,6 +12,13 @@
   provide mappings between field options seen in the UI and those used in the
   API
       * e.g. `Plot Name` in the UI and `sf_originatingMetric` in the API
+  * A new `TextChart` object has been added to `signal_analog.charts` that
+  enables text descriptions to be added to dashboards.
+
+### Fixed
+
+  * A fix has been added for Python 2 users that prevented successful
+  dashboard updates.
 
 ## 2.0.0 (2018-07-24)
 
