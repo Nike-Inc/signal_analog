@@ -19,7 +19,8 @@ requirements = [
     'requests',
     'click',
     'email_validator',
-    'pyyaml'
+    'pyyaml',
+    'markdown'
 ]
 
 setup_requirements = [
