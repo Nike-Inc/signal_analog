@@ -183,7 +183,7 @@ class AxisOption(ChartOption):
             min: the minimum value for the axis
             max: the maximum value for the axis
             label: label of the axis
-            high_watermark: a line ot draw as a high watermar
+            high_watermark: a line ot draw as a high watermark
             low_watermark: a line to draw as a low watermark
         """
         for arg in [min, max, label, high_watermark, low_watermark]:
@@ -428,7 +428,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin, LegendOptionsMixin):
         """Options for labeling axes on TimeSeries charts.
 
         Don't leave your axes laying about or this guy might show up:
-        https://youtu.be/V2FygG84bg8
+        https://youtu.be/Ln71u1nu6L4
         """
         util.assert_valid(axes)
         self.chart_options.update({
