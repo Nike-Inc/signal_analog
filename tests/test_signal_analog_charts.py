@@ -7,6 +7,7 @@ from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  SingleValueChart, ListChart, SortBy,\
                                  HeatmapChart, SignalFxFieldOption, TextChart
 from signal_analog.flow import Data
+import signal_analog.util as util
 
 
 @pytest.mark.parametrize("value", [None, ""])
@@ -182,11 +183,37 @@ def test_ts_chart_with_field_options_disabled():
 
 
 def test_ts_chart_with_publish_label_options():
+    """'Legacy' behavior, verified still working."""
     opts = PublishLabelOptions(
         'somelabel', 0, PaletteColor.mountain_green, PlotType.area_chart, 'foo'
     )
     chart = TimeSeriesChart().with_publish_label_options(opts)
     assert chart.chart_options['publishLabelOptions'] == [opts.to_dict()]
+
+
+def test_ts_chart_with_publish_label_options_happy():
+    opts = PublishLabelOptions(
+        'somelabel', y_axis=1, palette_index=PaletteColor.mountain_green,
+        plot_type=PlotType.area_chart, display_name='lol', value_prefix='hi',
+        value_suffix='weee', value_unit='hithere')
+    chart = TimeSeriesChart().with_publish_label_options(opts)
+    assert chart.chart_options['publishLabelOptions'] == [opts.to_dict()]
+
+
+publish_opts_optionals = ["display_name", "value_prefix", "value_suffix",
+                          "value_unit"]
+keyword_args = map(lambda x: {x: "foo"}, publish_opts_optionals)
+@pytest.mark.parametrize("arg", keyword_args)
+def test_ts_chart_with_publish_label_options_missing_option(arg):
+    """Test that optional simple keyword arguments can be passed without
+       clobbering each other."""
+    [(key, value)] = arg.items()
+    opts = PublishLabelOptions('someLabel', **arg).to_dict()
+
+    assert opts[util.snake_to_camel(key)] == value
+    remaining_values = [x for x in publish_opts_optionals if x is not key]
+    for k in opts.keys():
+        assert k not in remaining_values
 
 
 def test_publish_label_options_invalid_y_axis():

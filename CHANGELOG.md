@@ -14,6 +14,13 @@
       * e.g. `Plot Name` in the UI and `sf_originatingMetric` in the API
   * A new `TextChart` object has been added to `signal_analog.charts` that
   enables text descriptions to be added to dashboards.
+  * `PublishLabelOptions` has learned to accept prefix, suffix, and unit
+  arguments when labelling data on charts.
+
+### Changed
+
+  * `PublishLabelOptions` has learned to accept all arguments as optional
+  with the exception of the `label` argument.
 
 ### Fixed
 
