@@ -296,6 +296,14 @@ class PublishLabelOptions(ChartOption):
                 if key is elem and value:
                     self.opts.update({util.snake_to_camel(key): value})
 
+        if palette_index:
+            util.in_given_enum(palette_index, PaletteColor)
+            self.opts.update({'paletteIndex': palette_index.value})
+
+        if plot_type:
+            util.in_given_enum(plot_type, PlotType)
+            self.opts.update({'plotType': plot_type.value})
+
 
 class DisplayOptionsMixin(object):
     """A mixin for chart types that share display option builders.
