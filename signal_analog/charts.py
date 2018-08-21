@@ -250,33 +250,51 @@ class FieldOption(ChartOption):
 class PublishLabelOptions(ChartOption):
     """Options for displaying published timeseries data."""
 
-    def __init__(self, label, y_axis, palette_index, plot_type, display_name):
+    def __init__(self, label, y_axis=None, palette_index=None, plot_type=None,
+                 display_name=None, value_prefix=None, value_suffix=None,
+                 value_unit=None):
         """Initializes and validates publish label options.
 
         Arguments:
-            label: label used in the publish statement that displayes the plot
+            label: label used in the publish statement that displayes the plot.
             y_axis: the y-axis associated with values for this plot.
                     Must be 0 (left) or 1 (right).
             palette_index: the indexed palette color to use for all plot lines
             plot_type: the visualization style to use
             display_name: an alternate name to show in the legend
+            value_prefix: Indicates a string to prepend to the values displayed
+                          when you are viewing a single value or list chart,
+                          the data table for a chart, and the tooltip when
+                          hovering over a point on a chart.
+            value_suffix: Indicates a string to append to the values displayed
+                          when you are viewing a single value or list chart,
+                          the data table for a chart, and the tooltip when
+                          hovering over a point on a chart.
+            value_unit: Indicates display units for the values in the chart.
+                        The plot values will be presented in a readable way
+                        based on the assumption that the raw values are
+                        denominated in the selected unit.
         """
-        for arg in [label, display_name]:
-            util.assert_valid(arg)
-        util.in_given_enum(palette_index, PaletteColor)
-        util.in_given_enum(plot_type, PlotType)
-        if y_axis not in [0, 1]:
+
+        util.assert_valid(label)
+        self.opts = {
+            'label': label
+        }
+
+        if y_axis and y_axis not in [0, 1]:
             msg = "YAxis for chart must be 0 (Left) or 1 (Right); " +\
                     "'{0}' provided."
             raise ValueError(msg.format(y_axis))
+        else:
+            self.opts.update({'yAxis': y_axis})
 
-        self.opts = {
-            'label': label,
-            'yAxis': y_axis,
-            'paletteIndex': palette_index.value,
-            'plotType': plot_type.value,
-            'displayName': display_name
-        }
+        # A little ditty to translate optional simple parameters into a map
+        # of camelCased keys to values
+        for elem in ['display_name', 'value_prefix', 'value_suffix',
+                     'value_unit']:
+            for key, value in locals().items():
+                if key is elem and value:
+                    self.opts.update({util.snake_to_camel(key): value})
 
 
 class DisplayOptionsMixin(object):
