@@ -386,7 +386,6 @@ class LegendOptionsMixin(object):
         return self
 
 
-
 class TimeSeriesChart(Chart, DisplayOptionsMixin, LegendOptionsMixin):
     """A time series chart."""
 

@@ -88,7 +88,6 @@ class Program(object):
             self.__valid_statement__(stmt)
             self.statements.append(stmt)
 
-
     def find_label(self, label):
         """Find a statement in this program with the given label.
 
@@ -324,7 +323,7 @@ class Function(object):
         self.call_stack.append(Pow(exponent))
         return self
 
-    def pow(self, base=None):
+    def pow(self, base=None):  # noqa: F811 -- redefinition of unused 'pow' from line [...]
         """ - return base"""
         self.call_stack.append(Pow(base=base))
         return self
@@ -403,30 +402,27 @@ class Function(object):
         """
         self.call_stack.append(Fill(value, duration))
         return self
-    
-    def integrate(self):
+
+    def integrate(self):    # noqa: F811 -- redefinition of unused 'integrate' from line [...]
         """Multiplies the values of each input time series by the resolution (in seconds) of the computation.
         See https://developers.signalfx.com/reference#integrate-method
         """
         self.call_stack.append(Integrate())
         return self
-    
+
     def kpss(self, over=None, mode='level'):
         """Calculates the Kwiatkowski–Phillips–Schmidt–Shin (KPSS) statistic on the specified time window of the stream
         see https://developers.signalfx.com/reference#kpss-stream-method
         """
         self.call_stack.append(Kpss(over, mode))
         return self
-    
+
     def rateofchange(self):
         """Calculates the difference between the current value and the previous value for each time interval
         See https://developers.signalfx.com/reference#rateofchange-method
         """
         self.call_stack.append(RateOfChange())
         return self
-
-        
-        
 
 
 class StreamMethod(object):
@@ -452,6 +448,7 @@ class Arg(object):
 
     def __str__(self):
         return str(self.arg)
+
 
 class StrArg(object):
 
@@ -488,6 +485,7 @@ class KWArg(object):
 
     def __repr__(self):
         return self.__str__()
+
 
 class VarStrArg(object):
 
@@ -645,6 +643,7 @@ class Assign(Function):
     def __str__(self):
         return str(self.assignee) + " = " + str(self.expr)
 
+
 class AggregationTransformationMixin(object):
     """Mixin providing pre-condition checks for StreamMethods that perform
        both aggregations and transformations.
@@ -716,6 +715,7 @@ class Mean_plus_stddev(StreamMethod, AggregationTransformationMixin):
         super(Mean_plus_stddev, self).__init__("mean_plus_stddev")
         self.args = [KWArg("by", by), KWArg("over", over)]
         self.check_pre_conditions()
+
 
 class Median(StreamMethod, AggregationTransformationMixin):
 
@@ -921,7 +921,7 @@ class Pow(StreamMethod):
         self.args = [StrArg(exponent)]
 
 
-class Pow(StreamMethod):
+class Pow(StreamMethod):  # noqa: F811 -- redefinition of unused 'Pow' from line [...]
 
     def __init__(self, base=None):
         """ - return base"""
@@ -1030,6 +1030,7 @@ class Promote(StreamMethod):
         super(Promote, self).__init__("promote")
         self.args = [Arg(list(properties))]
 
+
 class Fill(StreamMethod):
     def __init__(self, value, duration):
         """Fills in missing values for time series in a stream."""
@@ -1039,10 +1040,12 @@ class Fill(StreamMethod):
             KWArg("duration", duration),
         ]
 
-class Integrate(StreamMethod):
+
+class Integrate(StreamMethod):  # noqa: F811 -- redefinition of unused 'Pow' from line 915
     def __init__(self):
         super(Integrate, self).__init__("integrate")
         self.args = []
+
 
 class Kpss(StreamMethod):
     def __init__(self, over, mode):
@@ -1056,10 +1059,12 @@ class Kpss(StreamMethod):
             KWArg("mode", mode),
         ]
 
+
 class RateOfChange(StreamMethod):
     def __init__(self):
         super(RateOfChange, self).__init__("rateofchange")
-        self.args = []    
+        self.args = []
+
 
 class Ref(Arg):
 
