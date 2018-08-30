@@ -91,6 +91,7 @@ def empty_body():
     """Returns  an empty body when making requests to SignalFx."""
     return lambda x: None
 
+
 def snake_to_camel(s):
     words = s.split('_')
     head, rest = words[0], words[1:]

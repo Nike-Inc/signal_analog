@@ -5,6 +5,7 @@ click
 coverage
 email_validator
 enum34
+flake8
 hypothesis
 mock
 pytest

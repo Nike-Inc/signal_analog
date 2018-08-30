@@ -15,7 +15,8 @@ class EventSignals(object):
         return self.options
 
     def with_event_search_text(self, event_search_text):
-        util.assert_valid(event_search_text, error_message='"event_search_text" cannot be empty. Expects a string.', expected_type=str)
+        util.assert_valid(event_search_text,
+                          error_message='"event_search_text" cannot be empty. Expects a string.', expected_type=str)
         self.options.update({'eventSearchText': event_search_text})
         return self
 
@@ -39,8 +40,7 @@ class EventOverlays(object):
         return self.opts
 
     def with_event_signals(self, eventsignals):
-        util.assert_valid(eventsignals, error_message='"eventsignals" cannot be empty. '
-                                                    'expects EventSignals()',
+        util.assert_valid(eventsignals, error_message='"eventsignals" cannot be empty. expects EventSignals()',
                           expected_type=object)
         ev = eventsignals.to_dict()
         self.opts.update({'eventSignal': ev})
@@ -74,8 +74,7 @@ class SelectedEventOverlays(object):
         return self.opts
 
     def with_event_signals(self, eventsignals):
-        util.assert_valid(eventsignals, error_message='"eventsignals" cannot be empty. '
-                                                    'expects EventSignals()',
+        util.assert_valid(eventsignals, error_message='"eventsignals" cannot be empty. expects EventSignals()',
                           expected_type=object)
         ev = eventsignals.to_dict()
         self.opts.update({'eventSignal': ev})
