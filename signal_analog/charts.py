@@ -59,6 +59,9 @@ class Chart(Resource):
     def create(self, dry_run=False):
         """Create a chart in the SignalFx API.
 
+        Arguments:
+            dry_run: Boolean to determine if this invocation will be a dry run
+
         See: https://developers.signalfx.com/v2/reference#create-chart
         """
         self.options = self.to_dict()
@@ -66,6 +69,12 @@ class Chart(Resource):
 
     def update(self, name=None, description=None, resource_id=None, dry_run=False):
         """Update a chart in the SignalFx API.
+
+        Arguments:
+            name: String defining chart name
+            description: String defining chart description
+            resource_id: String defining the chart resource id in signalfx
+            dry_run: Boolean to determine if this invocation will be a dry run
 
         WARNING: Users are strongly discouraged from updating charts outside
         of a Dashboard. Due to the nature of how charts are created in the
@@ -253,21 +262,36 @@ class DisplayOptionsMixin(object):
     """
 
     def with_color_by(self, color_by):
-        """Determine how timeseries are colored in this chart."""
+        """Determine how timeseries are colored in this chart.
+
+        Arguments:
+            color_by: String that defines how to color a chart
+            (dimension, metric, scale)
+        """
         util.assert_valid(color_by)
         util.in_given_enum(color_by, ColorBy)
         self.chart_options.update({'colorBy': color_by.value})
         return self
 
     def with_sort_by(self, sort_by):
-        """Determine how values are sorted."""
+        """Determine how values are sorted.
+
+        Arguments:
+            sort_by: String that defines how we sort values
+            (-value, +value)
+        """
         util.assert_valid(sort_by)
         util.in_given_enum(sort_by, SortBy)
         self.chart_options.update({'sortBy': sort_by.value})
         return self
 
     def with_unit_prefix(self, prefix):
-        """Add a unit prefix to this chart."""
+        """Add a unit prefix to this chart.
+
+        Arguments:
+            prefix: String defining unit prefix
+            (metric, binary)
+        """
         util.assert_valid(prefix)
         util.in_given_enum(prefix, UnitPrefix)
         self.chart_options.update({'unitPrefix': prefix.value})
@@ -304,7 +328,11 @@ class DisplayOptionsMixin(object):
         return self
 
     def with_publish_label_options(self, *publish_opts):
-        """Plot-level customization, associated with a publish statement."""
+        """Plot-level customization, associated with a publish statement.
+
+        Arguments:
+            *publish_opts: Non-keyworded List containing published label options
+        """
         util.assert_valid(publish_opts)
         opt = list(map(lambda o: o.to_dict(), publish_opts))
         self.chart_options.update({'publishLabelOptions': opt})
@@ -322,7 +350,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
         """Options to set the relative view window into the given chart.
 
         Arguments:
-            range: Absolute millisecond offset from now to visualize.
+            range: String of absolute millisecond offset from now to visualize.
 
         Returns:
             This TimeSeriesChart with absolute time config
