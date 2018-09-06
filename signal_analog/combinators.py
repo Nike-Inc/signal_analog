@@ -34,53 +34,24 @@ class NAryCombinator(object):
 
 
 class And(NAryCombinator):
+    """And combinator for combining SignalFlow objects.
+    """
 
     def __init__(self, *ns):
         super(And, self).__init__('and', *ns)
 
 
 class Or(NAryCombinator):
+    """Or combinator for combining SignalFlow objects.
+    """
 
     def __init__(self, *ns):
         super(Or, self).__init__('or', *ns)
 
-class LT(NAryCombinator):
-
-    def __init__(self, left, right):
-        super(LT, self).__init__('<', left, right)
-
-
-class GT(NAryCombinator):
-
-    def __init__(self, left, right):
-        super(GT, self).__init__('>', left, right)
-
-
-class Mul(NAryCombinator):
-
-    def __init__(self, left, right):
-        super(Mul, self).__init__('*', left, right)
-
-
-class Div(NAryCombinator):
-
-    def __init__(self, left, right):
-        super(Div, self).__init__('/', left, right)
-
-
-class Add(NAryCombinator):
-
-    def __init__(self, left, right):
-        super(Add, self).__init__('+', left, right)
-
-
-class Sub(NAryCombinator):
-
-    def __init__(self, left, right):
-        super(Sub, self).__init__('-', left, right)
-
 
 class Not(object):
+    """Not combinator for performing nullification on SignalFlow objects.
+    """
 
     def __init__(self, expr):
         """Negate the given expression.
@@ -98,3 +69,51 @@ class Not(object):
 
     def __str__(self):
         return "not " + str(self.expr)
+
+
+class LT(NAryCombinator):
+    """Less Than combinator for comparing SignalFlow objects.
+    """
+
+    def __init__(self, left, right):
+        super(LT, self).__init__('<', left, right)
+
+
+class GT(NAryCombinator):
+    """Greater Than combinator for comparing SignalFlow objects.
+    """
+
+    def __init__(self, left, right):
+        super(GT, self).__init__('>', left, right)
+
+
+class Mul(NAryCombinator):
+    """Multiplication combinator for performing math on SignalFlow objects.
+    """
+
+    def __init__(self, left, right):
+        super(Mul, self).__init__('*', left, right)
+
+
+class Div(NAryCombinator):
+    """Division combinator for performing math on SignalFlow objects.
+    """
+
+    def __init__(self, left, right):
+        super(Div, self).__init__('/', left, right)
+
+
+class Add(NAryCombinator):
+    """Addition combinator for performing math on SignalFlow objects.
+    """
+
+    def __init__(self, left, right):
+        super(Add, self).__init__('+', left, right)
+
+
+class Sub(NAryCombinator):
+    """Subtraction combinator for performing math on SignalFlow objects.
+    """
+
+    def __init__(self, left, right):
+        super(Sub, self).__init__('-', left, right)

@@ -6,7 +6,12 @@ from collections import Counter
 
 
 def check_collection(coll, type_):
-    """Ensure type consistency for the given collection."""
+    """Ensure type consistency for the given collection.
+
+    Arguments:
+        coll: List of resources
+        type_: Type of resource to check against
+    """
     for c in coll:
         if not issubclass(c.__class__, type_):
             msg = "We got a '{0}' when we were expecting a '{1}'."
@@ -16,6 +21,10 @@ def check_collection(coll, type_):
 def in_given_enum(value, enum):
     """Determines if the given value is in the given enum. Raises ValueError
        if it is not.
+
+    Arguments:
+        value: Int
+        enum: enum to check if value is in
     """
     if type(value) != enum or value not in enum:
         msg = '"{0}" must be one of {1}.'
@@ -49,6 +58,11 @@ def assert_valid(value, error_message=None, expected_type=None):
 
 
 def find_duplicates(xs):
+    """Find duplicates in a list.
+
+    Arguments:
+        xs: String to find duplicates of
+    """
     return [item for item, count in Counter(xs).items() if count > 1]
 
 
@@ -65,7 +79,11 @@ def flatten_charts(opts):
 
 
 def pp_json(dictionary):
-    """Pretty print a dictionary as JSON."""
+    """Pretty print a dictionary as JSON.
+
+    Arguments:
+        dictionary: Dict
+    """
     click.echo(json.dumps(dictionary, indent=2))
 
 

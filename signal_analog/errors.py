@@ -4,13 +4,14 @@ class SignalAnalogError(Exception):
     pass
 
 class ResourceMatchNotFoundError(SignalAnalogError):
+    """Resource not found error."""
     def __init__(self, resource_name):
         msg = 'Could not find an exact match for "{0}" in SignalFx.'
         super(ResourceMatchNotFoundError, self).__init__(
             msg.format(resource_name))
 
 class ResourceAlreadyExistsError(SignalAnalogError):
-
+    """Resource already exists error."""
     def __init__(self, name):
         # TODO this error message should be updated to add hints about a
         # --force option when it becomes implemented.
@@ -25,7 +26,7 @@ class ResourceAlreadyExistsError(SignalAnalogError):
 
 
 class ResourceHasMultipleExactMatchesError(SignalAnalogError):
-
+    """Resource has multiple matches error."""
     def __init__(self, dashboard_name):
         error_msg = """
     "{0}" has more than one exact match in SignalFx. Unwilling to choose a

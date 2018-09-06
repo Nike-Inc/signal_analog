@@ -112,7 +112,7 @@ class HipChatNotification(Notification):
 
 
 class ServiceNowNotification(Notification):
-    """A ServiceNow notifiction for detector rules."""
+    """A ServiceNow notification for detector rules."""
 
     def __init__(self, sn_id):
         """Initializes a new ServiceNow notification.
@@ -236,19 +236,32 @@ class Rule(object):
         self.options = {}
 
     def for_label(self, label):
-        """A label matching a `detect` label within the program text."""
+        """A label matching a `detect` label within the program text.
+
+            Arguments:
+                label: String
+        """
         util.assert_valid(label)
         self.options.update({'detectLabel': label})
         return self
 
     def with_description(self, description):
-        """Human-readable description for this rule."""
+        """Human-readable description for this rule.
+
+            Arguments:
+                description: String
+        """
         util.assert_valid(description)
         self.options.update({'description': description})
         return self
 
     def with_severity(self, severity):
-        """Severity of the rule."""
+        """Severity of the rule.
+            SignalFx supports five severity levels: Critical, Warning, Major, Minor, and Info.
+
+            Arguments:
+                severity: String
+        """
         util.in_given_enum(severity, Severity)
         self.options.update({'severity': severity.value})
         return self
@@ -256,12 +269,20 @@ class Rule(object):
     def is_disabled(self, disabled=False):
         """When true, notifications and events will not be generated for the
            detect label. False by default.
+
+        Arguments:
+            disabled: Boolean
         """
         self.options.update({'disabled': disabled})
         return self
 
     def with_notifications(self, *notifications):
         """Determines where notifications will be sent when an incident occurs.
+
+        Arguments:
+            *notifications: List of notification destinations
+
+            See https://developers.signalfx.com/reference#section-notifications for notification destinations.
         """
         util.check_collection(notifications, Notification)
         self.options.update({
@@ -270,8 +291,11 @@ class Rule(object):
         return self
 
     def with_parameterized_body(self, body):
-        """Custom notifiction message body for this rule when the alert is
-           triggeered.
+        """Custom notification message body for this rule when the alert is
+           triggered.
+
+           Arguments:
+               body: String
 
            Content can contain ASCII chars and is parsed as plain text. Quotes
            can be escaped using a backslash, and new line characters are
@@ -288,6 +312,9 @@ class Rule(object):
         """Custom notification message subject for this rule when an alert is
         triggered.
 
+        Arguments:
+            subject: String
+
         See the documentation for `with_parameterized_body` for more detail.
         """
         util.assert_valid(subject)
@@ -296,6 +323,9 @@ class Rule(object):
 
     def with_runbook_url(self, url):
         """URL of the page to consult when an alert is triggered.
+
+        Arguments:
+            url: String containing a valid URL
 
         This can be used with custom notification messages. It can be
         referenced using the {{runbookUrl}} template var.
@@ -308,6 +338,9 @@ class Rule(object):
         """Plain text suggested first course of action, such as a command line
         to execute.
 
+        Arguments:
+            tip: String
+
         This can be used with custom notification messages. It can be
         referenced using the {{tip}} template var.
         """
@@ -317,6 +350,7 @@ class Rule(object):
 
 
 class Time(Enum):
+    """Set relative or absolute timespan."""
     Relative = "relative"
     Absolute = "absolute"
 
@@ -328,7 +362,11 @@ class TimeConfig(object):
         self.options = {}
 
     def with_type(self, time_type):
-        """The type of time span defined."""
+        """The type of time span defined.
+
+        Arguments:
+            time_type: String either 'relative' or 'absolute'
+        """
         util.in_given_enum(time_type, Time)
         self.options.update({'type': time_type.value})
         return self
@@ -341,8 +379,10 @@ class TimeConfig(object):
     def with_range(self, millis):
         """The time range _prior_ to now to visualize, in millis.
 
-        NOTE: only valid for Time.relative configs.
+        Arguments:
+            millis: Int
 
+        NOTE: only valid for Time.relative configs.
         Example:
             60000 would visualize the last 60 seconds.
         """
@@ -355,6 +395,9 @@ class TimeConfig(object):
     def with_start(self, millis):
         """Milliseconds since epoch to start a visualization.
 
+        Arguments:
+            millis: Int
+
         NOTE: only valid for Time.absolute configs.
         """
         if self.options.get('type', None) == Time.Relative.value:
@@ -364,6 +407,9 @@ class TimeConfig(object):
 
     def with_end(self, millis):
         """Milliseconds since epoch to stop a visualization.
+
+        Arguments:
+            millis: Int
 
         NOTE: only valid for Time.absolute configs.
         """
@@ -380,6 +426,7 @@ class VisualizationOptions(object):
         self.options = {}
 
     def with_time_config(self, config):
+        """Set up time configuration"""
         if not isinstance(config, TimeConfig):
             msg = 'Attempting to set "{0}" to a time config for this ' +\
                   'visualization when we expected a "{1}"'
@@ -390,8 +437,12 @@ class VisualizationOptions(object):
         return self
 
     def show_data_markers(self, show_markers=False):
-        """When ture, markers will be drawn for each datapoint within the
-           visualization."""
+        """When true, markers will be drawn for each datapoint within the
+           visualization.
+
+           Arguments:
+               show_markers: Boolean
+       """
         self.options.update({'showDataMarkers': show_markers})
         return self
 
@@ -411,6 +462,7 @@ class Detector(Resource):
         self.options = {}
 
     def with_rules(self, *rules):
+        """Rules to include in the detector."""
         util.check_collection(rules, Rule)
         self.options.update({
             'rules': list(map(lambda x: x.options, rules))
@@ -418,6 +470,7 @@ class Detector(Resource):
         return self
 
     def with_program(self, program):
+        """Program defining the detector."""
         if not issubclass(program.__class__, Program):
             msg = 'Signal Analog Detectors only support Program objects, we' +\
                    ' got a "{0}" instead.'
@@ -429,7 +482,11 @@ class Detector(Resource):
         return self
 
     def with_max_delay(self, delay):
-        """Used to handle late datapoints."""
+        """The number of milliseconds to wait for late datapoints before rejecting them.
+
+        Arguments:
+            delay: Int
+        """
         util.assert_valid(delay)
         self.options.update({'maxDelay': delay})
         return self
@@ -445,13 +502,21 @@ class Detector(Resource):
         return self
 
     def with_tags(self, *tags):
-        """Tags associated with the detector."""
+        """Tags associated with the detector.
+
+        Arguments:
+            *tags: List of tags to attach to the detector
+        """
         util.check_collection(tags, string_types)
         self.options.update({'tags': list(tags)})
         return self
 
     def with_teams(self, *team_ids):
-        """Team IDs to associate the detector to."""
+        """Team IDs to associate the detector to.
+
+        Arguments:
+            *team_ids: List of team_ids to attach to the detector
+        """
         util.check_collection(team_ids, string_types)
         self.options.update({'teams': list(team_ids)})
         return self
@@ -476,13 +541,13 @@ class Detector(Resource):
         program = deepcopy(chart.__get__('programText', Program()))
 
         if not issubclass(program.__class__, Program):
-            msg = """
-Detector.from_chart only supports Charts that implement a Program. "{0}"
-contains a "{1}".
-
-You might consider contacting the Chart author to update their configuration to
-implement a proper `Program` from the `signal_analog.flow` module.
-"""
+            msg =   """
+                    Detector.from_chart only supports Charts that implement a Program. "{0}"
+                    contains a "{1}".
+                    
+                    You might consider contacting the Chart author to update their configuration to
+                    implement a proper `Program` from the `signal_analog.flow` module.
+                    """
             raise ValueError(msg.format(
                 chart.__class__.__name__,
                 program.__class__.__name__
@@ -493,6 +558,11 @@ implement a proper `Program` from the `signal_analog.flow` module.
 
     def create(self, dry_run=False, force=False, interactive=False):
         """Creates a Detector in SignalFx.
+
+        Arguments:
+            dry_run: Boolean to test a dry run
+            force: Boolean to force a create
+            interactive: Boolean to start interactive create
 
         See: https://developers.signalfx.com/v2/reference#detector
         """
@@ -506,6 +576,11 @@ implement a proper `Program` from the `signal_analog.flow` module.
     def update(self, name=None, description=None, dry_run=False):
         """Update a detector in the SignalFx API.
 
+        Arguments:
+            name: String defining name of detector to update
+            description: String defining description of updated detector
+            dry_run: Boolean to test a dry run
+
         See: https://developers.signalfx.com/v2/reference#detectorid-2
         """
 
@@ -516,14 +591,14 @@ implement a proper `Program` from the `signal_analog.flow` module.
             updated_opts.update({'name': description})
 
         if dry_run:
-            msg = """
-Updates the Detector named "{0}". If it doesn't exist, we'll create a new one.
-API calls being executed:
-    GET {1}
-    PUT {2}
-Request Body:
-    {3}
-"""
+            msg =   """
+                    Updates the Detector named "{0}". If it doesn't exist, we'll create a new one.
+                    API calls being executed:
+                        GET {1}
+                        PUT {2}
+                    Request Body:
+                        {3}
+                    """
             click.echo(msg.format(
                 self.__get__('name'),
                 self.base_url + self.endpoint,

@@ -6,7 +6,7 @@ from six import string_types
 
 import signal_analog.util as util
 
-# Py 2/3 compatability hack to force `filter` to always return an iterator
+# Py 2/3 compatibility hack to force `filter` to always return an iterator
 try:
     from itertools import ifilter
     filter = ifilter
@@ -33,7 +33,11 @@ class Program(object):
         return '\n'.join(map(str, self.statements))
 
     def __valid_statement__(self, stmt):
-        """Type check the provided statement."""
+        """Type check the provided statement.
+
+        Arguments:
+            stmt: the statement to validate
+        """
         if not stmt or not issubclass(stmt.__class__, Function):
             msg = "Attempted to build a program with something other than " +\
                    "SignalFlow statements. Received '{0}' but expected a " +\
@@ -89,7 +93,11 @@ class Program(object):
 class Function(object):
 
     def __init__(self, name):
-        """Base SignalFlow stream function class."""
+        """Base SignalFlow stream function class.
+
+        Arguments:
+            name: String defines name of Function
+        """
         self.name = name
         self.args = []
         self.call_stack = []
@@ -104,12 +112,22 @@ class Function(object):
         return "{0}({1}){2}".format(self.name, str_args, str_calls)
 
     def bottom(self, by=None, over=None):
-        """Get the bottom values in the stream."""
+        """Get the bottom values in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Bottom(by=by, over=over))
         return self
 
     def count(self, by=None, over=None):
-        """Counts the number of inputs that have data."""
+        """Counts the number of inputs that have data.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Count(by=by, over=over))
         return self
 
@@ -117,106 +135,202 @@ class Function(object):
         """Calculates the difference between the current value and the
            previous value for each time interval.
 
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+
         Delta operates independently on each time series."""
         self.call_stack.append(Delta(by=by, over=over))
         return self
 
     def mean(self, by=None, over=None):
-        """Find the mean on a stream."""
+        """Find the mean on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Mean(by=by, over=over))
         return self
 
     def mean_plus_stddev(self, by=None, over=None):
-        """Calculates the mean + n standard deviations."""
+        """Calculates the mean + n standard deviations.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Mean_plus_stddev(by=by, over=over))
         return self
 
     def median(self, by=None, over=None):
-        """Find the median on a stream."""
+        """Find the median on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Median(by=by, over=over))
         return self
 
     def min(self, by=None, over=None):
-        """Find the minimum value on a stream."""
+        """Find the minimum value on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Min(by=by, over=over))
         return self
 
     def max(self, by=None, over=None):
-        """Find the maximum value on a stream."""
+        """Find the maximum value on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Max(by=by, over=over))
         return self
 
     def percentile(self, by=None, over=None):
-        """Calculates the n-th percentile of inputs in the stream."""
+        """Calculates the n-th percentile of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Percentile(by=by, over=over))
         return self
 
     def random(self, by=None, over=None):
-        """Get random values in the stream by count or percentage."""
+        """Get random values in the stream by count or percentage.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Random(by=by, over=over))
         return self
 
     def sample_stddev(self, by=None, over=None):
-        """Calculates the sample standard deviation of inputs in the stream."""
+        """Calculates the sample standard deviation of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Sample_stddev(by=by, over=over))
         return self
 
     def sample_variance(self, by=None, over=None):
-        """Calculates the sample variance of inputs in the stream."""
+        """Calculates the sample variance of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Sample_variance(by=by, over=over))
         return self
 
     def size(self, by=None, over=None):
-        """Counts the number of inputs in the stream."""
+        """Counts the number of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Size(by=by, over=over))
         return self
 
     def stddev(self, by=None, over=None):
-        """Calculates the standard deviation of inputs in the stream."""
+        """Calculates the standard deviation of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Stddev(by=by, over=over))
         return self
 
     def sum(self, by=None, over=None):
-        """Find the sum on a stream."""
+        """Find the sum on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Sum(by=by, over=over))
         return self
 
     def top(self, by=None, over=None):
-        """Get the top values in the stream."""
+        """Get the top values in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Top(by=by, over=over))
         return self
 
     def variance(self, by=None, over=None):
-        """Calculates the variance of inputs in the stream."""
+        """Calculates the variance of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Variance(by=by, over=over))
         return self
 
     def integrate(self, by=None, over=None):
         """Multiplies the values of each input time series by the
-           resolution (in seconds) of the computation."""
+           resolution (in seconds) of the computation.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Integrate(by=by, over=over))
         return self
 
     def map(self, by=None, over=None):
-        """Apply a lambda function to a stream."""
+        """Apply a lambda function to a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         self.call_stack.append(Map(by=by, over=over))
         return self
 
     def publish(self, label=None, enable=None):
         """Publish the output of a stream so that it is visible outside of a
-           computation."""
+           computation.
+
+        Arguments:
+            label: String defining a label for the stream
+            enable: Boolean
+        """
         self.call_stack.append(Publish(label=label, enable=enable))
         return self
 
     def timeshift(self, offset=None):
         """Timeshift the datapoints for a stream, offset by a specified time
            period e.g. 1 week (1w), to enable comparison of time series with
-           its own past behavior."""
+           its own past behavior.
+
+        Arguments:
+              offset: String defining time offset
+        """
         self.call_stack.append(Timeshift(offset))
         return self
 
     def ewma(self, alpha):
         """Calculates the exponentially weighted moving average of the stream.
+
+        Arguments:
+            alpha: Int (must be between 0 and 1) used to calculate the EWMA of each input time series.
         """
         self.call_stack.append(Ewma(alpha))
         return self
@@ -252,12 +366,20 @@ class Function(object):
         return self
 
     def pow(self, base=None):
-        """ - return base"""
+        """ - return base e.g. pow(base=10)
+
+        Arguments:
+            base: base power
+        """
         self.call_stack.append(Pow(base=base))
         return self
 
     def scale(self, multiplier):
-        """Scale data in the stream by a multiplier."""
+        """Scale data in the stream by a multiplier.
+
+        Arguments:
+            multiplier: Int
+        """
         self.call_stack.append(Scale(multiplier))
         return self
 
@@ -269,6 +391,12 @@ class Function(object):
     def above(self, limit, inclusive=None, clamp=None):
         """Only pass through data in the stream that is above a particular
            value, or clamp data above a value to that value.
+
+       Arguments:
+           limit: Int
+           inclusive: Boolean if True limit is included in the filter
+           clamp: Boolean if True then when data is below limit it is passed on as limit,
+                    otherwise data is not passed through
         """
         self.call_stack.append(Above(limit, inclusive=inclusive, clamp=clamp))
         return self
@@ -276,6 +404,12 @@ class Function(object):
     def below(self, limit, inclusive=None, clamp=None):
         """Only pass through data in the stream that is below a particular
            value, or clamp data below a value to that value.
+
+       Arguments:
+           limit: Int
+           inclusive: Boolean if True limit is included in the filter
+           clamp: Boolean if True then when data is below limit it is passed on as limit,
+                    otherwise data is not passed through
         """
         self.call_stack.append(Below(limit, inclusive=inclusive, clamp=clamp))
         return self
@@ -285,6 +419,14 @@ class Function(object):
         """Only pass through data in the stream that is between two particular
            values or replace data that is not between two particular values
            with the limit that they are closest to.
+
+        Arguments:
+            low_limit: Int the value of the lower limit
+            high_limit: Int the value of the higher limit (must be greater than low_limit)
+            low_inclusive: Boolean if True then low_limit is included in the filter
+            high_inclusive: Boolean if True then high_limit is included in the filter
+            clamp: Boolean if True data that is not between low_limit and high_limit will be replaced with the value of
+                the closest of low_limit or high_limit, otherwise data is not passed through
         """
         self.call_stack.append(Between(
             low_limit, high_limit,
@@ -297,6 +439,10 @@ class Function(object):
         """Only pass through data in the stream that is equal to a particular
            value or replace data that is not equal to a particular value with
            another value.
+
+        Arguments:
+            value: Int the value to filter for
+            replacement: Int if not None, data that is not equal to value will be replaced with this value, otherwise data is not passed through.
         """
         self.call_stack.append(Equals(value, replacement=replacement))
         return self
@@ -305,6 +451,12 @@ class Function(object):
                     low_inclusive=None, high_inclusive=None):
         """Only pass through data in the stream that is not between two
            particular values.
+
+        Arguments:
+            low_limit: Int the value of the lower limit
+            high_limit: Int the value of the higher limit (must be greater than low_limit)
+            low_inclusive: Boolean if True then low_limit is included in the filter
+            high_inclusive: Boolean if True then high_limit is included in the filter
         """
         self.call_stack.append(Not_between(
             low_limit, high_limit,
@@ -315,12 +467,21 @@ class Function(object):
         """Only pass through data in the stream that is not equal to a
            particular value or replace data that is equal to a particular
            value with another value.
+
+        Arguments:
+            value: Int the value to filter for
+            replacement: Int if not None, data that is not equal to value will be replaced with this value, otherwise data is not passed through.
         """
         self.call_stack.append(Not_equals(value, replacement=replacement))
         return self
 
     def promote(self, property):
-        """Promotes a metadata property to a dimension."""
+        """Promotes a metadata property to a dimension.
+
+        Arguments:
+            Property: String a property name, or list of property names, or series of property names that should be used
+                    as dimensions.
+        """
         self.call_stack.append(Promote(property))
         return self
 
@@ -328,7 +489,11 @@ class Function(object):
 class StreamMethod(object):
 
     def __init__(self, name):
-        """Base SignalFlow stream method class."""
+        """Base SignalFlow stream method class.
+
+        Arguments:
+            name: String
+        """
         if not name:
             raise Exception("Name cannot be None.")
         self.name = name
@@ -342,6 +507,8 @@ class StreamMethod(object):
 class Arg(object):
 
     def __init__(self, arg):
+        """Base SignalFlow Arg method class.
+        """
         if not arg:
             raise Exception("Arg cannot be None.")
         self.arg = arg
@@ -352,6 +519,8 @@ class Arg(object):
 class StrArg(object):
 
     def __init__(self, arg):
+        """Base SignalFlow StrArg method class.
+        """
         if not arg:
             raise Exception("Arg cannot be None.")
         self.arg = arg
@@ -366,6 +535,8 @@ class StrArg(object):
 class KWArg(object):
 
     def __init__(self, keyword, arg):
+        """Base SignalFlow KWArg method class.
+        """
         if not keyword:
             raise Exception("Keyword cannot be None.")
         self.keyword = keyword
@@ -383,6 +554,8 @@ class KWArg(object):
 class VarStrArg(object):
 
     def __init__(self, args):
+        """Base SignalFlow VarStrArg method class.
+        """
         self.arg = args
 
     def __str__(self):
@@ -393,7 +566,41 @@ class Data(Function):
 
     def __init__(self, metric, filter=None,
                  rollup=None, extrapolation=None, maxExtrapolations=None):
-        """The data() function is used to create a stream."""
+        """The data() function is used to create a stream.
+
+        Arguments:
+            metric: String metric name (can use * as a wildcard)
+            filter: String filter name to match
+            rollup: String If None then the default rollup for the metric is used. Otherwise one of the following
+                    string values:
+
+                    average (default for gauges)
+
+                    count (useful to tell how many points were received in a timeslice)
+
+                    delta (useful for cumulative counters)
+
+                    latest (useful for gauges)
+
+                    max (useful for cumulative counters)
+
+                    min (useful for gauges)
+
+                    rate (default for cumulative and distributed counters)
+
+                    sum (useful for distributed counters)
+
+                    lag (the measured ingest lag for the timeseries for each timeslice)
+            extrapolation: String How to extrapolate missing data. One of the following string values:
+
+                            null: Missing data is not emitted. (default)
+
+                            zero: Missing data is considered to be a value of 0
+
+                            last_value: Missing data is considered to have the last value
+            maxExtrapolations: Int How many extrapolations will be performed when data is no longer received from a
+                                source. A negative value indicates infinite extrapolation.
+        """
         super(Data, self).__init__("data")
         self.args = [
             StrArg(metric),
@@ -407,7 +614,15 @@ class Data(Function):
 class Filter(Function):
 
     def __init__(self, parameter_name, query, *args):
-        """Creates a _filter_ object."""
+        """Creates a _filter_ object.
+
+        Arguments:
+            parameter_name: String filter with on this variable
+            query: String Value to match for the property_name. Supports non-starting wildcard queries via the '*'
+            character.
+            *args: String additional values to query for. Resultant filter will be a logically or. Supports and, or, and not
+                    binary operations.
+        """
         super(Filter, self).__init__("filter")
         self.args = [StrArg(parameter_name), StrArg(query), VarStrArg(args)]
 
@@ -417,6 +632,11 @@ class Const(Function):
     def __init__(self, value, key, timeseries):
         """The const() function is used to create a stream of constant-value
            timeseries.
+
+        Arguments:
+            value: Int the numeric value to use when generating a single timeseries
+            key: String timeseries dimensions to use when generating a single timeseries
+            timeseries: List of timeseries specifications describing the timeseries to generate and their values
         """
         super(Const, self).__init__("const")
         self.args = [StrArg(value), StrArg(key), StrArg(timeseries)]
@@ -428,6 +648,40 @@ class Graphite(Function):
                  maxExtrapolations=None, **kwargs):
         """The graphite() function is used to create a stream interpreting the
            metric query as a series of period separated dimensions.
+
+        Arguments:
+            metric: String metric name (can use * as a wildcard)
+            filter: String filter name to match
+            rollup: String If None then the default rollup for the metric is used. Otherwise one of the following
+                    string values:
+
+                    average (default for gauges)
+
+                    count (useful to tell how many points were received in a timeslice)
+
+                    delta (useful for cumulative counters)
+
+                    latest (useful for gauges)
+
+                    max (useful for cumulative counters)
+
+                    min (useful for gauges)
+
+                    rate (default for cumulative and distributed counters)
+
+                    sum (useful for distributed counters)
+
+                    lag (the measured ingest lag for the timeseries for each timeslice)
+            extrapolation: String How to extrapolate missing data. One of the following string values:
+
+                            null: Missing data is not emitted. (default)
+
+                            zero: Missing data is considered to be a value of 0
+
+                            last_value: Missing data is considered to have the last value
+            maxExtrapolations: Int How many extrapolations will be performed when data is no longer received from a
+                                source. A negative value indicates infinite extrapolation.
+            **kwargs: Used to map positions to names
         """
         super(Graphite, self).__init__("graphite")
         self.args = [
@@ -445,6 +699,40 @@ class Newrelic(Function):
                  extrapolation=None, maxExtrapolations=None, **kwargs):
         """The newrelic() function is used to create a stream interpreting the
            metric query as a series of slash separated dimensions.
+
+        Arguments:
+            metric: String metric name (can use * as a wildcard)
+            filter: String filter name to match
+            rollup: String If None then the default rollup for the metric is used. Otherwise one of the following
+                    string values:
+
+                    average (default for gauges)
+
+                    count (useful to tell how many points were received in a timeslice)
+
+                    delta (useful for cumulative counters)
+
+                    latest (useful for gauges)
+
+                    max (useful for cumulative counters)
+
+                    min (useful for gauges)
+
+                    rate (default for cumulative and distributed counters)
+
+                    sum (useful for distributed counters)
+
+                    lag (the measured ingest lag for the timeseries for each timeslice)
+            extrapolation: String How to extrapolate missing data. One of the following string values:
+
+                            null: Missing data is not emitted. (default)
+
+                            zero: Missing data is considered to be a value of 0
+
+                            last_value: Missing data is considered to have the last value
+            maxExtrapolations: Int How many extrapolations will be performed when data is no longer received from a
+                                source. A negative value indicates infinite extrapolation.
+            **kwargs: Used to map positions to names
         """
         super(Newrelic, self).__init__("newrelic")
         self.args = [
@@ -476,19 +764,33 @@ class Detect(Function):
         and when it clears. These events can be used to notify people of when
         the conditions within the detect block are met. In order to actually
         publish the events the  must be invoked on a stream.
+
+        Arguments:
+            on: Data when expression that will fire an event with the status "anomalous".
+            off: Data when expression that will fire an event with the status "ok". If not specified then the 'off' is equivalent to not on
+            mode: String mode of the detector
+
+                    paired - both on and off conditions are always evaluated simultaneously. The alert is raised if on
+                    is true and off is false, and the alert is cleared if the off is true and on is false.
+
+                    split - the on condition is evaluated only if there is no alert, and the alert is raised when the
+                    on condition evaluates to true. The off condition is only evaluated when the alert is raised, and
+                    the alert is cleared when the off condition evaluates to true.
         """
         super(Detect, self).__init__("detect")
         self.args = [Arg(on), KWArg("off", off), KWArg("mode", mode)]
 
 
 class Op(Function):
-    """Op combines two streams using mathematical operators and function calls
-    into a SignalFlow Formula that can be used in a Chart of Detector.
 
-    A Formula in SignalFlow requires operations such as *, /, +, - and allows function
-    calls such as .sum(), .publish(), etc
-    """
     def __init__(self, stmt):
+        """Op combines two streams using mathematical operators and function calls into a SignalFlow Formula to be used
+        in a Chart or Detector. A Formula in SignalFlow requires operations such as *, /, +, - and allows function calls
+        such as .sum(), .publish(), etc.
+
+        Arguments:
+            stmt: Data describing a SignalFlow statement
+        """
         super(Op, self).__init__("")
         self.args = [Arg(stmt)]
 
@@ -496,7 +798,16 @@ class Op(Function):
 class When(Function):
 
     def __init__(self, predicate, lasting=None, at_least=None):
-        """Creates a  object for use in  functions."""
+        """Creates a  object for use in  functions.
+
+        Arguments:
+            predicate: Boolean to indicate when this expression should evaluate to True
+            lasting: Int duration to indicate how the predicate must be true before the when is considered to have a
+                    value of True. If not specified, then this expression will evaluate True as long as the predicate
+                    is met.
+            at_least: Float value indicating the percentage of lasting that the predicate must be true in order for this
+                    expression to evaluate to True.Supports and, or, and not binary operations
+        """
         super(When, self).__init__("when")
         self.args = [Arg(predicate), KWArg(
             "lasting", lasting), KWArg("at_least", at_least)]
@@ -506,7 +817,15 @@ class Lasting(Function):
 
     def __init__(self, lasting=None, at_least=None):
         """Convenience wrapper for holding both the lasting and optionally the
-           at_least parameter to pass to a  function."""
+           at_least parameter to pass to a  function.
+
+        Arguments:
+            lasting: Int duration to indicate how the predicate must be true before the when is considered to have a
+                    value of True. If not specified, then this expression will evaluate True as long as the predicate
+                    is met.
+            at_least: Float value indicating the percentage of lasting that the predicate must be true in order for this
+                    expression to evaluate to True.Supports and, or, and not binary operations
+        """
         super(Lasting, self).__init__("lasting")
         self.args = [KWArg("lasting", lasting), KWArg("at_least", at_least)]
 
@@ -540,7 +859,12 @@ class Assign(Function):
 class Bottom(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Get the bottom values in the stream."""
+        """Get the bottom values in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Bottom, self).__init__("bottom")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -548,7 +872,12 @@ class Bottom(StreamMethod):
 class Count(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Counts the number of inputs that have data."""
+        """Counts the number of inputs that have data.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Count, self).__init__("count")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -558,6 +887,11 @@ class Delta(StreamMethod):
     def __init__(self, by=None, over=None):
         """Calculates the difference between the current value and the previous
            value for each time interval.
+
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
         """
         super(Delta, self).__init__("delta")
         self.args = [KWArg("by", by), KWArg("over", over)]
@@ -566,7 +900,12 @@ class Delta(StreamMethod):
 class Mean(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Find the mean on a stream."""
+        """Find the mean on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Mean, self).__init__("mean")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -574,7 +913,12 @@ class Mean(StreamMethod):
 class Mean_plus_stddev(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Calculates the mean + n standard deviations."""
+        """Calculates the mean + n standard deviations.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Mean_plus_stddev, self).__init__("mean_plus_stddev")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -582,7 +926,12 @@ class Mean_plus_stddev(StreamMethod):
 class Median(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Find the median on a stream."""
+        """Find the median on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Median, self).__init__("median")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -590,7 +939,12 @@ class Median(StreamMethod):
 class Min(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Find the minimum value on a stream."""
+        """Find the minimum value on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Min, self).__init__("min")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -598,7 +952,12 @@ class Min(StreamMethod):
 class Max(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Find the maximum value on a stream."""
+        """Find the maximum value on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Max, self).__init__("max")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -606,7 +965,12 @@ class Max(StreamMethod):
 class Percentile(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Calculates the n-th percentile of inputs in the stream."""
+        """Calculates the n-th percentile of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Percentile, self).__init__("percentile")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -614,7 +978,12 @@ class Percentile(StreamMethod):
 class Random(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Get random values in the stream by count or percentage."""
+        """Get random values in the stream by count or percentage.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Random, self).__init__("random")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -622,7 +991,12 @@ class Random(StreamMethod):
 class Sample_stddev(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Calculates the sample standard deviation of inputs in the stream."""
+        """Calculates the sample standard deviation of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Sample_stddev, self).__init__("sample_stddev")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -630,7 +1004,12 @@ class Sample_stddev(StreamMethod):
 class Sample_variance(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Calculates the sample variance of inputs in the stream."""
+        """Calculates the sample variance of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Sample_variance, self).__init__("sample_variance")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -638,7 +1017,12 @@ class Sample_variance(StreamMethod):
 class Size(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Counts the number of inputs in the stream."""
+        """Counts the number of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Size, self).__init__("size")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -646,7 +1030,12 @@ class Size(StreamMethod):
 class Stddev(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Calculates the standard deviation of inputs in the stream."""
+        """Calculates the standard deviation of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Stddev, self).__init__("stddev")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -654,7 +1043,12 @@ class Stddev(StreamMethod):
 class Sum(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Find the sum on a stream."""
+        """Find the sum on a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Sum, self).__init__("sum")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -662,7 +1056,12 @@ class Sum(StreamMethod):
 class Top(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Get the top values in the stream."""
+        """Get the top values in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Top, self).__init__("top")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -670,7 +1069,12 @@ class Top(StreamMethod):
 class Variance(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Calculates the variance of inputs in the stream."""
+        """Calculates the variance of inputs in the stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Variance, self).__init__("variance")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -680,6 +1084,10 @@ class Integrate(StreamMethod):
     def __init__(self, by=None, over=None):
         """Multiplies the values of each input time series by the resolution
            (in seconds) of the computation.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
         """
         super(Integrate, self).__init__("integrate")
         self.args = [KWArg("by", by), KWArg("over", over)]
@@ -688,7 +1096,12 @@ class Integrate(StreamMethod):
 class Map(StreamMethod):
 
     def __init__(self, by=None, over=None):
-        """Apply a lambda function to a stream."""
+        """Apply a lambda function to a stream.
+
+        Arguments:
+            by: String or List of Strings of names of properties to group by
+            over: Int as positive duration over which to get the count of inputs that have data
+        """
         super(Map, self).__init__("map")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
@@ -698,6 +1111,10 @@ class Publish(StreamMethod):
     def __init__(self, label=None, enable=None):
         """Publish the output of a stream so that it is visible outside of a
            computation.
+
+        Arguments:
+            label: String label for published stream
+            enable: Boolean
         """
         super(Publish, self).__init__("publish")
         self.args = [KWArg("label", label), KWArg("enable", enable)]
@@ -709,6 +1126,9 @@ class Timeshift(StreamMethod):
         """Timeshift the datapoints for a stream, offset by a specified time
            period e.g. 1 week (1w), to enable comparison of time series with
            its own past behavior.
+
+        Arguments:
+            offset: String
         """
         super(Timeshift, self).__init__("timeshift")
         self.args = [StrArg(offset)]
@@ -718,7 +1138,12 @@ class Ewma(StreamMethod):
 
     def __init__(self, alpha):
         """Calculates the exponentially weighted moving average of the stream.
-ewma(alpha)Returns a new  object."""
+            ewma(alpha)Returns a new  object.
+
+        Arguments:
+            alpha: Int smoothing parameter (must be between 0 and 1) used to calculate the EWMA of each input time
+                    series.
+        """
         super(Ewma, self).__init__("ewma")
         self.args = [StrArg(alpha)]
 
@@ -776,7 +1201,11 @@ class Pow(StreamMethod):
 class Pow(StreamMethod):
 
     def __init__(self, base=None):
-        """ - return base"""
+        """ - return base
+
+        Arguments:
+            base: Int the power/exponent to raise the data too
+        """
         super(Pow, self).__init__("pow")
         self.args = [KWArg("base", base)]
 
@@ -784,7 +1213,11 @@ class Pow(StreamMethod):
 class Scale(StreamMethod):
 
     def __init__(self, multiplier):
-        """Scale data in the stream by a multiplier."""
+        """Scale data in the stream by a multiplier.
+
+        Arguments:
+            multiplier: Int
+        """
         super(Scale, self).__init__("scale")
         self.args = [StrArg(multiplier)]
 
@@ -802,6 +1235,11 @@ class Above(StreamMethod):
     def __init__(self, limit, inclusive=None, clamp=None):
         """Only pass through data in the stream that is above a particular
            value, or clamp data above a value to that value.
+
+        Arguments:
+            limit: Int
+            inclusive: Boolean if True then limit is included in the filter
+            clamp: Boolean if True then when data is below limit it is passed on as limit, otherwise data is not passed
         """
         super(Above, self).__init__("above")
         self.args = [StrArg(limit), KWArg(
@@ -813,6 +1251,11 @@ class Below(StreamMethod):
     def __init__(self, limit, inclusive=None, clamp=None):
         """Only pass through data in the stream that is below a particular
            value, or clamp data below a value to that value.
+
+        Arguments:
+            limit: Int
+            inclusive: Boolean if True then limit is included in the filter
+            clamp: Boolean if True then when data is below limit it is passed on as limit, otherwise data is not passed
         """
         super(Below, self).__init__("below")
         self.args = [StrArg(limit), KWArg(
@@ -826,6 +1269,14 @@ class Between(StreamMethod):
         """Only pass through data in the stream that is between two particular
            values or replace data that is not between two particular values
            with the limit that they are closest to.
+
+        Arguments:
+            low_limit: Int the value of the lower limit
+            high_limit: Int the value of the higher limit (must be greater than low_limit)
+            low_inclusive: Boolean if True then low_limit is included in the filter
+            high_inclusive: Boolean if True then high_limit is included in the filter
+            clamp: Boolean if True data that is not between low_limit and high_limit will be replaced with the value of
+                the closest of low_limit or high_limit, otherwise data is not passed through
         """
         super(Between, self).__init__("between")
         self.args = [
@@ -843,6 +1294,11 @@ class Equals(StreamMethod):
         """Only pass through data in the stream that is equal to a particular
            value or replace data that is not equal to a particular value with
            another value.
+
+        Arguments:
+              value: Int the value to filter for
+              replacement: Int if not None, data that is not equal to value will be replaced with this value, otherwise
+                            data is not passed through.
         """
         super(Equals, self).__init__("equals")
         self.args = [StrArg(value), KWArg("replacement", replacement)]
@@ -854,6 +1310,14 @@ class Not_between(StreamMethod):
                  low_inclusive=None, high_inclusive=None):
         """Only pass through data in the stream that is not between two
            particular values.
+
+        Arguments:
+            low_limit: Int the value of the lower limit
+            high_limit: Int the value of the higher limit (must be greater than low_limit)
+            low_inclusive: Boolean if True then low_limit is included in the filter
+            high_inclusive: Boolean if True then high_limit is included in the filter
+            clamp: Boolean if True data that is not between low_limit and high_limit will be replaced with the value of
+                the closest of low_limit or high_limit, otherwise data is not passed through
         """
         super(Not_between, self).__init__("not_between")
         self.args = [
@@ -870,6 +1334,11 @@ class Not_equals(StreamMethod):
         """Only pass through data in the stream that is not equal to a
            particular value or replace data that is equal to a particular
            value with another value.
+
+        Arguments:
+              value: Int the value to filter for
+              replacement: Int if not None, data that is not equal to value will be replaced with this value, otherwise
+                            data is not passed through.
         """
         super(Not_equals, self).__init__("not_equals")
         self.args = [StrArg(value), KWArg("replacement", replacement)]

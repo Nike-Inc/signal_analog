@@ -23,6 +23,9 @@ class Chart(Resource):
     def with_id(self, id):
         """The unique identifier for this chart.
 
+        Arguments:
+            id: String identifying chart
+
         Useful when updating/deleting charts.
         """
         util.assert_valid(id)
@@ -31,6 +34,9 @@ class Chart(Resource):
 
     def with_program(self, program):
         """The SignalFlow program to execute for this chart.
+
+        Arguments:
+            program: Valid json defining a program
 
         For more information SignalFlow consult the `signal_analog.flow`
         module or the upstream SignalFlow documentation here:
@@ -42,6 +48,9 @@ class Chart(Resource):
         return self
 
     def to_dict(self):
+        """Creates a dict of entire chart.
+
+        """
         curr_chart_opts = deepcopy(self.options.get('options', {}))
         curr_chart_opts.update(self.chart_options)
 
@@ -171,6 +180,8 @@ class ChartOption(object):
         self.opts = {}
 
     def to_dict(self):
+        """Return a dict of ChartOptions
+        """
         return self.opts
 
 
@@ -178,14 +189,14 @@ class AxisOption(ChartOption):
     """Encapsulation for options on chart axes."""
 
     def __init__(self, min, max, label, high_watermark, low_watermark):
-        """Initializes this class with valid values, raises ValueError
+        """Initialize this class with valid values, raises ValueError
            if any values are missing.
 
         Arguments:
             min: the minimum value for the axis
             max: the maximum value for the axis
             label: label of the axis
-            high_watermark: a line ot draw as a high watermar
+            high_watermark: a line ot draw as a high watermark
             low_watermark: a line to draw as a low watermark
         """
         for arg in [min, max, label, high_watermark, low_watermark]:
@@ -229,7 +240,7 @@ class PublishLabelOptions(ChartOption):
         """Initializes and validates publish label options.
 
         Arguments:
-            label: label used in the publish statement that displayes the plot
+            label: label used in the publish statement that displays the plot
             y_axis: the y-axis associated with values for this plot.
                     Must be 0 (left) or 1 (right).
             palette_index: the indexed palette color to use for all plot lines
@@ -265,8 +276,7 @@ class DisplayOptionsMixin(object):
         """Determine how timeseries are colored in this chart.
 
         Arguments:
-            color_by: String that defines how to color a chart
-            (dimension, metric, scale)
+            color_by: String that defines how to color a chart (dimension, metric, scale)
         """
         util.assert_valid(color_by)
         util.in_given_enum(color_by, ColorBy)
@@ -277,8 +287,7 @@ class DisplayOptionsMixin(object):
         """Determine how values are sorted.
 
         Arguments:
-            sort_by: String that defines how we sort values
-            (-value, +value)
+            sort_by: String that defines how we sort values (-value, +value)
         """
         util.assert_valid(sort_by)
         util.in_given_enum(sort_by, SortBy)
@@ -289,8 +298,7 @@ class DisplayOptionsMixin(object):
         """Add a unit prefix to this chart.
 
         Arguments:
-            prefix: String defining unit prefix
-            (metric, binary)
+            prefix: String defining unit prefix (metric, binary)
         """
         util.assert_valid(prefix)
         util.in_given_enum(prefix, UnitPrefix)
@@ -379,8 +387,14 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
     def with_axes(self, axes):
         """Options for labeling axes on TimeSeries charts.
 
+        Arguments:
+            axes: List of objects to configure axis identifiers
+
+        Y axis configuration for the left and right side of a chart.
+        The first element of the array corresponds to the left side of the chart
+        and the second element of the array corresponds to the right side of the array.
         Don't leave your axes laying about or this guy might show up:
-        https://youtu.be/V2FygG84bg8
+        https://youtu.be/Ln71u1nu6L4
         """
         util.assert_valid(axes)
         self.chart_options.update({
@@ -389,7 +403,11 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
         return self
 
     def with_legend_options(self, field_opts):
-        """Options for the behavior of this chart's legend."""
+        """Options for the behavior of this chart's legend.
+
+            Arguments:
+                field_opts: List of objects defining entries in a chart's legend
+        """
         util.assert_valid(field_opts)
         opts = {'fields': list(map(lambda x: x.to_dict(), field_opts))}
         self.chart_options.update({'legendOptions': opts})
@@ -398,12 +416,19 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
     def show_event_lines(self, boolean):
         """Whether vertical highlight lines should be drawn in the
            visualizations at times when events occurred.
+
+           Arguments:
+                boolean: Boolean defining if event lines will be shown on the chart
         """
         self.chart_options.update({'showEventLines': str(boolean).lower()})
         return self
 
     def __has_opt(self, opt_name):
-        """Identify if the given option exists in this TimeSeriesChart."""
+        """Identify if the given option exists in this TimeSeriesChart.
+
+            Arguments:
+                opt_name: object defining a chart option to check for
+        """
         return self.chart_options.get(opt_name, None) is not None
 
     def __with_chart_options(self, clazz, show_data_markers=False):
@@ -429,33 +454,58 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
         return self
 
     def with_line_chart_options(self, show_data_markers=False):
-        """Modify options on line plot types."""
+        """Modify options on line plot types.
+
+            Arguments:
+                show_data_markers: Boolean to turn data markers on and off in line charts
+        """
         return self.__with_chart_options('lineChartOptions', show_data_markers)
 
     def with_area_chart_options(self, show_data_markers=False):
-        """Modify options on line plot types."""
+        """Modify options on line plot types.
+
+            Arguments:
+                show_data_markers: Boolean to turn data markers on and off in area charts
+        """
         return self.__with_chart_options('areaChartOptions', show_data_markers)
 
     def stack_chart(self, boolean):
-        """Should area/bar charts in the visualization be stacked."""
+        """Should area/bar charts in the visualization be stacked.
+
+            Arguments:
+                boolean: Boolean to turn on/off chart stacking
+        """
         self.chart_options.update({'stacked': str(boolean).lower()})
         return self
 
     def with_default_plot_type(self, plot_type):
-        """The default plot display style for the visualization."""
+        """The default plot display style for the visualization.
+
+            Arguments:
+                plot_type: Enumerated string to define default plot type in TimeSeriesChart
+        """
         util.assert_valid(plot_type)
         util.in_given_enum(plot_type, PlotType)
         self.chart_options.update({'defaultPlotType': plot_type.value})
         return self
 
     def with_axis_precision(self, num):
-        """Force a specific number of significant digits in the y-axis."""
+        """Force a specific number of significant digits in the y-axis.
+
+            Arguments:
+                num: Int
+        """
         util.assert_valid(num)
         self.chart_options.update({'axisPrecision': num})
         return self
 
     def with_chart_legend_options(self, dimension, show_legend=False):
-        """Show the on-chart legend using the given dimension."""
+        """Show the on-chart legend using the given dimension.
+
+            Arguments:
+                dimension: Object defining dimension to show on legend
+                show_legend: Boolean to turn legend on/off
+        """
         util.assert_valid(dimension)
         opts = {
             'showLegend': show_legend,
@@ -472,24 +522,45 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
         self.chart_options = {'type': 'SingleValue'}
 
     def with_refresh_interval(self, interval):
-        """How often (in milliseconds) to refresh the values of the list."""
+        """How often (in milliseconds) to refresh the values of the list.
+
+            Arguments:
+                interval: Int
+        """
         util.assert_valid(interval)
         self.chart_options.update({'refreshInterval': interval})
         return self
 
     def with_maximum_precision(self, precision):
-        """The maximum precision to for values displayed in the list."""
+        """The maximum precision to for values displayed in the list.
+
+            Arguments:
+                precision: Int
+
+            Indicates the number of significant digits included for values plotted on a chart but only applies to
+            fractional portions of the number.
+            For example, if the values of the represented data typically fluctuates between 0.001 and 0.01,
+            significant information will be lost unless the precision is set to at least 4.
+        """
         util.assert_valid(precision)
         self.chart_options.update({'maximumPrecision': precision})
         return self
 
     def with_timestamp_hidden(self, hidden=False):
-        """Whether to hide the timestamp in the chart."""
+        """Whether to hide the timestamp in the chart.
+
+            Arguments:
+                hidden: Boolean
+        """
         self.chart_options.update({'timestampHidden': hidden})
         return self
 
     def with_sparkline_hidden(self, hidden=True):
-        """Whether to show a trend line below the current value."""
+        """Whether to show a trend line below the current value.
+
+            Arguments:
+                hidden: Boolean
+        """
         self.chart_options.update({'showSparkLine': hidden})
         return self
 
@@ -498,7 +569,7 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
 
         Arguments:
             thresholds: The thresholds to set for the color range being used.
-            inverted: If false, values are red if they are above
+            inverted: Boolean If false, values are red if they are above
                       the highest specified value. If true, values are red if
                       they are below the lowest specified value.
         """
@@ -516,13 +587,21 @@ class ListChart(Chart, DisplayOptionsMixin):
         self.chart_options = {'type': 'List'}
 
     def with_refresh_interval(self, interval):
-        """How often (in milliseconds) to refresh the values of the list."""
+        """How often (in milliseconds) to refresh the values of the list.
+
+            Arguments:
+                interval: Int
+        """
         util.assert_valid(interval)
         self.chart_options.update({'refreshInterval': interval})
         return self
 
     def with_maximum_precision(self, precision):
-        """The maximum precision to for values displayed in the list."""
+        """The maximum precision to for values displayed in the list.
+
+            Arguments:
+                precision: Int
+        """
         util.assert_valid(precision)
         self.chart_options.update({'maximumPrecision': precision})
         return self
