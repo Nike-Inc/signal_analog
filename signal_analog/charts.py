@@ -358,7 +358,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
         """Options to set the relative view window into the given chart.
 
         Arguments:
-            range: String of absolute millisecond offset from now to visualize.
+            range: Int absolute millisecond offset from now to visualize.
 
         Returns:
             This TimeSeriesChart with absolute time config
