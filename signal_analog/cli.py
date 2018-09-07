@@ -16,8 +16,13 @@ pass_config = click.make_pass_decorator(SignalAnalogConfig, ensure=True)
 def invoke(resource, action, api_key, **kwargs):
     """Attempt to invoke the provided action on each resource.
 
-    Returns:
-        The response from the action taken.
+        Arguments:
+            resource: Object defining a Sfx resource (chart, dashboard, dashboard group, etc)
+            action: String to create, update, read, or delete a resource
+            api_key: String
+
+        Returns:
+            The response from the action taken.
     """
     res = resource.with_api_token(api_key)
     try:
@@ -36,10 +41,13 @@ class CliBuilder(object):
         self.resources = []
 
     def with_resources(self, *args):
+        """Resources to build with the CLI
+        """
         self.resources = args
         return self
 
     def build(self):
+        """CLI commands to define actions taken on resources such as create, update, read, or delete."""
 
         @click.group()
         @click.option('--api-key', help='Your SignalFx API key')

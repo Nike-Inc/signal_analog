@@ -8,7 +8,7 @@ from signal_analog import debug
 from signal_analog.errors import ResourceMatchNotFoundError, \
     ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 
-# py2/3 compatability hack so that we can consistently handle JSON errors.
+# py2/3 compatibility hack so that we can consistently handle JSON errors.
 try:
     from json.decoder import JSONDecodeError
 except ImportError:
@@ -29,7 +29,7 @@ class Resource(object):
         in the cards for a future iteration, but the opportunity cost is not
         quite there yet.
 
-        Attributes:
+        Arguments:
             base_url: the base endpoint to use when talking to SignalFx
             endpoint: the particular endpoint to hit for this resource
             api_token: the api token to authenticate requests with
@@ -54,28 +54,40 @@ class Resource(object):
         self.__set_base_url__(base_url)
 
     def with_name(self, name):
-        """The name to give this resource."""
+        """The name to give this resource.
+
+        Arguments:
+            name: String
+        """
         util.assert_valid(name)
         self.options.update({'name': name})
         return self
 
     def with_description(self, description):
-        """The description to attach to this resource."""
+        """The description to attach to this resource.
+
+        Arguments:
+            description: String
+        """
         util.assert_valid(description)
         self.options.update({'description': description})
         return self
 
     def with_id(self, ident):
-        """The id for this resource.
+        """The id for this resource. Useful for creates/deletes.
 
-        Useful for creates/deletes.
+        Arguments:
+            ident: String
         """
         util.assert_valid(ident)
         self.options.update({'id': ident})
         return self
 
     def __set_api_token__(self, token):
-        """Internal helper for setting valid API tokens."""
+        """Internal helper for setting valid API tokens.
+
+        Arguments: String
+        """
 
         message = """Cannot proceed with an empty API token.
         Either pass one in at Resource instantiation time or provide one
@@ -85,17 +97,29 @@ class Resource(object):
         self.api_token = token
 
     def __set_endpoint__(self, endpoint):
-        """Internal helper for setting valid endpoints."""
+        """Internal helper for setting valid endpoints.
+
+        Arguments:
+            endpoint: String
+        """
         util.assert_valid(endpoint, error_message="Cannot proceed with an empty endpoint")
         self.endpoint = endpoint
 
     def __set_base_url__(self, base_url):
-        """Internal helper for setting valid base_urls."""
+        """Internal helper for setting valid base_urls.
+
+        Arguments:
+            base_url: String
+        """
         util.assert_valid(base_url, error_message="Cannot proceed with empty base_url")
         self.base_url = base_url
 
     def with_api_token(self, token):
-        """Set the API token for this resource."""
+        """Set the API token for this resource.
+
+        Arguments:
+            token: String
+        """
 
         self.__set_api_token__(token)
         return self
@@ -165,7 +189,12 @@ class Resource(object):
             return None
 
     def __get__(self, name, default=None):
-        """Helper for sourcing top-level options from this resource."""
+        """Helper for sourcing top-level options from this resource.
+
+        Arguments:
+            name: String
+            default: String
+        """
         return self.options.get(name, default)
 
     def __find_existing_resources__(self):
@@ -238,7 +267,13 @@ class Resource(object):
         raise ResourceMatchNotFoundError(self.__get__('name'))
 
     def create(self, dry_run=False, interactive=False, force=False):
-        """Default implementation for resource creation."""
+        """Default implementation for resource creation.
+
+        Arguments:
+            dry_run: Boolean to test a dry run
+            interactive: Boolean to run in interactive mode
+            force: Boolean to force execution
+        """
         return self.__action__('post', self.endpoint, lambda x: x,
                                dry_run=dry_run, interactive=interactive,
                                force=force)
@@ -248,6 +283,11 @@ class Resource(object):
 
         Your have to provide the resource id via
         'with_id' or you can pass the id as a parameter
+
+        Arguments:
+            name: String
+            description: String
+            resource_id: String
         """
         rid = resource_id if resource_id else self.__get__('id')
         if name:
@@ -266,6 +306,9 @@ class Resource(object):
         Your chances are much higher if you provide the chart id via
         'with_id'. Otherwise, we will attempt to do a best effort to search for
         your chart based on name.
+
+        Arguments:
+            resource_id: String
         """
         rid = resource_id if resource_id else self.__get__('id')
         if rid:
@@ -277,7 +320,11 @@ class Resource(object):
                 params={'name': self.__get__('name')})['results'][0]
 
     def delete(self, resource_id=None):
-        """Delete the given resource in the SignalFx API."""
+        """Delete the given resource in the SignalFx API.
+
+        Arguments:
+            resource_id: String
+        """
         rid = resource_id if resource_id else self.__get__('id')
 
         if rid:
@@ -290,7 +337,13 @@ class Resource(object):
                 lambda x: None)
 
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
-        """Default implementation for resource cloning."""
+        """Default implementation for resource cloning.
+
+        Arguments:
+            dashboard_id: String
+            dashboard_group_id: String
+            dry_run: String
+        """
 
         self.options = {'sourceDashboard': dashboard_id}
         return self.__action__(
@@ -299,6 +352,12 @@ class Resource(object):
             lambda x: x, dry_run=dry_run)
 
     def __create_helper__(self, force=False, interactive=False):
+        """Helper for creating new resources.
+
+        Arguments:
+            force: Boolean
+            interactive: Boolean
+        """
         try:
             query_result = self.__find_existing_resources__()
             self.__find_existing_match__(query_result)

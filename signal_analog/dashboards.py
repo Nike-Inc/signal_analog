@@ -57,6 +57,11 @@ class DashboardGroup(Resource):
         """Creates a SignalFx dashboard group using the /dashboardgroup helper
         endpoint.
 
+        Arguments:
+            dry_run: Boolean to test a dry run
+            force: Boolean to force creation in case of errors
+            interactive: Boolean to be prompted for user input in case of errors
+
         See: https://developers.signalfx.com/v2/reference#create-dashboard-group
         """
 
@@ -115,6 +120,9 @@ class DashboardGroup(Resource):
         """Gets data of a SignalFx dashboard group using the /dashboardgroup/<id> helper
         endpoint. Dashboard Group Id is required
 
+        Arguments:
+            dry_run: Boolean to test a dry run
+
         See: https://developers.signalfx.com/v2/reference#get-dashboard-groups
         """
         if dry_run:
@@ -126,6 +134,9 @@ class DashboardGroup(Resource):
 
     def __update_dashboard_resources__(self, dashboard_group_state):
         """Update child resources for this dashboard group.
+
+            Arguments:
+                dashboard_group_state: Placeholder to store the state of a dashboard group
         """
         state = deepcopy(dashboard_group_state)
 
@@ -175,6 +186,12 @@ class DashboardGroup(Resource):
         """Updates a SignalFx dashboard group using the /dashboardgroup/_id_ helper
         endpoint.
 
+        Arguments:
+            name: String matching a dashboard group
+            description: String containing a dashboard group's description
+            resource_id: String matching a dashboard group resource
+            dry_run: Boolean to test a dry run
+
         See: https://developers.signalfx.com/v2/reference#update-dashboard-group
         """
 
@@ -216,6 +233,10 @@ class DashboardGroup(Resource):
         """Deletes a SignalFx dashboard group using the /dashboardgroup/<id> helper
         endpoint. Dashboard Group Id is required
 
+        Arguments:
+            resource_id: String matching a dashboard group resource
+            dry_run: Boolean to test a dry run
+
         See: https://developers.signalfx.com/v2/reference#delete-dashboard-group
         """
         if dry_run:
@@ -228,6 +249,11 @@ class DashboardGroup(Resource):
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
         """Clones a SignalFx dashboard using the /dashboardgroup/_id_/dashboard helper
         endpoint. Dashboard Group Id and sourceDashboard Id are required
+
+        Arguments:
+            dashboard_id: String matching a dashboard resource within a dashboard group
+            resource_id: String matching a dashboard group resource
+            dry_run: Boolean to test a dry run
 
         See: https://developers.signalfx.com/v2/reference#clone-dashboard-into-dashboard-group
         """
@@ -260,20 +286,24 @@ class Dashboard(Resource):
         self.selectedevents = {'selectedEventOverlays': []}
 
     def with_charts(self, *charts):
+        """Charts to be included in the dashboard"""
         for chart in charts:
             self.options['charts'].append(deepcopy(chart))
         return self
 
     def with_filters(self, filters):
+        """Filters to be included in the dashboard"""
         self.filters.update({'filters': filters.options})
         return self
 
     def with_event_overlay(self, *eventoverlays):
+        """Event overlays to be included in the dashboard drop down options for events"""
         for eventoverlay in eventoverlays:
             self.events['eventOverlays'].append(deepcopy(eventoverlay))
         return self
 
     def with_selected_event_overlay(self, *selectedeventoverlays):
+        """Default events to display on the dashboard"""
         for selectedeventoverlay in selectedeventoverlays:
             self.selectedevents['selectedEventOverlays'].append(
                 deepcopy(selectedeventoverlay))
@@ -282,6 +312,11 @@ class Dashboard(Resource):
     def create(self, dry_run=False, force=False, interactive=False):
         """Creates a Signalfx dashboard using the /dashboard/simple helper
         endpoint. A list of chart models is required.
+
+        Arguments:
+            dry_run: Boolean to test a dry run
+            force: Boolean to force creation in case of errors
+            interactive: Boolean to be prompted for user input in case of errors
 
         See: https://developers.signalfx.com/v2/reference#dashboardsimple
         """
@@ -340,6 +375,10 @@ class Dashboard(Resource):
     def read(self, resource_id=None, dry_run=False):
         """Gets data of a Signalfx dashboard using the /dashboard/<id> helper
         endpoint. Dashboard Id is required
+
+        Arguments:
+            resource_id: String matching a dashboard resource
+            dry_run: Boolean to test a dry run
 
         See: https://developers.signalfx.com/v2/reference#get-dashboard
         """
@@ -428,6 +467,12 @@ class Dashboard(Resource):
         """Updates a Signalfx dashboard using the /dashboard/_id_ helper
         endpoint. A list of chart models is required.
 
+        Arguments:
+            name: String containing the name for the dashboard
+            description: String containing a description for this dashboard
+            resource_id: String matching the resource ID for this dashboard
+            dry_run: Boolean to test a dry run
+
         See: https://developers.signalfx.com/v2/reference#update-dashboard
         """
         if 'id' in self.options or resource_id:
@@ -508,7 +553,11 @@ This typically happens when we delete a chart from an existing dashboard.
 
     def delete(self, resource_id=None, dry_run=False):
         """Deletes a SignalFx dashboard using the /dashboard/<id> helper
-        endpoint. Dashboard Group Id is required
+        endpoint. Dashboard Id is required
+
+        Arguments:
+            resource_id: String matching the resource id for a dashboard
+            dry_run: Boolean to test a dry run
 
         See: https://developers.signalfx.com/v2/reference#delete-dashboard
         """
