@@ -545,13 +545,13 @@ class Detector(Resource):
         program = deepcopy(chart.__get__('programText', Program()))
 
         if not issubclass(program.__class__, Program):
-            msg =   """
-                    Detector.from_chart only supports Charts that implement a Program. "{0}"
-                    contains a "{1}".
-                    
-                    You might consider contacting the Chart author to update their configuration to
-                    implement a proper `Program` from the `signal_analog.flow` module.
-                    """
+            msg = """
+                  Detector.from_chart only supports Charts that implement a Program. "{0}"
+                  contains a "{1}".
+
+                  You might consider contacting the Chart author to update their configuration to
+                  implement a proper `Program` from the `signal_analog.flow` module.
+                  """
             raise ValueError(msg.format(
                 chart.__class__.__name__,
                 program.__class__.__name__
@@ -595,14 +595,14 @@ class Detector(Resource):
             updated_opts.update({'name': description})
 
         if dry_run:
-            msg =   """
-                    Updates the Detector named "{0}". If it doesn't exist, we'll create a new one.
-                    API calls being executed:
-                        GET {1}
-                        PUT {2}
-                    Request Body:
-                        {3}
-                    """
+            msg = """
+                  Updates the Detector named "{0}". If it doesn't exist, we'll create a new one.
+                  API calls being executed:
+                      GET {1}
+                      PUT {2}
+                  Request Body:
+                      {3}
+                  """
             click.echo(msg.format(
                 self.__get__('name'),
                 self.base_url + self.endpoint,

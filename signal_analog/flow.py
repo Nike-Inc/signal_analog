@@ -437,7 +437,7 @@ class Function(object):
         self.call_stack.append(Pow(exponent))
         return self
 
-    def pow(self, base=None): # noqa: F811 -- redefinition of unused 'pow' from line [...]
+    def pow(self, base=None):  # noqa: F811 -- redefinition of unused 'pow' from line [...]
         """ - return base e.g. pow(base=10)
 
         Arguments:
@@ -514,7 +514,8 @@ class Function(object):
 
         Arguments:
             value: Int the value to filter for
-            replacement: Int if not None, data that is not equal to value will be replaced with this value, otherwise data is not passed through.
+            replacement: Int if not None, data that is not equal to value will be replaced with this value, otherwise
+                         data is not passed through.
         """
         self.call_stack.append(Equals(value, replacement=replacement))
         return self
@@ -542,7 +543,8 @@ class Function(object):
 
         Arguments:
             value: Int the value to filter for
-            replacement: Int if not None, data that is not equal to value will be replaced with this value, otherwise data is not passed through.
+            replacement: Int if not None, data that is not equal to value will be replaced with this value, otherwise
+                         data is not passed through.
         """
         self.call_stack.append(Not_equals(value, replacement=replacement))
         return self
@@ -551,8 +553,8 @@ class Function(object):
         """Promotes a metadata property to a dimension.
 
         Arguments:
-            Property: String a property name, or list of property names, or series of property names that should be used
-                    as dimensions.
+            Property: String a property name, or list of property names, or series of property names that should be
+                      used as dimensions.
         """
         self.call_stack.append(Promote(*properties))
         return self
@@ -739,8 +741,8 @@ class Filter(Function):
             parameter_name: String filter with on this variable
             query: String Value to match for the property_name. Supports non-starting wildcard queries via the '*'
             character.
-            *args: String additional values to query for. Resultant filter will be a logically or. Supports and, or, and not
-                    binary operations.
+            *args: String additional values to query for. Resultant filter will be a logically or. Supports and, or,
+                   and not binary operations.
         """
         super(Filter, self).__init__("filter")
         self.args = [StrArg(parameter_name), StrArg(query), VarStrArg(args)]
@@ -886,7 +888,8 @@ class Detect(Function):
 
         Arguments:
             on: Data when expression that will fire an event with the status "anomalous".
-            off: Data when expression that will fire an event with the status "ok". If not specified then the 'off' is equivalent to not on
+            off: Data when expression that will fire an event with the status "ok". If not specified then the 'off' is
+            equivalent to not on
             mode: String mode of the detector
 
                     paired - both on and off conditions are always evaluated simultaneously. The alert is raised if on
@@ -904,8 +907,8 @@ class Op(Function):
 
     def __init__(self, stmt):
         """Op combines two streams using mathematical operators and function calls into a SignalFlow Formula to be used
-        in a Chart or Detector. A Formula in SignalFlow requires operations such as *, /, +, - and allows function calls
-        such as .sum(), .publish(), etc.
+        in a Chart or Detector. A Formula in SignalFlow requires operations such as *, /, +, - and allows function
+        calls such as .sum(), .publish(), etc.
 
         Arguments:
             stmt: Data describing a SignalFlow statement
@@ -924,8 +927,8 @@ class When(Function):
             lasting: Int duration to indicate how the predicate must be true before the when is considered to have a
                     value of True. If not specified, then this expression will evaluate True as long as the predicate
                     is met.
-            at_least: Float value indicating the percentage of lasting that the predicate must be true in order for this
-                    expression to evaluate to True.Supports and, or, and not binary operations
+            at_least: Float value indicating the percentage of lasting that the predicate must be true in order for
+                      this expression to evaluate to True.Supports and, or, and not binary operations
         """
         super(When, self).__init__("when")
         self.args = [Arg(predicate), KWArg(
@@ -942,8 +945,8 @@ class Lasting(Function):
             lasting: Int duration to indicate how the predicate must be true before the when is considered to have a
                     value of True. If not specified, then this expression will evaluate True as long as the predicate
                     is met.
-            at_least: Float value indicating the percentage of lasting that the predicate must be true in order for this
-                    expression to evaluate to True.Supports and, or, and not binary operations
+            at_least: Float value indicating the percentage of lasting that the predicate must be true in order for
+                      this expression to evaluate to True.Supports and, or, and not binary operations
         """
         super(Lasting, self).__init__("lasting")
         self.args = [KWArg("lasting", lasting), KWArg("at_least", at_least)]
