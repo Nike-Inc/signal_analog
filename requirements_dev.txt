@@ -5,6 +5,7 @@ click
 coverage
 email_validator
 enum34
+flake8
 hypothesis
 mock
 pytest
@@ -16,3 +17,4 @@ requests-mock
 six
 tox
 pyyaml
+markdown

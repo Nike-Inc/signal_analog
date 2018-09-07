@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """This module provides bindings for the SignalFx SignalFlow DSL."""
 
 from numbers import Number
@@ -5,6 +7,8 @@ from numbers import Number
 from six import string_types
 
 import signal_analog.util as util
+from signal_analog.combinators import NAryCombinator
+from signal_analog.errors import ProgramDoesNotPublishTimeseriesError
 
 # Py 2/3 compatibility hack to force `filter` to always return an iterator
 try:
@@ -31,6 +35,32 @@ class Program(object):
 
     def __str__(self):
         return '\n'.join(map(str, self.statements))
+
+    def validate(self, *validations):
+        """Validate this Program.
+
+        If no validations are provided this Program will validate against all
+        validation functions from self.DEFAULT_VALIDATIONS.
+
+        A validation function is one that inspects the given Programs
+        statements and returns nothing if verified, an appropriate Exception
+        otherwise.
+
+        Arguments:
+            validations: if provided, override the default validations for this
+                         program.
+
+        Returns:
+            An appropriate Exception if invalid, None otherwise.
+        """
+        defaults = [
+            Program.validate_publish_statements
+        ]
+
+        valid_fns = validations if validations else defaults
+
+        for validation in valid_fns:
+            validation(self.statements)
 
     def __valid_statement__(self, stmt):
         """Type check the provided statement.
@@ -62,7 +92,6 @@ class Program(object):
             self.__valid_statement__(stmt)
             self.statements.append(stmt)
 
-
     def find_label(self, label):
         """Find a statement in this program with the given label.
 
@@ -89,6 +118,29 @@ class Program(object):
         # Only return the first match from the filter iterator.
         return next(filter(label_predicate, self.statements), None)
 
+    @staticmethod
+    def validate_publish_statements(statements):
+        """Validate that at least 1 statement is published for this Program."""
+        def find_publish(statement):
+
+            # Inspect the left hand side of the assignment
+            if isinstance(statement, Assign):
+                statement = statement.expr
+
+            # We technically shouldn't see naked combinators in a Program
+            # object, but out of an abundance of caution...
+            if isinstance(statement, NAryCombinator):
+                return False
+
+            for call in statement.call_stack:
+                if isinstance(call, Publish):
+                    return True
+
+        publish_statements = list(filter(find_publish, statements))
+
+        if len(publish_statements) < 1:
+            raise ProgramDoesNotPublishTimeseriesError(statements)
+
 
 class Function(object):
 
@@ -111,14 +163,15 @@ class Function(object):
 
         return "{0}({1}){2}".format(self.name, str_args, str_calls)
 
-    def bottom(self, by=None, over=None):
+    def bottom(self, count=None, percentage=None, by=None):
         """Get the bottom values in the stream.
 
         Arguments:
-            by: String or List of Strings of names of properties to group by
-            over: Int as positive duration over which to get the count of inputs that have data
+            count: count of bottom inputs to pass thru. Mutually exclusive with percentage parameter
+            percentage:  percent of bottom inputs to pass thru expressed as a double between 0 and 1.0
+            by: either string or list of strings of the names of properties to group by
         """
-        self.call_stack.append(Bottom(by=by, over=over))
+        self.call_stack.append(Bottom(count=count, percentage=percentage, by=by))
         return self
 
     def count(self, by=None, over=None):
@@ -131,7 +184,7 @@ class Function(object):
         self.call_stack.append(Count(by=by, over=over))
         return self
 
-    def delta(self, by=None, over=None):
+    def delta(self):
         """Calculates the difference between the current value and the
            previous value for each time interval.
 
@@ -140,7 +193,32 @@ class Function(object):
             over: Int as positive duration over which to get the count of inputs that have data
 
         Delta operates independently on each time series."""
-        self.call_stack.append(Delta(by=by, over=over))
+        self.call_stack.append(Delta())
+        return self
+
+    def dimensions(self, aliases=None, renames=None):
+        """The dimensions method duplicates or renames metadata of time series
+           in the stream.
+
+           The aliases and renames parameters are optional, but at least one
+           must be specified. Any supplied parameter must be a dictionary of
+           strings to strings.  The keys of the dictionaries specify the names
+           of the new metadata dimensions.  The values of the dictionaries
+           specify the corresponding names of existing metadata dimensions or
+           custom properties from which the new dimensions are derived.
+
+           The difference between aliases and renames is that aliases introduce
+           new dimensions while leaving the existing dimensions as is, whereas
+           renames replace existing dimensions.
+
+           The return value is a data stream whose time series have altered
+           metadata dimensions
+
+        Arguments:
+            aliases: dictionary of strings of strings
+            renames: dictionary of strings of strings
+        """
+        self.call_stack.append(Dimensions(aliases=aliases, renames=renames))
         return self
 
     def mean(self, by=None, over=None):
@@ -193,24 +271,27 @@ class Function(object):
         self.call_stack.append(Max(by=by, over=over))
         return self
 
-    def percentile(self, by=None, over=None):
+    def percentile(self, percentage, by=None, over=None):
         """Calculates the n-th percentile of inputs in the stream.
 
         Arguments:
+            percentage: the percentile to calculate. Double between 0.0(exclusive) and 100.0(inclusive)
             by: String or List of Strings of names of properties to group by
             over: Int as positive duration over which to get the count of inputs that have data
         """
         self.call_stack.append(Percentile(by=by, over=over))
+        self.call_stack.append(Percentile(percentage, by=by, over=over))
         return self
 
-    def random(self, by=None, over=None):
+    def random(self, count, by=None, over=None):
         """Get random values in the stream by count or percentage.
 
         Arguments:
+            count: count of random inputs to pass thru.
             by: String or List of Strings of names of properties to group by
             over: Int as positive duration over which to get the count of inputs that have data
         """
-        self.call_stack.append(Random(by=by, over=over))
+        self.call_stack.append(Random(count, by=by, over=over))
         return self
 
     def sample_stddev(self, by=None, over=None):
@@ -263,14 +344,15 @@ class Function(object):
         self.call_stack.append(Sum(by=by, over=over))
         return self
 
-    def top(self, by=None, over=None):
+    def top(self, count=None, percentage=None, by=None):
         """Get the top values in the stream.
 
         Arguments:
-            by: String or List of Strings of names of properties to group by
-            over: Int as positive duration over which to get the count of inputs that have data
+            count: Int count of top inputs to pass thru. Mutually exclusive with percentage parameter
+            percentage: Double percent of top inputs to pass thru expressed as a double between 0 and 1.0
+            by:  String or List of strings of the names of properties to group by
         """
-        self.call_stack.append(Top(by=by, over=over))
+        self.call_stack.append(Top(count=count, percentage=percentage, by=by))
         return self
 
     def variance(self, by=None, over=None):
@@ -294,16 +376,6 @@ class Function(object):
         self.call_stack.append(Integrate(by=by, over=over))
         return self
 
-    def map(self, by=None, over=None):
-        """Apply a lambda function to a stream.
-
-        Arguments:
-            by: String or List of Strings of names of properties to group by
-            over: Int as positive duration over which to get the count of inputs that have data
-        """
-        self.call_stack.append(Map(by=by, over=over))
-        return self
-
     def publish(self, label=None, enable=None):
         """Publish the output of a stream so that it is visible outside of a
            computation.
@@ -315,7 +387,7 @@ class Function(object):
         self.call_stack.append(Publish(label=label, enable=enable))
         return self
 
-    def timeshift(self, offset=None):
+    def timeshift(self, offset):
         """Timeshift the datapoints for a stream, offset by a specified time
            period e.g. 1 week (1w), to enable comparison of time series with
            its own past behavior.
@@ -326,13 +398,13 @@ class Function(object):
         self.call_stack.append(Timeshift(offset))
         return self
 
-    def ewma(self, alpha):
+    def ewma(self, alpha=None, over=None):
         """Calculates the exponentially weighted moving average of the stream.
 
         Arguments:
             alpha: Int (must be between 0 and 1) used to calculate the EWMA of each input time series.
         """
-        self.call_stack.append(Ewma(alpha))
+        self.call_stack.append(Ewma(alpha, over=over))
         return self
 
     def abs(self):
@@ -365,7 +437,7 @@ class Function(object):
         self.call_stack.append(Pow(exponent))
         return self
 
-    def pow(self, base=None):
+    def pow(self, base=None): # noqa: F811 -- redefinition of unused 'pow' from line [...]
         """ - return base e.g. pow(base=10)
 
         Arguments:
@@ -475,14 +547,54 @@ class Function(object):
         self.call_stack.append(Not_equals(value, replacement=replacement))
         return self
 
-    def promote(self, property):
+    def promote(self, *properties):
         """Promotes a metadata property to a dimension.
 
         Arguments:
             Property: String a property name, or list of property names, or series of property names that should be used
                     as dimensions.
         """
-        self.call_stack.append(Promote(property))
+        self.call_stack.append(Promote(*properties))
+        return self
+
+    def fill(self, value=None, duration=None):
+        """Fills in missing values for time series in a stream. See
+        https://developers.signalfx.com/reference#fill-stream-method
+
+        The fill method accepts an optional value parameter to substitute missing
+        values of a time series. If no value parameter is supplied, the last observed
+        value of that time series is used.
+
+        The optional duration parameter specifies the maximum continuous length of time
+        that the fill is applied for a specific time series, after which the fill is
+        discontinued. If the duration parameter is not specified, the fill is performed
+        for as long as the time series is included in the stream. Actual reported
+        values in the time series cause the fill duration to be reset.
+
+        The return value is a data stream with missing values filled.
+        """
+        self.call_stack.append(Fill(value, duration))
+        return self
+
+    def integrate(self):    # noqa: F811 -- redefinition of unused 'integrate' from line [...]
+        """Multiplies the values of each input time series by the resolution (in seconds) of the computation.
+        See https://developers.signalfx.com/reference#integrate-method
+        """
+        self.call_stack.append(Integrate())
+        return self
+
+    def kpss(self, over=None, mode='level'):
+        """Calculates the Kwiatkowski–Phillips–Schmidt–Shin (KPSS) statistic on the specified time window of the stream
+        see https://developers.signalfx.com/reference#kpss-stream-method
+        """
+        self.call_stack.append(Kpss(over, mode))
+        return self
+
+    def rateofchange(self):
+        """Calculates the difference between the current value and the previous value for each time interval
+        See https://developers.signalfx.com/reference#rateofchange-method
+        """
+        self.call_stack.append(RateOfChange())
         return self
 
 
@@ -515,6 +627,7 @@ class Arg(object):
 
     def __str__(self):
         return str(self.arg)
+
 
 class StrArg(object):
 
@@ -549,6 +662,12 @@ class KWArg(object):
         elif isinstance(self.arg, Number):
             str_arg = str(self.arg)
         return "%s=%s" % (self.keyword, str_arg)
+
+    def __eq__(self, other):
+        return self.arg == other.arg and self.arg == other.arg
+
+    def __repr__(self):
+        return self.__str__()
 
 
 class VarStrArg(object):
@@ -856,20 +975,49 @@ class Assign(Function):
         return str(self.assignee) + " = " + str(self.expr)
 
 
+class AggregationTransformationMixin(object):
+    """Mixin providing pre-condition checks for StreamMethods that perform
+       both aggregations and transformations.
+    """
+
+    def __init__(self):
+        pass
+
+    def check_pre_conditions(self):
+        # We only want these pre-conditions to be checked if this mixin is
+        # used in conjunction with StreamMethod.
+        if StreamMethod not in self.__class__.__bases__:
+            msg = "AggregationTransformationMixin cannout be used outside" +\
+                  "of a StreamMethod. This is likely a library error and" +\
+                  "not a user error. Please file a ticket:\n" +\
+                  "https://github.com/Nike-inc/signal_analog/issues"
+            raise ValueError(msg)
+
+        # A StreamMethod may have positional arguments and by/over kwargs.
+        # In such cases we only want to inspect the first two kwargs defined.
+        kwargs = filter(lambda x: issubclass(KWArg, x.__class__), self.args)
+        (by, over) = map(lambda x: x.arg, kwargs)
+
+        if by and over:
+            msg = '{0} cannot define both "by" and "over" at the same time.'
+            raise ValueError(msg.format(self.__class__.__name__))
+
+
 class Bottom(StreamMethod):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, count=None, percentage=None, by=None):
         """Get the bottom values in the stream.
 
         Arguments:
-            by: String or List of Strings of names of properties to group by
-            over: Int as positive duration over which to get the count of inputs that have data
+            count: count of bottom inputs to pass thru. Mutually exclusive with percentage parameter
+            percentage: percent of bottom inputs to pass thru expressed as a double between 0 and 1.0
+            by: either string or list of strings of the names of properties to group by
         """
         super(Bottom, self).__init__("bottom")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [KWArg("by", count), KWArg("percentage", percentage), KWArg("by", by)]
 
 
-class Count(StreamMethod):
+class Count(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Counts the number of inputs that have data.
@@ -880,11 +1028,12 @@ class Count(StreamMethod):
         """
         super(Count, self).__init__("count")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
 class Delta(StreamMethod):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self):
         """Calculates the difference between the current value and the previous
            value for each time interval.
 
@@ -894,10 +1043,10 @@ class Delta(StreamMethod):
             over: Int as positive duration over which to get the count of inputs that have data
         """
         super(Delta, self).__init__("delta")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = []
 
 
-class Mean(StreamMethod):
+class Mean(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the mean on a stream.
@@ -908,9 +1057,10 @@ class Mean(StreamMethod):
         """
         super(Mean, self).__init__("mean")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Mean_plus_stddev(StreamMethod):
+class Mean_plus_stddev(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Calculates the mean + n standard deviations.
@@ -921,9 +1071,10 @@ class Mean_plus_stddev(StreamMethod):
         """
         super(Mean_plus_stddev, self).__init__("mean_plus_stddev")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Median(StreamMethod):
+class Median(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the median on a stream.
@@ -934,9 +1085,10 @@ class Median(StreamMethod):
         """
         super(Median, self).__init__("median")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Min(StreamMethod):
+class Min(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the minimum value on a stream.
@@ -947,9 +1099,10 @@ class Min(StreamMethod):
         """
         super(Min, self).__init__("min")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Max(StreamMethod):
+class Max(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the maximum value on a stream.
@@ -960,32 +1113,37 @@ class Max(StreamMethod):
         """
         super(Max, self).__init__("max")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Percentile(StreamMethod):
+class Percentile(StreamMethod, AggregationTransformationMixin):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, percentage, by=None, over=None):
         """Calculates the n-th percentile of inputs in the stream.
 
         Arguments:
+            percentage: the percentile to calculate. Double between 0.0(exclusive) and 100.0(inclusive)
             by: String or List of Strings of names of properties to group by
             over: Int as positive duration over which to get the count of inputs that have data
         """
         super(Percentile, self).__init__("percentile")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [StrArg(percentage), KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Random(StreamMethod):
+class Random(StreamMethod, AggregationTransformationMixin):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, count, by=None, over=None):
         """Get random values in the stream by count or percentage.
 
         Arguments:
+            count: count of random inputs to pass thru. Mutually exclusive with percentage parameter
             by: String or List of Strings of names of properties to group by
             over: Int as positive duration over which to get the count of inputs that have data
         """
         super(Random, self).__init__("random")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [StrArg(count), KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
 class Sample_stddev(StreamMethod):
@@ -1014,7 +1172,7 @@ class Sample_variance(StreamMethod):
         self.args = [KWArg("by", by), KWArg("over", over)]
 
 
-class Size(StreamMethod):
+class Size(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Counts the number of inputs in the stream.
@@ -1025,9 +1183,10 @@ class Size(StreamMethod):
         """
         super(Size, self).__init__("size")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Stddev(StreamMethod):
+class Stddev(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Calculates the standard deviation of inputs in the stream.
@@ -1038,9 +1197,10 @@ class Stddev(StreamMethod):
         """
         super(Stddev, self).__init__("stddev")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
-class Sum(StreamMethod):
+class Sum(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Find the sum on a stream.
@@ -1051,22 +1211,24 @@ class Sum(StreamMethod):
         """
         super(Sum, self).__init__("sum")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
 class Top(StreamMethod):
 
-    def __init__(self, by=None, over=None):
+    def __init__(self, count=None, percentage=None, by=None):
         """Get the top values in the stream.
 
         Arguments:
+            count: count of top inputs to pass thru. Mutually exclusive with percentage parameter
+            percentage: percent of top inputs to pass thru expressed as a double between 0 and 1.0
             by: String or List of Strings of names of properties to group by
-            over: Int as positive duration over which to get the count of inputs that have data
         """
         super(Top, self).__init__("top")
-        self.args = [KWArg("by", by), KWArg("over", over)]
+        self.args = [KWArg("count", count), KWArg("percentage", percentage), KWArg("by", by)]
 
 
-class Variance(StreamMethod):
+class Variance(StreamMethod, AggregationTransformationMixin):
 
     def __init__(self, by=None, over=None):
         """Calculates the variance of inputs in the stream.
@@ -1077,6 +1239,7 @@ class Variance(StreamMethod):
         """
         super(Variance, self).__init__("variance")
         self.args = [KWArg("by", by), KWArg("over", over)]
+        self.check_pre_conditions()
 
 
 class Integrate(StreamMethod):
@@ -1090,19 +1253,6 @@ class Integrate(StreamMethod):
             over: Int as positive duration over which to get the count of inputs that have data
         """
         super(Integrate, self).__init__("integrate")
-        self.args = [KWArg("by", by), KWArg("over", over)]
-
-
-class Map(StreamMethod):
-
-    def __init__(self, by=None, over=None):
-        """Apply a lambda function to a stream.
-
-        Arguments:
-            by: String or List of Strings of names of properties to group by
-            over: Int as positive duration over which to get the count of inputs that have data
-        """
-        super(Map, self).__init__("map")
         self.args = [KWArg("by", by), KWArg("over", over)]
 
 
@@ -1136,7 +1286,7 @@ class Timeshift(StreamMethod):
 
 class Ewma(StreamMethod):
 
-    def __init__(self, alpha):
+    def __init__(self, alpha=None, over=None):
         """Calculates the exponentially weighted moving average of the stream.
             ewma(alpha)Returns a new  object.
 
@@ -1145,7 +1295,16 @@ class Ewma(StreamMethod):
                     series.
         """
         super(Ewma, self).__init__("ewma")
-        self.args = [StrArg(alpha)]
+
+        if alpha and over:
+            raise ValueError("You may only define alpha or 'over' when calling ewma.")
+
+        self.args = []
+
+        if alpha:
+            self.args.append(StrArg(alpha))
+
+        self.args.append(KWArg("over", over))
 
 
 class Abs(StreamMethod):
@@ -1198,7 +1357,7 @@ class Pow(StreamMethod):
         self.args = [StrArg(exponent)]
 
 
-class Pow(StreamMethod):
+class Pow(StreamMethod):  # noqa: F811 -- redefinition of unused 'Pow' from line [...]
 
     def __init__(self, base=None):
         """ - return base
@@ -1346,13 +1505,58 @@ class Not_equals(StreamMethod):
 
 class Promote(StreamMethod):
 
-    def __init__(self, property):
+    def __init__(self, *properties):
         """Promotes a metadata property to a dimension."""
         super(Promote, self).__init__("promote")
-        self.args = [StrArg(property)]
+        self.args = [Arg(list(properties))]
+
+
+class Fill(StreamMethod):
+    def __init__(self, value, duration):
+        """Fills in missing values for time series in a stream."""
+        super(Fill, self).__init__("fill")
+        self.args = [
+            KWArg("value", value),
+            KWArg("duration", duration),
+        ]
+
+
+class Integrate(StreamMethod):  # noqa: F811 -- redefinition of unused 'Pow' from line 915
+    def __init__(self):
+        super(Integrate, self).__init__("integrate")
+        self.args = []
+
+
+class Kpss(StreamMethod):
+    def __init__(self, over, mode):
+        """Fills in missing values for time series in a stream."""
+        super(Kpss, self).__init__("kpss")
+        if mode not in set(['level', 'trend']):
+            raise ValueError('kpss mode must be level|trend')
+
+        self.args = [
+            KWArg("over", over),
+            KWArg("mode", mode),
+        ]
+
+
+class RateOfChange(StreamMethod):
+    def __init__(self):
+        super(RateOfChange, self).__init__("rateofchange")
+        self.args = []
 
 
 class Ref(Arg):
 
     def __init__(self, arg):
         super(self.__class__, self).__init__(arg)
+
+
+class Dimensions(StreamMethod):
+
+    def __init__(self, aliases=None, renames=None):
+        super(Dimensions, self).__init__("dimensions")
+        if not aliases and not renames:
+            raise ValueError("Either aliases or renames must be defined, but not both.")
+
+        self.args = [KWArg("aliases", aliases), KWArg("renames", renames)]

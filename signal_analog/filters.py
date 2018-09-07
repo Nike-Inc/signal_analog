@@ -106,10 +106,10 @@ class FilterVariable(object):
 class FilterSource(object):
     """
     Each element represents an adhoc filter to apply to the charts within the dashboard. Each filter can key off of one
-    dimension or custom property (either user defined or supplied by default) and can either include or exclude all data
-    matching the supplied criteria. The properties of the included objects are indicated as
-    filters.sources[x].propertyName; this notation means the propertyName property is part of the object in each element
-    of the sources array.
+    dimension or custom property (either user defined or supplied by default) and can either include or exclude all
+    data matching the supplied criteria. The properties of the included objects are indicated as
+    filters.sources[x].propertyName; this notation means the propertyName property is part of the object in each
+    element of the sources array.
     """
 
     def __init__(self):
@@ -233,8 +233,8 @@ class DashboardFilters(object):
             """
             All the code below evaluates the following conditions and throws an error if any of them are not met
 
-            filters.time.start-->	Type: 
-                                        string or integer	
+            filters.time.start-->	Type:
+                                        string or integer
                                     Must be an integer if filters.time.end is an integer
                                     Must be a string if filters.time.end is a string
                                     If integer:
@@ -243,11 +243,11 @@ class DashboardFilters(object):
                                     If string:
                                         Value must start with a negative sign
                                         A positive integer must follow the negative sign
-                                        Value must end with a units indicator. Allowed units indicators are m, h, d, w 
+                                        Value must end with a units indicator. Allowed units indicators are m, h, d, w
                                         representing minutes, hours, days, and weeks respectively
 
             filters.time.end-->	    Type:
-                                        enumerated string or integer	
+                                        enumerated string or integer
                                     Must be an integer if filters.time.start is an integer
                                     Must be a string if filters.time.start is a string
                                     If integer:
@@ -308,4 +308,3 @@ class DashboardFilters(object):
             return self
         else:
             raise ValueError("Start and End time are required")
-

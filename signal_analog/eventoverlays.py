@@ -21,7 +21,8 @@ class EventSignals(object):
             Arguments:
                 event_search_text: String
         """
-        util.assert_valid(event_search_text, error_message='"event_search_text" cannot be empty. Expects a string.', expected_type=str)
+        util.assert_valid(event_search_text,
+                          error_message='"event_search_text" cannot be empty. Expects a string.', expected_type=str)
         self.options.update({'eventSearchText': event_search_text})
         return self
 

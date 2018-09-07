@@ -2,11 +2,13 @@
 
 from copy import deepcopy
 from enum import Enum
+from six import string_types
 
 import signal_analog.util as util
 from signal_analog.errors import ResourceMatchNotFoundError, \
     ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 from signal_analog.resources import Resource
+from signal_analog.flow import Program
 
 
 class Chart(Resource):
@@ -44,6 +46,11 @@ class Chart(Resource):
         https://developers.signalfx.com/docs/signalflow-overview
         """
         util.assert_valid(program)
+        # Chart's don't require you to use a Program object, so make a best
+        # effort to validate if we can.
+        if isinstance(program, Program):
+            program.validate()
+
         self.options.update({'programText': program})
         return self
 
@@ -216,6 +223,23 @@ class AxisOption(ChartOption):
         }
 
 
+class SignalFxFieldOption(Enum):
+    """Common SignalFx field options intended to be combined with FieldOption.
+
+    When using these values via the API it's non-obvious how you would filter
+    them out of your charts. Using 'Plot Name' in your FieldOption would not
+    hide 'Plot Name' in the UI, you would use 'sf_originatingMetric' instead.
+    This enum is intended to make the behavior of the UI consistent with the
+    UI.
+
+    Values:
+        metric: the 'sf_metric' field option.
+        plot_name: the 'Plot Name' field option.
+    """
+    metric = 'sf_metric'
+    plot_name = 'sf_originatingMetric'
+
+
 class FieldOption(ChartOption):
     """Field options used to display columns in a chart's table."""
 
@@ -230,13 +254,25 @@ class FieldOption(ChartOption):
         if not property:
             raise ValueError('Field option cannot be blank')
 
-        self.opts = {'property': property, 'enabled': enabled}
+        if isinstance(property, SignalFxFieldOption):
+            # <insert home buying joke here>
+            value = property.value
+        elif isinstance(property, string_types):
+            value = property
+        else:
+            msg = 'FieldOption property should be a string or' +\
+                  'SignalFxFieldOption, got "{0}" instead.'
+            raise ValueError(msg.format(property))
+
+        self.opts = {'property': value, 'enabled': enabled}
 
 
 class PublishLabelOptions(ChartOption):
     """Options for displaying published timeseries data."""
 
-    def __init__(self, label, y_axis, palette_index, plot_type, display_name):
+    def __init__(self, label, y_axis=None, palette_index=None, plot_type=None,
+                 display_name=None, value_prefix=None, value_suffix=None,
+                 value_unit=None):
         """Initializes and validates publish label options.
 
         Arguments:
@@ -246,23 +282,47 @@ class PublishLabelOptions(ChartOption):
             palette_index: the indexed palette color to use for all plot lines
             plot_type: the visualization style to use
             display_name: an alternate name to show in the legend
+            value_prefix: Indicates a string to prepend to the values displayed
+                          when you are viewing a single value or list chart,
+                          the data table for a chart, and the tooltip when
+                          hovering over a point on a chart.
+            value_suffix: Indicates a string to append to the values displayed
+                          when you are viewing a single value or list chart,
+                          the data table for a chart, and the tooltip when
+                          hovering over a point on a chart.
+            value_unit: Indicates display units for the values in the chart.
+                        The plot values will be presented in a readable way
+                        based on the assumption that the raw values are
+                        denominated in the selected unit.
         """
-        for arg in [label, display_name]:
-            util.assert_valid(arg)
-        util.in_given_enum(palette_index, PaletteColor)
-        util.in_given_enum(plot_type, PlotType)
-        if y_axis not in [0, 1]:
+
+        util.assert_valid(label)
+        self.opts = {
+            'label': label
+        }
+
+        if y_axis and y_axis not in [0, 1]:
             msg = "YAxis for chart must be 0 (Left) or 1 (Right); " +\
                     "'{0}' provided."
             raise ValueError(msg.format(y_axis))
+        else:
+            self.opts.update({'yAxis': y_axis})
 
-        self.opts = {
-            'label': label,
-            'yAxis': y_axis,
-            'paletteIndex': palette_index.value,
-            'plotType': plot_type.value,
-            'displayName': display_name
-        }
+        # A little ditty to translate optional simple parameters into a map
+        # of camelCased keys to values
+        for elem in ['display_name', 'value_prefix', 'value_suffix',
+                     'value_unit']:
+            for key, value in locals().items():
+                if key is elem and value:
+                    self.opts.update({util.snake_to_camel(key): value})
+
+        if palette_index:
+            util.in_given_enum(palette_index, PaletteColor)
+            self.opts.update({'paletteIndex': palette_index.value})
+
+        if plot_type:
+            util.in_given_enum(plot_type, PlotType)
+            self.opts.update({'plotType': plot_type.value})
 
 
 class DisplayOptionsMixin(object):
@@ -347,7 +407,22 @@ class DisplayOptionsMixin(object):
         return self
 
 
-class TimeSeriesChart(Chart, DisplayOptionsMixin):
+class LegendOptionsMixin(object):
+    """A mixin for chart types that share legend options setting.
+
+    The assumption is made that all classes using this mixin have
+    a member dict called 'chart_options'.
+    """
+
+    def with_legend_options(self, field_opts):
+        """Options for the behavior of this chart's legend."""
+        util.assert_valid(field_opts)
+        opts = {'fields': list(map(lambda x: x.to_dict(), field_opts))}
+        self.chart_options.update({'legendOptions': opts})
+        return self
+
+
+class TimeSeriesChart(Chart, DisplayOptionsMixin, LegendOptionsMixin):
     """A time series chart."""
 
     def __init__(self, session=None):
@@ -400,17 +475,6 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
         self.chart_options.update({
             'axes': list(map(lambda x: x.to_dict(), axes))
         })
-        return self
-
-    def with_legend_options(self, field_opts):
-        """Options for the behavior of this chart's legend.
-
-            Arguments:
-                field_opts: List of objects defining entries in a chart's legend
-        """
-        util.assert_valid(field_opts)
-        opts = {'fields': list(map(lambda x: x.to_dict(), field_opts))}
-        self.chart_options.update({'legendOptions': opts})
         return self
 
     def show_event_lines(self, boolean):
@@ -475,7 +539,7 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
             Arguments:
                 boolean: Boolean to turn on/off chart stacking
         """
-        self.chart_options.update({'stacked': str(boolean).lower()})
+        self.chart_options.update({'stacked': boolean})
         return self
 
     def with_default_plot_type(self, plot_type):
@@ -512,6 +576,10 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin):
             'dimensionInLegend': dimension
         }
         self.chart_options.update({'onChartLegendOptions': opts})
+        return self
+
+    def with_include_zero(self, include_zero=False):
+        self.chart_options.update({'includeZero': include_zero})
         return self
 
 
@@ -580,7 +648,7 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
         return self
 
 
-class ListChart(Chart, DisplayOptionsMixin):
+class ListChart(Chart, DisplayOptionsMixin, LegendOptionsMixin):
 
     def __init__(self, session=None):
         super(ListChart, self).__init__(session=session)
@@ -623,4 +691,17 @@ class HeatmapChart(Chart, DisplayOptionsMixin):
         thresholds.sort(reverse=True)
         opts = {'thresholds': thresholds}
         self.chart_options.update({'colorScale': opts})
+        return self
+
+
+class TextChart(Chart, DisplayOptionsMixin):
+
+    def __init__(self, session=None):
+        super(TextChart, self).__init__(session=session)
+        self.chart_options = {'type': 'Text'}
+
+    def with_markdown(self, markdown):
+        """The markdown text that needs to be displayed"""
+        util.check_markdown(markdown, error_message='"text" cannot be empty. ')
+        self.chart_options.update({'markdown': markdown})
         return self

@@ -1,11 +1,13 @@
 import pytest
+from enum import Enum
 
 from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  PlotType, AxisOption, FieldOption,\
                                  PublishLabelOptions, PaletteColor,\
                                  SingleValueChart, ListChart, SortBy,\
-                                 HeatmapChart
+                                 HeatmapChart, SignalFxFieldOption, TextChart
 from signal_analog.flow import Data
+import signal_analog.util as util
 
 
 @pytest.mark.parametrize("value", [None, ""])
@@ -80,7 +82,7 @@ def test_ts_chart_show_event_lines():
 
 def test_ts_chart_stack_chart():
     chart = TimeSeriesChart().stack_chart(False)
-    assert chart.chart_options['stacked'] == 'false'
+    assert chart.chart_options['stacked'] is False
 
 
 def test_ts_chart_with_axis_precision():
@@ -181,11 +183,37 @@ def test_ts_chart_with_field_options_disabled():
 
 
 def test_ts_chart_with_publish_label_options():
+    """'Legacy' behavior, verified still working."""
     opts = PublishLabelOptions(
         'somelabel', 0, PaletteColor.mountain_green, PlotType.area_chart, 'foo'
     )
     chart = TimeSeriesChart().with_publish_label_options(opts)
     assert chart.chart_options['publishLabelOptions'] == [opts.to_dict()]
+
+
+def test_ts_chart_with_publish_label_options_happy():
+    opts = PublishLabelOptions(
+        'somelabel', y_axis=1, palette_index=PaletteColor.mountain_green,
+        plot_type=PlotType.area_chart, display_name='lol', value_prefix='hi',
+        value_suffix='weee', value_unit='hithere')
+    chart = TimeSeriesChart().with_publish_label_options(opts)
+    assert chart.chart_options['publishLabelOptions'] == [opts.to_dict()]
+
+
+publish_opts_optionals = ["display_name", "value_prefix", "value_suffix",
+                          "value_unit"]
+keyword_args = map(lambda x: {x: "foo"}, publish_opts_optionals)
+@pytest.mark.parametrize("arg", keyword_args)
+def test_ts_chart_with_publish_label_options_missing_option(arg):
+    """Test that optional simple keyword arguments can be passed without
+       clobbering each other."""
+    [(key, value)] = arg.items()
+    opts = PublishLabelOptions('someLabel', **arg).to_dict()
+
+    assert opts[util.snake_to_camel(key)] == value
+    remaining_values = [x for x in publish_opts_optionals if x is not key]
+    for k in opts.keys():
+        assert k not in remaining_values
 
 
 def test_publish_label_options_invalid_y_axis():
@@ -203,6 +231,11 @@ def test_ts_chart_with_legend_options():
     chart = TimeSeriesChart()\
         .with_chart_legend_options('foo', show_legend=True)
     assert chart.chart_options['onChartLegendOptions'] == opts
+
+
+def test_ts_chart_include_zero_options():
+    chart = TimeSeriesChart().with_include_zero(True)
+    assert chart.chart_options['includeZero'] is True
 
 
 def test_sv_chart_with_refresh_interval():
@@ -261,3 +294,70 @@ def test_hm_chart_with_colorscale():
     opts = {'thresholds': [70, 50]}
     chart = HeatmapChart().with_colorscale([70, 50])
     assert chart.chart_options['colorScale'] == opts
+
+def test_ts_list_charts_mixin():
+    """TimeSeries and ListCharts can set legend options. But not others."""
+
+    opt = {'fields': [{'property': 'foo', 'enabled': False}]}
+
+    ts = TimeSeriesChart()\
+            .with_legend_options([FieldOption('foo', enabled=False)])
+    assert ts.chart_options['legendOptions'] == opt
+
+    lc = ListChart()\
+            .with_legend_options([FieldOption('foo', enabled=False)])
+    assert lc.chart_options['legendOptions'] == opt
+
+    with pytest.raises(Exception):
+        SingleValueChart().with_legend_options(FieldOption('foo', enabled=False))
+
+
+def test_sfx_field_options_enum():
+    """We expect values from the SignalFxFieldOption enum to be serialized.
+    """
+    expected = {'fields': [{'property': 'sf_originatingMetric', 'enabled': False}]}
+
+    ts = TimeSeriesChart()\
+            .with_legend_options([
+                FieldOption(SignalFxFieldOption.plot_name, enabled=False)
+            ])
+
+    assert ts.chart_options['legendOptions'] == expected
+
+
+def test_sfx_field_options_happy():
+    """We also expect that string values are still valid."""
+
+    expected = {'fields': [{'property': 'foo', 'enabled': False}]}
+
+    ts = TimeSeriesChart()\
+            .with_legend_options([FieldOption('foo', enabled=False)])
+
+    assert ts.chart_options['legendOptions'] == expected
+
+
+def test_sfx_field_options_invalid():
+    """Other enums should not be allowed."""
+
+    class InvalidEnum(Enum):
+        foo = 'bar'
+
+    with pytest.raises(ValueError):
+        ts = TimeSeriesChart()\
+                .with_legend_options([
+                    FieldOption(InvalidEnum.foo, enabled=False)
+                ])
+
+
+def test_text_chart_init():
+    assert TextChart().chart_options['type'] == 'Text'
+
+
+def test_text_chart_with_text():
+    chart = TextChart().with_markdown("Strong emphasis, aka bold, with **asterisks** or __underscores__.<ol>")
+    assert chart.chart_options['markdown'] == 'Strong emphasis, aka bold, with **asterisks** or __underscores__.<ol>'
+
+
+def test_text_chart_with_empty_text():
+    with pytest.raises(ValueError):
+        TextChart().with_markdown("")

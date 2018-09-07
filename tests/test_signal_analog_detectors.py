@@ -2,6 +2,9 @@
 
 import re
 import pytest
+import requests
+import betamax
+from betamax_serializers import pretty_json
 
 from email_validator import EmailNotValidError
 from signal_analog.combinators import Div, GT, LT
@@ -15,6 +18,16 @@ from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
                                     TeamEmailNotification, Rule, Severity, \
                                     Time, TimeConfig, VisualizationOptions, \
                                     Detector
+
+
+# Global config. This will store all recorded requests in the 'mocks' dir
+with betamax.Betamax.configure() as config:
+    betamax.Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
+    config.cassette_library_dir = 'tests/mocks'
+
+# Don't get in the habit of doing this, but it simplifies testing
+global_session = requests.Session()
+global_recorder = betamax.Betamax(global_session)
 
 
 def test_email_valid():
@@ -413,25 +426,62 @@ def test_detector_with_assign_combinator():
 
     utilization_mean = Assign(mean_string, mean_data)
 
-    detect = Detect(When(GT(Ref(mean_string), 50)))
+    detect = Detect(When(GT(Ref(mean_string), 50))).publish(label='detector')
 
-    program = Program( \
-        utilization_sum, \
-        utilization_count, \
-        utilization_mean, \
-        detect \
+    program = Program(
+        utilization_sum,
+        utilization_count,
+        utilization_mean,
+        detect
     )
 
     detector = Detector().with_program(program)
 
-    assert detector.options["programText"] == "{0}\n{1}\n{2}\n{3}".format( \
-        str(utilization_sum), \
-        str(utilization_count), \
-        str(utilization_mean), \
-        str(detect) \
+    assert detector.options["programText"] == "{0}\n{1}\n{2}\n{3}".format(
+        str(utilization_sum),
+        str(utilization_count),
+        str(utilization_mean),
+        str(detect)
     )
 
     assert program.statements.pop() == detect
     assert program.statements.pop() == utilization_mean
     assert program.statements.pop() == utilization_count
     assert program.statements.pop() == utilization_sum
+
+
+def test_detector_update():
+
+    api_token = 'foo'
+    label = 'foo'
+
+    def program(threshold):
+        return Program(
+            Detect(GT(Data('cpu.utilization'), threshold)).publish(label=label)
+        )
+
+    rule = Rule()\
+        .for_label(label)\
+        .with_severity(Severity.Major)\
+        .with_notifications(EmailNotification('foo.bar@example.com'))
+
+    # Assert that we can actually update values within a detector
+    with global_recorder.use_cassette('detector_update_success',
+                                      serialize_with='prettyjson'):
+
+
+        def detector(threshold):
+            return Detector(session=global_session)\
+                .with_name('test_update')\
+            .with_program(program(threshold))\
+            .with_rules(rule)
+
+        create_response = detector(90).with_api_token(api_token).create()
+        import time
+        time.sleep(3)
+        update_response = detector(99).with_api_token(api_token).update()
+
+        # These assertions should fail
+        assert '90' in create_response['programText']
+        assert '99' in update_response['programText']
+        assert create_response['id'] == update_response['id']

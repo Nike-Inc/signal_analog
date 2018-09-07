@@ -9,8 +9,9 @@ from signal_analog.flow import Program
 from six import string_types
 import signal_analog.util as util
 from email_validator import validate_email
-from signal_analog.errors import ResourceMatchNotFoundError, \
-        ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
+from signal_analog.errors import \
+    ResourceMatchNotFoundError, \
+    ResourceAlreadyExistsError
 
 
 class Notification(object):
@@ -476,6 +477,9 @@ class Detector(Resource):
                    ' got a "{0}" instead.'
             raise ValueError(msg.format(program.__class__.__name__))
 
+        if isinstance(program, Program):
+            program.validate()
+
         self.options.update({
             'programText': str(program)
         })
@@ -615,10 +619,7 @@ class Detector(Resource):
         except ResourceAlreadyExistsError:
             detector = self.__filter_matches__(query_result)
 
-            if name:
-                detector.update({'name': name})
-            if description:
-                detector.update({'description': description})
+            detector.update(updated_opts)
 
             return self.__action__('put', self.endpoint + '/' + detector['id'],
                                    lambda x: detector)

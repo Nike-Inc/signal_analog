@@ -1,5 +1,72 @@
 # History
 
+## 2.1.0 (2018-08-21)
+
+### Added
+
+  * ListCharts learned how to filter legend options via the
+  `with_legend_options` builder
+  * Future chart types that can filter legend options may now take advantage
+  of the `signal_analog.charts.LegendOptionsMixin` class
+  * The `FieldOption` class has learned to accept `SignalFxFieldOption`s which
+  provide mappings between field options seen in the UI and those used in the
+  API
+      * e.g. `Plot Name` in the UI and `sf_originatingMetric` in the API
+  * A new `TextChart` object has been added to `signal_analog.charts` that
+  enables text descriptions to be added to dashboards.
+  * `PublishLabelOptions` has learned to accept prefix, suffix, and unit
+  arguments when labelling data on charts.
+
+### Changed
+
+  * `PublishLabelOptions` has learned to accept all arguments as optional
+  with the exception of the `label` argument.
+
+### Fixed
+
+  * A fix has been added for Python 2 users that prevented successful
+  dashboard updates.
+
+## 2.0.0 (2018-07-24)
+
+For assistance migrating from 1.x to 2.x please consult the
+[migration guide][migration-1x].
+
+### Added
+
+  * Add support for the `dimensions`, `fill`, `integrate`, `kpss`,
+  `rateofchange` methods
+
+
+### Removed
+
+  * `map` method support has been removed
+      * It didn't work properly to begin with, and will require some finagling
+      to get right given our approach to building SignalFlow statements
+
+### Fixes
+
+  * `top` and `bottom` method signatures have been fixed to use `count`, `by`,
+  and `percentage` arguments
+  * The following functions have been updated to raise an error if both
+  `by` and `over` are defined in the same method call:
+      * `count`, `max`, `mean`, `mean_plus_stddev`, `median`, `min`,
+      `percentile`, `random`, `size`, `stddev`, `sum`, `variance`
+  * `delta` has been updated to no longer accept any method arguments
+  * `ewma` has been updated to support the `over` key
+
+## 1.6.0 (2018-07-18)
+
+  * Add combinators for less-than-or-equal-to (`LTE`) and greater-than-or-equal-to (`GTE`)
+
+## 1.5.1 (2018-06-21)
+
+  * Fix detector update logic to include all fields instead of just name/description
+
+## 1.5.0(2018-05-16)
+
+  * Added `include_zero` method to `TimeSeriesChart` to allow setting the `includeZero` option.
+
 ## 1.4.0(2018-05-08)
 
   * Implements functionality to add event overlays and selected (default) event overlays to dashboards 
@@ -8,7 +75,7 @@
 ## 1.3.0(2018-04-17)
 
   * Implementing the rest of the Dashboard Filters: `source` and `time`
-  
+
 ## 1.2.0 (2018-04-11)
   * Added an Assign function that will enable more complex detectors which are constructed by combining multiple data streams
   * Added a Ref flow operator that will enable referencing assignments in a way that can be validated at later steps by checking for an Assign object with a match between the reference string and the assignee
@@ -125,3 +192,4 @@
   * Initial release
 
 [deployment]: https://github.com/Nike-Inc/signal_analog/wiki/Developers-::-Deployment
+[migration-1x]: ./docs/migrating_from_1.x.md

@@ -19,7 +19,8 @@ requirements = [
     'requests',
     'click',
     'email_validator',
-    'pyyaml'
+    'pyyaml',
+    'markdown'
 ]
 
 setup_requirements = [
@@ -41,10 +42,11 @@ test_requirements = [
 
 setup(
     name='signal_analog',
-    version='1.4.0',
+    version='2.1.0',
     description='A troposphere-like library for managing SignalFx'
                 + 'Charts, Dashboards, and Detectors.',
     long_description=readme + '\n\n' + history,
+    long_description_content_type="text/markdown",
     author="Fernando Freire",
     author_email='fernando.freire@nike.com',
     url='https://github.com/Nike-inc/signal_analog',

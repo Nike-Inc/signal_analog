@@ -87,6 +87,18 @@ class GT(NAryCombinator):
         super(GT, self).__init__('>', left, right)
 
 
+class LTE(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(LTE, self).__init__('<=', left, right)
+
+
+class GTE(NAryCombinator):
+
+    def __init__(self, left, right):
+        super(GTE, self).__init__('>=', left, right)
+
+
 class Mul(NAryCombinator):
     """Multiplication combinator for performing math on SignalFlow objects.
     """
