@@ -962,6 +962,25 @@ def test_dashboard_create_with_filters_time_start_time_is_not_less_than_end_time
             .create()
 
 
+def test_dashboard_create_with_dashboard_group_id_success():
+    with global_recorder.use_cassette('dashboard_create_with_dashboard_group_id_success',
+                                      serialize_with='prettyjson'):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .create(group_id='DnogQGhAcAA')
+
+
+def test_dashboard_create_with_invalid_dashboard_group_id_failure():
+    with pytest.raises(RuntimeError):
+        Dashboard(session=global_session)\
+            .with_name('testy mctesterson')\
+            .with_api_token('foo')\
+            .with_charts(mk_chart('lol'))\
+            .create(group_id='asdf;lkj')
+
+
 def test_dashboard_update_with_filters_success():
     app_var = FilterVariable().with_alias('app') \
         .with_property('app') \

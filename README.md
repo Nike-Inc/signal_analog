@@ -213,6 +213,16 @@ At this point one of two things will happen:
   - We successfully created the dashboard, in which case the JSON response is
   returned as a dictionary.
 
+Also, if you have an existing Dashboard Group and you want this new dashboard to be part of that dashboard group, you
+ can pass that group id of the dashboard group when creating the dashboard. Something like this:
+
+```python
+response = dash\
+  .with_charts(memory_chart)\
+  .with_api_token('my-api-token')\
+  .create(group_id="asdf;lkj")
+``` 
+ 
 Now, storing API keys in source isn't ideal, so if you'd like to see how you
 can pass in your API keys at runtime check the documentation below to see how
 you can [dynamically build a CLI for your resources](#cli-builder).

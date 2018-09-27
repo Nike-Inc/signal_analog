@@ -1,5 +1,21 @@
 # History
 
+## 2.2.0 (2018-09-27)
+
+### Changed
+  * Dashboard Create method to accept group id of an existing dashboard group in which case the new dashboard will be
+   part of the dashboard group provided
+   
+   Example:
+```python
+response = dashboard\
+  .with_charts(memory_chart)\
+  .with_api_token('my-api-token')\
+  .create(group_id="asdf;lkj")
+``` 
+  * Dashboard Group create method to pass group id of the newly created dashboard group to the dashboard create 
+  method so that we can avoid  a few redundant calls like cloning and deleting the dashboards
+
 ## 2.1.0 (2018-08-21)
 
 ### Added
