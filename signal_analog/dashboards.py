@@ -413,7 +413,7 @@ class Dashboard(Resource):
                     'height': 2,
                     'row': row_num_to_set,
                     'width': 6})
-            return state
+        return state
 
     def update(self, name=None, description=None, resource_id=None, dry_run=False):
         """Updates a Signalfx dashboard using the /dashboard/_id_ helper
