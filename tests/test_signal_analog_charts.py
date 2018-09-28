@@ -256,12 +256,18 @@ def test_sv_chart_with_timestamp_hidden():
     assert chart.chart_options['timestampHidden'] is True
 
 
-def test_sv_chart_with_sparkline():
-    chart = SingleValueChart().with_sparkline_hidden()
-    assert chart.chart_options['showSparkLine'] is True
+def test_sv_chart_with_secondary_visualization():
+    chart = SingleValueChart().with_secondary_visualization()
+    assert chart.chart_options['secondaryVisualization'] is None
 
-    chart.with_sparkline_hidden(hidden=False)
-    assert chart.chart_options['showSparkLine'] is False
+    chart.with_secondary_visualization("Radial")
+    assert chart.chart_options['secondaryVisualization'] is "Radial"
+
+    chart.with_secondary_visualization("Linear")
+    assert chart.chart_options['secondaryVisualization'] is "Linear"
+
+    chart.with_secondary_visualization("Sparkline")
+    assert chart.chart_options['secondaryVisualization'] is "Sparkline"
 
 
 def test_sv_chart_with_colorscale():

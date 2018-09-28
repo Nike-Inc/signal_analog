@@ -623,13 +623,17 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
         self.chart_options.update({'timestampHidden': hidden})
         return self
 
-    def with_sparkline_hidden(self, hidden=True):
+    def with_secondary_visualization(self, visualization=None):
         """Whether to show a trend line below the current value.
 
             Arguments:
-                hidden: Boolean
+                visualization: Enumerated string equal to None, Radial, Linear, Sparkline
         """
-        self.chart_options.update({'showSparkLine': hidden})
+        if visualization not in [None, "Radial", "Linear", "Sparkline"]:
+            msg = "Secondary visualization for chart must be either None, Radial, Linear, or Sparkline"
+            raise ValueError(msg.format(visualization))
+        else:
+            self.chart_options.update({'secondaryVisualization': visualization})
         return self
 
     def with_colorscale(self, thresholds, inverted=False):
