@@ -14,6 +14,7 @@ from signal_analog import __version__
 
 import deprecation
 
+
 class Chart(Resource):
     """Base representation of a chart in SignalFx."""
 
