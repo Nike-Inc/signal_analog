@@ -10,11 +10,9 @@ from signal_analog.errors import ResourceMatchNotFoundError, \
 from signal_analog.resources import Resource
 from signal_analog.flow import Program
 
-import signal_analog
+from signal_analog import __version__
 
 import deprecation
-
-__version__ = signal_analog.__version__
 
 class Chart(Resource):
     """Base representation of a chart in SignalFx."""
