@@ -8,6 +8,7 @@ from signal_analog.charts import Chart, TimeSeriesChart, UnitPrefix, ColorBy, \
                                  HeatmapChart, SignalFxFieldOption, TextChart
 from signal_analog.flow import Data
 import signal_analog.util as util
+import deprecation
 
 
 @pytest.mark.parametrize("value", [None, ""])
@@ -255,13 +256,27 @@ def test_sv_chart_with_timestamp_hidden():
     chart.with_timestamp_hidden(hidden=True)
     assert chart.chart_options['timestampHidden'] is True
 
-
+@deprecation.fail_if_not_removed
 def test_sv_chart_with_sparkline():
     chart = SingleValueChart().with_sparkline_hidden()
     assert chart.chart_options['showSparkLine'] is True
 
     chart.with_sparkline_hidden(hidden=False)
     assert chart.chart_options['showSparkLine'] is False
+
+
+def test_sv_chart_with_secondary_visualization():
+    chart = SingleValueChart().with_secondary_visualization()
+    assert chart.chart_options['secondaryVisualization'] is None
+
+    chart.with_secondary_visualization("Radial")
+    assert chart.chart_options['secondaryVisualization'] is "Radial"
+
+    chart.with_secondary_visualization("Linear")
+    assert chart.chart_options['secondaryVisualization'] is "Linear"
+
+    chart.with_secondary_visualization("Sparkline")
+    assert chart.chart_options['secondaryVisualization'] is "Sparkline"
 
 
 def test_sv_chart_with_colorscale():

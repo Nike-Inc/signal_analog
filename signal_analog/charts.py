@@ -10,6 +10,10 @@ from signal_analog.errors import ResourceMatchNotFoundError, \
 from signal_analog.resources import Resource
 from signal_analog.flow import Program
 
+from signal_analog import __version__
+
+import deprecation
+
 
 class Chart(Resource):
     """Base representation of a chart in SignalFx."""
@@ -623,6 +627,9 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
         self.chart_options.update({'timestampHidden': hidden})
         return self
 
+    @deprecation.deprecated(deprecated_in="2.2.0", removed_in="3.0",
+                            current_version=__version__,
+                            details="Use the with_secondary_visualization function instead")
     def with_sparkline_hidden(self, hidden=True):
         """Whether to show a trend line below the current value.
 
@@ -630,6 +637,19 @@ class SingleValueChart(Chart, DisplayOptionsMixin):
                 hidden: Boolean
         """
         self.chart_options.update({'showSparkLine': hidden})
+        return self
+
+    def with_secondary_visualization(self, visualization=None):
+        """Whether to show a trend line below the current value.
+
+            Arguments:
+                visualization: Enumerated string equal to None, Radial, Linear, Sparkline
+        """
+        if visualization not in [None, "Radial", "Linear", "Sparkline"]:
+            msg = "Secondary visualization for chart must be either None, Radial, Linear, or Sparkline"
+            raise ValueError(msg.format(visualization))
+        else:
+            self.chart_options.update({'secondaryVisualization': visualization})
         return self
 
     def with_colorscale(self, thresholds, inverted=False):

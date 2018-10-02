@@ -19,3 +19,4 @@ six
 tox
 pyyaml
 markdown
+deprecation
