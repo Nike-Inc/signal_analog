@@ -1,5 +1,10 @@
 # History
 
+## 2.2.2 (2018-10-03)
+
+### Fixed
+  * Add `deprecation` to setup.py.
+
 ## 2.2.1 (2018-10-02)
 
 ### Changed

@@ -20,7 +20,7 @@ requirements = [
     'click',
     'email_validator',
     'pyyaml',
-    'markdown'
+    'markdown',
     'deprecation'
 ]
 
@@ -43,7 +43,7 @@ test_requirements = [
 
 setup(
     name='signal_analog',
-    version='2.2.1',
+    version='2.2.2',
     description='A troposphere-like library for managing SignalFx'
                 + 'Charts, Dashboards, and Detectors.',
     long_description=readme + '\n\n' + history,
