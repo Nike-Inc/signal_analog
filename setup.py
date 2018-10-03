@@ -21,6 +21,7 @@ requirements = [
     'email_validator',
     'pyyaml',
     'markdown'
+    'deprecation'
 ]
 
 setup_requirements = [
