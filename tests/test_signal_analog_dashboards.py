@@ -1284,3 +1284,17 @@ def test_dashboard_group_clone_success():
         DashboardGroup(session=global_session)\
             .with_api_token('foo')\
             .clone('DWgX6iYAcAA', 'DWgX6dNAYAA')
+
+
+def test_dashboard_group_with_team_noop():
+    group = DashboardGroup()
+
+    # Sfx API will ignore an empty teams object, so this is harmless.
+    assert group.with_teams().options['teams'] == []
+
+
+def test_dashboard_group_with_team_happy():
+    expected = '1234'
+    group = DashboardGroup().with_teams(expected)
+
+    assert group.options['teams'] == [expected]
