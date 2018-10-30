@@ -1,5 +1,10 @@
 # History
 
+## 2.3.0 (2018-10-30)
+
+  * DashboardGroup has learned how to accept SignalFX Team ids so that they can
+  be associated with pre-existing teams via the `with_teams` builder method.
+
 ## 2.2.2 (2018-10-03)
 
 ### Fixed
@@ -11,7 +16,7 @@
   * Added `with_secondary_visualization` function to enable display of various meters (Sparkline, Linear, Radial) in 
   Single Value charts. This replaces the now defunct `with_sparkline_hidden` function. This will not be a 
   'breaking change' until version 3.0.0 when `with_sparkline_hidden` will be removed from `signal_analog`.
-  
+
   * Added the `deprecation` Python library to this project to note when `with_sparkline_hidden` should be removed. Upon 
   version matching 3.0.0 or higher the tests for that function will begin to fail notifying whoever is releasing that 
   version to remove the defunct `with_sparkline_hidden` function and tests.
@@ -21,14 +26,14 @@
 ### Changed
   * Dashboard Create method to accept group id of an existing dashboard group in which case the new dashboard will be
    part of the dashboard group provided
-   
+
    Example:
 ```python
 response = dashboard\
   .with_charts(memory_chart)\
   .with_api_token('my-api-token')\
   .create(group_id="asdf;lkj")
-``` 
+```
   * Dashboard Group create method to pass group id of the newly created dashboard group to the dashboard create 
   method so that we can avoid  a few redundant calls like cloning and deleting the dashboards
 
