@@ -41,15 +41,13 @@ class DashboardGroup(Resource):
         return self
 
     def with_teams(self, *team_id):
-        """Adds the given team ids to this dashboard.
-
-        Note: each call to with_dashboards replaces any previous dashboards
-              configured for this group.
+        """Associates this dashboard group to the given teams in SignalFx.
 
         Arguments:
             *team_id: one or more team ids to add to this dashboard group.
         """
-        raise NotImplementedError('Implemented as part of SIP-1065')
+        self.options.update({'teams': list(team_id)})
+        return self
 
     def create(self, dry_run=False, force=False, interactive=False):
         """Creates a SignalFx dashboard group using the /dashboardgroup helper
