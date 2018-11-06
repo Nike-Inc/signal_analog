@@ -10,9 +10,12 @@ from signal_analog.errors import ResourceMatchNotFoundError, \
 
 # py2/3 compatibility hack so that we can consistently handle JSON errors.
 try:
-    from json.decoder import JSONDecodeError
+    from simplejson.decoder import JSONDecodeError
 except ImportError:
-    JSONDecodeError = ValueError
+    try:
+        from json.decoder import JSONDecodeError
+    except ImportError:
+        JSONDecodeError = ValueError
 
 __SIGNALFX_API_ENDPOINT__ = 'https://api.signalfx.com/v2'
 
