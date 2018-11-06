@@ -1,5 +1,10 @@
 # History
 
+## 2.3.1 (2018-11-06)
+
+  * signal-analog now prefers `simplejson` if it is available on the path,
+  falling back to the `json` module otherwise.
+
 ## 2.3.0 (2018-10-30)
 
   * DashboardGroup has learned how to accept SignalFX Team ids so that they can
