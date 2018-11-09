@@ -235,6 +235,11 @@ def test_ewma_invalid():
         Data('foo').ewma(1, '1m')
 
 
+def test_percentile_happy():
+    data = Data('foo').percentile(99)
+    assert data.call_stack[0].args[0].arg == 99
+
+
 @pytest.mark.parametrize("clazz", [Count, Mean, Mean_plus_stddev, Median, Min,
                                    Max, Size, Stddev, Sum, Variance])
 def test_transform_aggregation_happy(clazz):

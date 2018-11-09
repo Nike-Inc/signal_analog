@@ -279,7 +279,6 @@ class Function(object):
             by: String or List of Strings of names of properties to group by
             over: Int as positive duration over which to get the count of inputs that have data
         """
-        self.call_stack.append(Percentile(by=by, over=over))
         self.call_stack.append(Percentile(percentage, by=by, over=over))
         return self
 
