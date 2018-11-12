@@ -1,5 +1,10 @@
 # History
 
+## 2.3.2 (2018-11-12)
+
+  * The `percentile` function on `signal_analog.flow.Data` objects has been
+  fixed to use the correct constructor
+
 ## 2.3.1 (2018-11-06)
 
   * signal-analog now prefers `simplejson` if it is available on the path,
