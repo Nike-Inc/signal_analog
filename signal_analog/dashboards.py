@@ -36,6 +36,7 @@ class DashboardGroup(Resource):
         Arguments:
             *dashboards: one or more dashboard objects to add.
         """
+
         for dashboard in dashboards:
             self.dashboards.append(dashboard)
         return self
@@ -85,12 +86,14 @@ class DashboardGroup(Resource):
 
             if len(self.dashboards) > 0:
                 for dashboard in self.dashboards:
-                    dashboard.with_api_token(self.api_token).create(group_id=dashboard_group_create_response['id'],
-                                                                    force=True)
+                    dashboard.with_api_token(self.api_token)\
+                        .with_numbered_dashboards(self.dashboards, dashboard)\
+                        .create(group_id=dashboard_group_create_response['id'], force=True)
 
                 if len(dashboard_group_create_response['dashboards']) > 0:
-                    Dashboard(session=self.session_handler).with_api_token(self.api_token).with_id(
-                        dashboard_group_create_response['dashboards'][0]).delete()
+                    Dashboard(session=self.session_handler).with_api_token(self.api_token)\
+                        .with_id(dashboard_group_create_response['dashboards'][0])\
+                        .delete()
 
                 return self.with_id(dashboard_group_create_response['id']).read()
             else:
@@ -134,21 +137,26 @@ class DashboardGroup(Resource):
         for remote_dashboard in remote_dashboards:
             for local_dashboard in local_dashboards:
                 if remote_dashboard['name'] == local_dashboard.__get__('name'):
-                    local_dashboard.with_id(remote_dashboard['id']).with_api_token(self.api_token).update()
+                    local_dashboard.with_id(remote_dashboard['id'])\
+                        .with_api_token(self.api_token)\
+                        .update()
                     break
 
         # Delete dashboards that exist in SignalFx but not in our local config
         local_names = list(map(lambda x: x.__get__('name'), local_dashboards))
         for remote_dashboard in remote_dashboards:
             if remote_dashboard['name'] not in local_names:
-                Dashboard(session=self.session_handler).with_id(remote_dashboard['id']).with_api_token(
-                    self.api_token).delete()
+                Dashboard(session=self.session_handler).with_id(remote_dashboard['id'])\
+                    .with_api_token(self.api_token)\
+                    .delete()
 
         # Create dashboards that exist in our local config but not in SignalFx
         remote_names = list(map(lambda x: x['name'], remote_dashboards))
         for local_dashboard in local_dashboards:
             if local_dashboard.__get__('name') not in remote_names:
-                resp = local_dashboard.with_api_token(self.api_token).create(force=True)
+                resp = local_dashboard.with_numbered_dashboards(local_dashboards, local_dashboard)\
+                    .with_api_token(self.api_token)\
+                    .create(force=True)
                 self.clone(resp['id'], state['id'])
                 self.with_id(resp['groupId']).delete()
 
@@ -269,6 +277,18 @@ class Dashboard(Resource):
         """Default events to display on the dashboard"""
         for selectedeventoverlay in selectedeventoverlays:
             self.selectedevents['selectedEventOverlays'].append(deepcopy(selectedeventoverlay))
+        return self
+
+    def with_numbered_dashboards(self, resourcelist, resource):
+        """Helper to number dashboards according to their index in a list.
+        Single digit numbers will be padded with a leading zero.
+
+        Arguments:
+            resourcelist: A list of dashboard resources
+            resource: The dashboard to be numbered
+        """
+        numberedname = str(resourcelist.index(resource) + 1).zfill(2) + ' - ' + resource.__get__('name')
+        self.options.update({'name': numberedname})
         return self
 
     def create(self, group_id=None, dry_run=False, force=False, interactive=False):
