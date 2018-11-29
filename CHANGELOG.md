@@ -1,5 +1,10 @@
 # History
 
+## 2.4.0
+
+  * Add numbering to dashboards in a dashboard group for better organization 
+  of dashboards
+
 ## 2.3.2 (2018-11-12)
 
   * The `percentile` function on `signal_analog.flow.Data` objects has been
