@@ -24,7 +24,7 @@ from signal_analog.filters import DashboardFilters, FilterVariable, FilterSource
 # Global config. This will store all recorded requests in the 'mocks' dir
 with betamax.Betamax.configure() as config:
     betamax.Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
-    config.cassette_library_dir = 'tests/mocks'
+    config.cassette_library_dir = './mocks'
 
 # Don't get in the habit of doing this, but it simplifies testing
 global_session = requests.Session()
