@@ -20,3 +20,5 @@ tox
 pyyaml
 markdown
 deprecation
+wheel
+twine
