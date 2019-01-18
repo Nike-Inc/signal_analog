@@ -68,7 +68,7 @@ class SlackNotification(Notification):
         that a Slack integration id is valid.
 
         See the integration page for more detail:
-        https://developers.signalfx.com/v2/reference#slack-integration-model
+        https://developers.signalfx.com/v2.1/reference#slack-integration-model
 
         Arguments:
             slack_id: the slack integration id to use
