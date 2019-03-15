@@ -68,12 +68,12 @@ class Program(object):
         Arguments:
             stmt: the statement to validate
         """
-        if not stmt or not issubclass(stmt.__class__, Function):
+        if not stmt or (not issubclass(stmt.__class__, Function) and not issubclass(stmt.__class__, Plot)):
             msg = "Attempted to build a program with something other than " +\
                    "SignalFlow statements. Received '{0}' but expected a " +\
-                   "{1}"
+                   "{1} or {2}"
             raise ValueError(msg.format(
-                stmt.__class__.__name__, Function.__name__))
+                stmt.__class__.__name__, Function.__name__, Plot.__name__))
 
     def add_statements(self, *statements):
         """Add a statement to this program.
@@ -123,6 +123,10 @@ class Program(object):
         """Validate that at least 1 statement is published for this Program."""
         def find_publish(statement):
 
+            # Inspect the internals of the Plot
+            if isinstance(statement, Plot):
+                statement = statement.plot
+
             # Inspect the left hand side of the assignment
             if isinstance(statement, Assign):
                 statement = statement.expr
@@ -140,6 +144,85 @@ class Program(object):
 
         if len(publish_statements) < 1:
             raise ProgramDoesNotPublishTimeseriesError(statements)
+
+
+class Plot(object):
+    """Represents a Plot for a Chart as configured in the SignalFx UI.  It is a helper class that makes it simpler
+       to use lower-level abstractions like Assign, Function, Data, publish()"""
+
+    def __init__(self, label, signal_name, filter=None, rollup=None, fx=None, display_name=None, visible=True,
+                 extrapolation_policy=None, max_extrapolations=None):
+        """Represents a Plot for a Chart as configured in the SignalFx UI.  It is a helper class that makes it simpler
+        to use lower-level abstractions like Assign, Function, Data, publish()
+
+        Other options available in the UI for a plot include: display_units, plot_color, and visualization_type.  These
+        values can be configured in with_publish_label_options() in the Chart itself.  See PublishLabelOptions.
+
+        Example:
+
+        >>> TimeSeriesChart() \
+        >>>    .with_name("Cpu Utilization") \
+        >>>    .with_program(
+        >>>       Plot("A", "CPUUtilization", filter, rollup="max", fx=[Mean(by="app")])
+        >>> )
+
+        Arguments:
+            label: the assigned name used in the SignalFlow program, use A-Z to keep compatibility with the builder
+                    in the SignalFx UI. E.g. the "A" in "A = data('metric_name')"
+            signal_name: the metric name, e.g. "CPUUtilization"
+            filter: the filter to apply to the metric, e.g. And(Filter("env, "prod"), Filter("app", "foo"))
+            rollup: String If None then the default rollup for the metric is used. Otherwise one of the following
+                    string values:
+
+                    average (default for gauges)
+
+                    count (useful to tell how many points were received in a timeslice)
+
+                    delta (useful for cumulative counters)
+
+                    latest (useful for gauges)
+
+                    max (useful for cumulative counters)
+
+                    min (useful for gauges)
+
+                    rate (default for cumulative and distributed counters)
+
+                    sum (useful for distributed counters)
+
+                    lag (the measured ingest lag for the timeseries for each timeslice)
+            fx: List of Signal Flow function(s) to apply e.g. [ Mean(by="app") ]
+            display_name: the name visible in the chart on hover
+            visible: True if this plot should be visible in the chart.  False is used for values that used in a formula
+                    but that aren't displayed themselves.  Defaults to True.
+            extrapolation_policy: String How to extrapolate missing data. One of the following string values:
+
+                    null: Missing data is not emitted. (default)
+
+                    zero: Missing data is considered to be a value of 0
+
+                    last_value: Missing data is considered to have the last value
+            max_extrapolations: Int How many extrapolations will be performed when data is no longer received from a
+                    source. A negative value indicates infinite extrapolation.
+        """
+        if not label:
+            raise ValueError("label is required, e.g. 'A', 'B'")
+
+        if not signal_name:
+            raise ValueError("signal_name is required, e.g. 'CPUUtilization'")
+
+        data = Data(signal_name, filter, rollup, extrapolation_policy, max_extrapolations)
+
+        if fx and not isinstance(fx, list):
+            raise ValueError("fx should be of type list")
+        elif fx:
+            data.call_stack = fx
+
+        assign = Assign(label, data.publish(display_name, visible))
+        self.plot = assign
+
+    def __str__(self):
+        return self.plot.__str__()
 
 
 class Function(object):
