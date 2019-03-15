@@ -172,10 +172,10 @@ def test_valid_publish_statements_multi():
 
 def test_valid_publish_statements_plot_happy():
     Program(
-        Plot('A', 'foo', fx=[Max()], display_name="lol")
+        Plot('A', 'foo', fx=[Max()], label="lol")
     ).validate()
     Program(
-        Plot('A', 'foo', fx=None, display_name="lol")
+        Plot('A', 'foo', fx=None, label="lol")
     ).validate()
 
 def test_valid_publish_statements_assign_happy():

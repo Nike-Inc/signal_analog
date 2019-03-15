@@ -150,7 +150,7 @@ class Plot(object):
     """Represents a Plot for a Chart as configured in the SignalFx UI.  It is a helper class that makes it simpler
        to use lower-level abstractions like Assign, Function, Data, publish()"""
 
-    def __init__(self, label, signal_name, filter=None, rollup=None, fx=None, display_name=None, visible=True,
+    def __init__(self, assigned_name, signal_name, filter=None, rollup=None, fx=None, label=None, visible=True,
                  extrapolation_policy=None, max_extrapolations=None):
         """Represents a Plot for a Chart as configured in the SignalFx UI.  It is a helper class that makes it simpler
         to use lower-level abstractions like Assign, Function, Data, publish()
@@ -167,8 +167,8 @@ class Plot(object):
         >>> )
 
         Arguments:
-            label: the assigned name used in the SignalFlow program, use A-Z to keep compatibility with the builder
-                    in the SignalFx UI. E.g. the "A" in "A = data('metric_name')"
+            assigned_name: the assigned name used in the SignalFlow program, use A-Z to keep compatibility with the
+                    builder in the SignalFx UI. E.g. the "A" in "A = data('metric_name')"
             signal_name: the metric name, e.g. "CPUUtilization"
             filter: the filter to apply to the metric, e.g. And(Filter("env, "prod"), Filter("app", "foo"))
             rollup: String If None then the default rollup for the metric is used. Otherwise one of the following
@@ -192,7 +192,7 @@ class Plot(object):
 
                     lag (the measured ingest lag for the timeseries for each timeslice)
             fx: List of Signal Flow function(s) to apply e.g. [ Mean(by="app") ]
-            display_name: the name visible in the chart on hover
+            label: the name visible in the chart on hover.  This is also the label used in PublishLabelOptions
             visible: True if this plot should be visible in the chart.  False is used for values that used in a formula
                     but that aren't displayed themselves.  Defaults to True.
             extrapolation_policy: String How to extrapolate missing data. One of the following string values:
@@ -205,8 +205,8 @@ class Plot(object):
             max_extrapolations: Int How many extrapolations will be performed when data is no longer received from a
                     source. A negative value indicates infinite extrapolation.
         """
-        if not label:
-            raise ValueError("label is required, e.g. 'A', 'B'")
+        if not assigned_name:
+            raise ValueError("assigned_name is required, e.g. 'A', 'B'")
 
         if not signal_name:
             raise ValueError("signal_name is required, e.g. 'CPUUtilization'")
@@ -218,7 +218,7 @@ class Plot(object):
         elif fx:
             data.call_stack = fx
 
-        assign = Assign(label, data.publish(display_name, visible))
+        assign = Assign(assigned_name, data.publish(label, visible))
         self.plot = assign
 
     def __str__(self):
@@ -462,9 +462,11 @@ class Function(object):
         """Publish the output of a stream so that it is visible outside of a
            computation.
 
+           This is also the label used in the 'PublishLabelOptions' class.
+
         Arguments:
             label: String defining a label for the stream
-            enable: Boolean
+            enable: Boolean True/False means show/hide the Time Series in the chart.
         """
         self.call_stack.append(Publish(label=label, enable=enable))
         return self
@@ -771,6 +773,9 @@ class Data(Function):
                  rollup=None, extrapolation=None, maxExtrapolations=None):
         """The data() function is used to create a stream.
 
+        Assigning data is recommended to keep your Signal Flow program compatible with the SignalFx UI builder,
+        e.g. Assign('A', Data('mymetric', filter).publish(label)).
+
         Arguments:
             metric: String metric name (can use * as a wildcard)
             filter: String filter name to match
@@ -1039,8 +1044,10 @@ class Assign(Function):
     def __init__(self, assignee, expr):
         """Assign the given expression to the assignee
 
+           A-Z are recommended values to keep your Signal Flow program compatible with
+           the SignalFx UI builder.
         Arguments:
-            assignee: the name to which to assign the expression
+            assignee: the name to which to assign the expression, e.g. 'A', 'B'
             expr: the expression to assign
 
         Returns:

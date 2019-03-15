@@ -272,19 +272,35 @@ class FieldOption(ChartOption):
 
 
 class PublishLabelOptions(ChartOption):
-    """Options for displaying published timeseries data."""
+    """Options for displaying published timeseries data.
+
+    These options are applied at the individual plot level (vs. the chart level).
+
+    Also see method 'with_publish_label_options()'
+    """
 
     def __init__(self, label, y_axis=None, palette_index=None, plot_type=None,
                  display_name=None, value_prefix=None, value_suffix=None,
                  value_unit=None):
         """Initializes and validates publish label options.
 
+        These options are applied at the individual plot level (vs. the chart level).
+
+        Also see method 'with_publish_label_options()'
+
         Arguments:
-            label: label used in the publish statement that displays the plot
+            label: label used in the publish statement that displays the plot.
+                    If you defined your plot with the 'Plot' class this should be
+                    the same as the 'label' in that class.  Otherwise it should be
+                    the same label used in 'Function.publish(label)'
             y_axis: the y-axis associated with values for this plot.
                     Must be 0 (left) or 1 (right).
-            palette_index: the indexed palette color to use for all plot lines
-            plot_type: the visualization style to use
+            palette_index: the indexed palette color to use for all plot lines,
+                    e.g. PaletteColor.green
+            plot_type: the visualization style to use, e.g. PlotType.area_chart.
+                    This value overrides the value defined in the 'TimeSeriesChart'
+                    for a single plot.
+                    Also see 'TimeSeriesChart.with_default_plot_type()'.
             display_name: an alternate name to show in the legend
             value_prefix: Indicates a string to prepend to the values displayed
                           when you are viewing a single value or list chart,
@@ -297,7 +313,10 @@ class PublishLabelOptions(ChartOption):
             value_unit: Indicates display units for the values in the chart.
                         The plot values will be presented in a readable way
                         based on the assumption that the raw values are
-                        denominated in the selected unit.
+                        denominated in the selected unit. E.g. 60,000 milliseconds
+                        will be displayed 1 minute in the chart. Example values
+                        include 'Millisecond', 'Nanosecond', 'Byte', 'Kibibyte',
+                        'Bit', 'Kilobit', 'Megabit', etc. (as seen in the SignalFx UI)
         """
 
         util.assert_valid(label)
@@ -401,6 +420,8 @@ class DisplayOptionsMixin(object):
 
     def with_publish_label_options(self, *publish_opts):
         """Plot-level customization, associated with a publish statement.
+
+        See 'PublishLabelOptions' class.
 
         Arguments:
             *publish_opts: Non-keyworded List containing published label options
