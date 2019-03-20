@@ -1,5 +1,9 @@
 # History
 
+## 2.4.1 (2019-03-18)
+
+  * Fix: TextCharts weren't working
+
 ## 2.4.0
 
   * Add numbering to dashboards in a dashboard group for better organization 
