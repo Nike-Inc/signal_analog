@@ -14,7 +14,8 @@ __version__ = '2.5.0'
 logging_config = pkg_resources.resource_string(
     __name__, 'logging.yaml').decode('utf-8')
 
-logging.config.dictConfig(yaml.load(logging_config))
+# Fix for yaml loader according to https://github.com/yaml/pyyaml/wiki/PyYAML-yaml.load(input)-Deprecation
+logging.config.dictConfig(yaml.load(logging_config, Loader=yaml.SafeLoader))
 
 logger = logging.getLogger()
 

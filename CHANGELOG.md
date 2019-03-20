@@ -1,10 +1,11 @@
 # History
 
-## 2.5.0 (2019-03-15)
+## 2.5.0 (2019-03-20)
 
   * Added `Plot` class, a helper class that gives an interface more like that found in the SignalFx UI.
   * Added `RollupType` enum for specifying the roll-up used in Charts.
   * Added additional documentation links to README.
+  * Fix: TextCharts weren't working
 
 ## 2.4.0
 

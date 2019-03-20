@@ -70,9 +70,11 @@ class Chart(Resource):
             'options': curr_chart_opts
         })
 
-        chart_opts_copy.update({
-            'programText': str(chart_opts_copy['programText'])
-        })
+        # TextCharts don't have programText
+        if 'programText' in chart_opts_copy:
+            chart_opts_copy.update({
+                'programText': str(chart_opts_copy['programText'])
+            })
 
         return chart_opts_copy
 
