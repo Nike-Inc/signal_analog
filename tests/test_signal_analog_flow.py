@@ -6,7 +6,7 @@ from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref, \
                                Top, KWArg, StrArg, Count, Mean, \
                                Mean_plus_stddev, Median, Min, Max, Size, \
                                Stddev, Sum, Variance, \
-                               AggregationTransformationMixin
+                               AggregationTransformationMixin, Plot
 from signal_analog.combinators import Mul, GT, Div
 from signal_analog.errors import \
     ProgramDoesNotPublishTimeseriesError
@@ -170,6 +170,13 @@ def test_valid_publish_statements_multi():
         Data('foo').publish(label='foo')
     ).validate()
 
+def test_valid_publish_statements_plot_happy():
+    Program(
+        Plot('A', 'foo', fx=[Max()], label="lol")
+    ).validate()
+    Program(
+        Plot('A', 'foo', fx=None, label="lol")
+    ).validate()
 
 def test_valid_publish_statements_assign_happy():
     Program(

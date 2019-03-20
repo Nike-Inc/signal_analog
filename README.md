@@ -713,6 +713,11 @@ This gives you the following features:
       store them in source control (that's you! don't store your keys in
       source control)
 
+## Documentation
+
+- [Signal Analog Documentation](https://signal-analog.readthedocs.io/)
+- [Introductory Article on Medium](https://medium.com/nikeengineering/introducing-signal-analog-the-troposphere-like-library-for-automating-monitoring-resources-c99eb8c2dca7)
+
 ## Contributing
 
 Please read our [docs here for more info about contributing](CONTRIBUTING.md).
