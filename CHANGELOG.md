@@ -6,6 +6,7 @@
   * Added `RollupType` enum for specifying the roll-up used in Charts.
   * Added additional documentation links to README.
   * Fix: TextCharts weren't working
+  * Fix: YAML load deprecation warning in logging config
 
 ## 2.4.0
 
