@@ -1,5 +1,10 @@
 # History
 
+## 2.6.0 (2019-03-21)
+
+  * AxisOption parameters should be optional.
+  * Additional documentation.
+
 ## 2.5.0 (2019-03-20)
 
   * Added `Plot` class, a helper class that gives an interface more like that found in the SignalFx UI.
