@@ -263,7 +263,18 @@ class Dashboard(Resource):
         return self
 
     def with_filters(self, filters):
-        """Filters to be included in the dashboard"""
+        """Filters to be included in the dashboard.
+
+        This method exposes functionality like the "DASHBOARD VARIABLES" screen in the SignalFx UI.
+
+        E.g. DashboardFilters() \
+                .with_variables(
+                    FilterVariable() \
+                        .with_property("aws_account_id")
+                        .with_alias("aws_account_id")
+                        .with_value(aws_account_id)
+                )
+        """
         self.filters.update({'filters': filters.options})
         return self
 

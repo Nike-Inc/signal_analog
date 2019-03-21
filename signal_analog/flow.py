@@ -849,6 +849,12 @@ class Filter(Function):
     def __init__(self, parameter_name, query, *args):
         """Creates a _filter_ object.
 
+        E.g. And(Filter('app', app), Filter('env', env))
+
+        This is a filter at the individual plot level within a 'Chart'.
+
+        Also see the 'DashboardFilters' class.
+
         Arguments:
             parameter_name: String filter with on this variable
             query: String Value to match for the property_name. Supports non-starting wildcard queries via the '*'
