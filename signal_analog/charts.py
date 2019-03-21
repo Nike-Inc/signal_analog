@@ -201,7 +201,7 @@ class ChartOption(object):
 class AxisOption(ChartOption):
     """Encapsulation for options on chart axes."""
 
-    def __init__(self, min, max, label, high_watermark, low_watermark):
+    def __init__(self, min=None, max=None, label="", high_watermark=None, low_watermark=None):
         """Initialize this class with valid values, raises ValueError
            if any values are missing.
 
@@ -212,11 +212,8 @@ class AxisOption(ChartOption):
             high_watermark: a line ot draw as a high watermark
             low_watermark: a line to draw as a low watermark
         """
-        for arg in [min, max, label, high_watermark, low_watermark]:
-            if arg is None:
-                raise ValueError("{0} cannot be empty".format(arg))
 
-        if max < min:
+        if min is not None and max is not None and max < min:
             msg = "min cannot be less than max in axis with label {0}"
             raise ValueError(msg.format(label))
 
@@ -492,13 +489,15 @@ class TimeSeriesChart(Chart, DisplayOptionsMixin, LegendOptionsMixin):
         Arguments:
             axes: List of objects to configure axis identifiers
 
+        See AxisOption class.
+
         Y axis configuration for the left and right side of a chart.
         The first element of the array corresponds to the left side of the chart
         and the second element of the array corresponds to the right side of the array.
         Don't leave your axes laying about or this guy might show up:
         https://youtu.be/Ln71u1nu6L4
         """
-        util.assert_valid(axes)
+        util.assert_valid(axes, expected_type=list)
         self.chart_options.update({
             'axes': list(map(lambda x: x.to_dict(), axes))
         })
