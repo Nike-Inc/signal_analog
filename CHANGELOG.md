@@ -1,5 +1,9 @@
 # History
 
+## 2.5.1 (2019-03-22)
+
+  * Fixing applyIfExists option for Dashboard variables.
+
 ## 2.5.0 (2019-03-20)
 
   * Added `Plot` class, a helper class that gives an interface more like that found in the SignalFx UI.
