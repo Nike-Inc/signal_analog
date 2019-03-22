@@ -24,11 +24,15 @@ class FilterVariable(object):
     def with_apply_if_exists(self, apply_if_exists):
         """Apply the filter if it exists.
 
+        True enables the UI option "Allow data matching the filter condition or missing <dimension-name>".
+
+        See https://docs.signalfx.com/en/latest/dashboards/dashboard-filter-dynamic.html#how-allow-data
+
             Arguments:
                 apply_if_exists: Boolean
         """
         util.assert_valid(apply_if_exists, expected_type=bool)
-        self.options.update({'apply_if_exists': apply_if_exists})
+        self.options.update({'applyIfExists': apply_if_exists})
         return self
 
     def with_description(self, description):
