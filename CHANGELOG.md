@@ -1,5 +1,11 @@
 # History
 
+## 2.7.0 (2019-03-26)
+
+  * Removed dashboard numbering for two reasons:
+    1. There was a bug in the logic that caused dashboards to be deleted and recreated on update.
+    1. The functionality is no longer needed as SignalFx automatically maintains the order that dashboards were provided and allows easy reordering in the UI.
+
 ## 2.5.0 (2019-03-20)
 
   * Added `Plot` class, a helper class that gives an interface more like that found in the SignalFx UI.
