@@ -9,7 +9,7 @@ import os
 
 __author__ = """Fernando Freire"""
 __email__ = 'Lst-nike.plus.platform.sharedinfrastructure@nike.com'
-__version__ = '2.6.0'
+__version__ = '2.7.0'
 
 logging_config = pkg_resources.resource_string(
     __name__, 'logging.yaml').decode('utf-8')
