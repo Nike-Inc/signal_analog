@@ -267,13 +267,12 @@ class Dashboard(Resource):
 
         This method exposes functionality like the "DASHBOARD VARIABLES" screen in the SignalFx UI.
 
-        E.g. DashboardFilters() \
-                .with_variables(
-                    FilterVariable() \
-                        .with_property("aws_account_id")
-                        .with_alias("aws_account_id")
-                        .with_value(aws_account_id)
-                )
+        Example:
+
+        >>> Dashboard().with_filter(DashboardFilters().with_variables(
+        >>>     FilterVariable().with_property("aws_account_id").with_alias("aws_account_id").with_value(aws_account_id)
+        >>>   ).with_time(FilterTime().with_start("-7d").with_end("Now"))
+        >>> )
         """
         self.filters.update({'filters': filters.options})
         return self
