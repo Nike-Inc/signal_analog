@@ -425,6 +425,14 @@ class DisplayOptionsMixin(object):
 
         See 'PublishLabelOptions' class.
 
+        Example:
+
+        >>> TimeSeriesChart().with_publish_label_options(PublishLabelOptions(
+        >>>     label='Latency',
+        >>>     palette_index=PaletteColor.gray,
+        >>>     value_unit='Millisecond'
+        >>> ))
+
         Arguments:
             *publish_opts: Non-keyworded List containing published label options
         """
@@ -439,6 +447,11 @@ class LegendOptionsMixin(object):
 
     The assumption is made that all classes using this mixin have
     a member dict called 'chart_options'.
+
+    Example:
+
+    >>> TimeSeriesChart().with_chart_legend_options("sf_metric", show_legend=True)
+
     """
 
     def with_legend_options(self, field_opts):
