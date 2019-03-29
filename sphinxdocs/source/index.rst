@@ -6,6 +6,9 @@
 Welcome to signal_analog's documentation!
 =========================================
 
+Signal Analog is a troposphere-inspired library for programmatic, declarative definition and management of SignalFx Charts, Dashboards, and Detectors.
+
+
 Contents:
 
 .. toctree::
