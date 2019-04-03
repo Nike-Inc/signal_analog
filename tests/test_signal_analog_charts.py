@@ -17,7 +17,6 @@ def test_chart_with_empties(value):
         Chart().with_name(value)
         Chart().with_description(value)
         Chart().with_program()
-        AxisOption(value, value, value, value, value)
         FieldOption(value, False)
         PublishLabelOptions(value, value, value, value, value)
 
