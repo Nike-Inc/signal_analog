@@ -24,6 +24,34 @@ class Program(object):
     def __init__(self, *statements):
         """Initialize a new program, optionally with statements.
 
+        Example:
+
+        >>> Program(
+        >>>     Plot(
+        >>>         assigned_name="A",
+        >>>         signal_name="ConsumedReadCapacityUnits",
+        >>>         filter=And(
+        >>>             Filter("TableName", table_name),
+        >>>             Filter("stat", "sum")
+        >>>         ),
+        >>>         rollup=RollupType.sum,
+        >>>         fx=[Sum(by=["TableName", "aws_account_id"])],
+        >>>         label="ConsumedReadCapacity"
+        >>>     ),
+        >>>     Plot(
+        >>>         assigned_name="B",
+        >>>         signal_name="ConsumedWriteCapacityUnits",
+        >>>         filter=And(
+        >>>             Filter("TableName", table_name),
+        >>>             Filter("stat", "sum")
+        >>>         ),
+        >>>         rollup=RollupType.sum,
+        >>>         fx=[Sum(by=["TableName", "aws_account_id"])],
+        >>>         label="ConsumedWriteCapacity"
+        >>>     )
+        >>> )
+
+
         Raises:
             ValueError: when any provided statement is found to not be a valid
                         statement. See __valid_statement__ for more detail.
@@ -160,10 +188,10 @@ class Plot(object):
 
         Example:
 
-        >>> TimeSeriesChart() \
-        >>>    .with_name("Cpu Utilization") \
-        >>>    .with_program(
-        >>>       Plot("A", "CPUUtilization", filter, rollup="max", fx=[Mean(by="app")])
+        >>> TimeSeriesChart().with_name("Cpu Utilization").with_program(
+        >>>     Program(
+        >>>         Plot("A", "CPUUtilization", filter, rollup=RollupType.max, fx=[Mean(by="app")])
+        >>>     )
         >>> )
 
         Arguments:
@@ -171,6 +199,7 @@ class Plot(object):
                     builder in the SignalFx UI. E.g. the "A" in "A = data('metric_name')"
             signal_name: the metric name, e.g. "CPUUtilization"
             filter: the filter to apply to the metric, e.g. And(Filter("env, "prod"), Filter("app", "foo"))
+                    Also, consider filters at the Dashboard level, see 'DashboardFilters' class.
             rollup: RollupType If None then the default rollup for the metric is used. Otherwise use the RollupType
                     enum. E.g. RollupType.average, RollupType.rate, RollupType.delta, RollupType.max
             fx: List of Signal Flow function(s) to apply e.g. [ Mean(by="app") ]
@@ -816,8 +845,11 @@ class Data(Function):
                  rollup=None, extrapolation=None, maxExtrapolations=None):
         """The data() function is used to create a stream.
 
-        Assigning data is recommended to keep your Signal Flow program compatible with the SignalFx UI builder,
+        Assigning data is required to keep your Signal Flow program compatible with the SignalFx UI builder,
         e.g. Assign('A', Data('mymetric', filter).publish(label)).
+
+        An alternative to using the Data class directly is to use the Plot class for an higher-level API that provides
+        options more like the UI in SignalFx.
 
         Arguments:
             metric: String metric name (can use * as a wildcard)
