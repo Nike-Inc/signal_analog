@@ -1,10 +1,13 @@
-# History
+ ## 2.7.0 (2019-03-26)
 
-## 2.7.0 (2019-03-26)
-
+### Updated
   * Removed dashboard numbering for two reasons:
     1. There was a bug in the logic that caused dashboards to be deleted and recreated on update.
     1. The functionality is no longer needed as SignalFx automatically maintains the order that dashboards were provided and allows easy reordering in the UI.
+
+### Fixed
+
+* Fixing applyIfExists option for Dashboard variables.
 
 ## 2.5.0 (2019-03-20)
 
