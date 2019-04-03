@@ -155,7 +155,7 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=01+-+Falcon99"
+        "uri": "https://api.signalfx.com/v2/dashboard?name=Falcon99"
       },
       "response": {
         "body": {
@@ -186,7 +186,7 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard?name=01+-+Falcon99"
+        "url": "https://api.signalfx.com/v2/dashboard?name=Falcon99"
       }
     },
     {
@@ -220,7 +220,7 @@
           ]
         },
         "method": "POST",
-        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=01+-+Falcon99&groupId=DXIwltLAcAA"
+        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=Falcon99&groupId=DXIwltLAcAA"
       },
       "response": {
         "body": {
@@ -251,7 +251,7 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard/simple?name=01+-+Falcon99&groupId=DXIwltLAcAA"
+        "url": "https://api.signalfx.com/v2/dashboard/simple?name=Falcon99&groupId=DXIwltLAcAA"
       }
     },
     {
