@@ -41,6 +41,35 @@ class Chart(Resource):
     def with_program(self, program):
         """The SignalFlow program to execute for this chart.
 
+        See 'Program' class.
+
+        Example:
+
+        >>> Program(
+        >>>     Plot(
+        >>>         assigned_name="A",
+        >>>         signal_name="ConsumedReadCapacityUnits",
+        >>>         filter=And(
+        >>>             Filter("TableName", table_name),
+        >>>             Filter("stat", "sum")
+        >>>         ),
+        >>>         rollup=RollupType.sum,
+        >>>         fx=[Sum(by=["TableName", "aws_account_id"])],
+        >>>         label="ConsumedReadCapacity"
+        >>>     ),
+        >>>     Plot(
+        >>>         assigned_name="B",
+        >>>         signal_name="ConsumedWriteCapacityUnits",
+        >>>         filter=And(
+        >>>             Filter("TableName", table_name),
+        >>>             Filter("stat", "sum")
+        >>>         ),
+        >>>         rollup=RollupType.sum,
+        >>>         fx=[Sum(by=["TableName", "aws_account_id"])],
+        >>>         label="ConsumedWriteCapacity"
+        >>>     )
+        >>> )
+
         Arguments:
             program: Valid json defining a program
 
@@ -425,6 +454,14 @@ class DisplayOptionsMixin(object):
 
         See 'PublishLabelOptions' class.
 
+        Example:
+
+        >>> TimeSeriesChart().with_publish_label_options(PublishLabelOptions(
+        >>>     label='Latency',
+        >>>     palette_index=PaletteColor.gray,
+        >>>     value_unit='Millisecond'
+        >>> ))
+
         Arguments:
             *publish_opts: Non-keyworded List containing published label options
         """
@@ -439,6 +476,11 @@ class LegendOptionsMixin(object):
 
     The assumption is made that all classes using this mixin have
     a member dict called 'chart_options'.
+
+    Example:
+
+    >>> TimeSeriesChart().with_chart_legend_options("sf_metric", show_legend=True)
+
     """
 
     def with_legend_options(self, field_opts):

@@ -217,7 +217,7 @@
           ]
         },
         "method": "GET",
-        "uri": "https://api.signalfx.com/v2/dashboard?name=01+-+Draagoon"
+        "uri": "https://api.signalfx.com/v2/dashboard?name=Draagoon"
       },
       "response": {
         "body": {
@@ -248,7 +248,7 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard?name=01+-+Draagoon"
+        "url": "https://api.signalfx.com/v2/dashboard?name=Draagoon"
       }
     },
     {
@@ -282,7 +282,7 @@
           ]
         },
         "method": "POST",
-        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=01+-+Draagoon&groupId=DXIrwyaAgAE"
+        "uri": "https://api.signalfx.com/v2/dashboard/simple?name=Draagoon&groupId=DXIrwyaAgAE"
       },
       "response": {
         "body": {
@@ -313,7 +313,7 @@
           "code": 200,
           "message": "OK"
         },
-        "url": "https://api.signalfx.com/v2/dashboard/simple?name=01+-+Draagoon&groupId=DXIrwyaAgAE"
+        "url": "https://api.signalfx.com/v2/dashboard/simple?name=Draagoon&groupId=DXIrwyaAgAE"
       }
     },
     {
