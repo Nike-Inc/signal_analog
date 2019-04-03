@@ -3,8 +3,8 @@
 """Examples for the `signal_analog.charts` module."""
 
 from signal_analog.charts \
-    import TimeSeriesChart, PlotType, PublishLabelOptions, PaletteColor
-from signal_analog.flow import Data, Filter, Program
+    import TimeSeriesChart, PlotType, PublishLabelOptions, PaletteColor, AxisOption
+from signal_analog.flow import Data, Filter, Program, Plot, RollupType, Sum
 from signal_analog.combinators import And
 
 """
@@ -65,3 +65,61 @@ if __name__ == '__main__':
     from signal_analog.cli import CliBuilder
     cli = CliBuilder().with_resources(chart, chart_from_templ).build()
     cli()
+
+
+"""
+Example 3: make a more advanced chart using more options.
+
+This example charts two metrics on the same chart with a different scale for each.
+"""
+
+function_name = 'my-lambda'
+
+chart = TimeSeriesChart() \
+            .with_name("Lambda " + function_name + " Invocations") \
+            .with_description("") \
+            .with_default_plot_type(PlotType.column_chart) \
+            .with_chart_legend_options("sf_metric", show_legend=True) \
+            .with_publish_label_options(
+                PublishLabelOptions(
+                    label='Invocations',
+                    palette_index=PaletteColor.green
+                ),
+                PublishLabelOptions(
+                    label='Duration',
+                    palette_index=PaletteColor.gray,
+                    y_axis=1, # right y-axis
+                    plot_type=PlotType.line_chart, # override of main chart type for 1 metric
+                    value_unit='Millisecond' # SignalFx will automatically convert units to human-readable format
+                )
+            ) \
+            .with_axes([
+                AxisOption(label="Count", min=0), # left Y-axis
+                AxisOption(label="Latency", min=0) # right Y-axis
+            ]) \
+            .with_program(
+                Program(
+                    Plot(
+                        assigned_name="A",
+                        signal_name="Invocations", # metric name
+                        filter=And(
+                            Filter("FunctionName", function_name),
+                            Filter("namespace", "AWS/Lambda"),
+                            Filter("stat", "sum") # CloudWatch sends several stats for each metric so you need to filter
+                        ),
+                        rollup=RollupType.sum,
+                        fx=[Sum(by=["aws_account_id", "FunctionName"])],
+                        label="Invocations"),
+                    Plot(
+                        assigned_name="B",
+                        signal_name="Duration",
+                        filter=And(
+                            Filter("FunctionName", function_name),
+                            Filter("namespace", "AWS/Lambda"),
+                            Filter("stat", "mean")
+                        ),
+                        rollup=RollupType.max,  # max rollup is used here so you can still see spikes over longer windows
+                        fx=[Sum(by=["aws_account_id", "FunctionName"])],
+                        label="Duration")
+                )
+            )
