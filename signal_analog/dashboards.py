@@ -87,7 +87,6 @@ class DashboardGroup(Resource):
             if len(self.dashboards) > 0:
                 for dashboard in self.dashboards:
                     dashboard.with_api_token(self.api_token)\
-                        .with_numbered_dashboards(self.dashboards, dashboard)\
                         .create(group_id=dashboard_group_create_response['id'], force=True)
 
                 if len(dashboard_group_create_response['dashboards']) > 0:
@@ -154,8 +153,7 @@ class DashboardGroup(Resource):
         remote_names = list(map(lambda x: x['name'], remote_dashboards))
         for local_dashboard in local_dashboards:
             if local_dashboard.__get__('name') not in remote_names:
-                resp = local_dashboard.with_numbered_dashboards(local_dashboards, local_dashboard)\
-                    .with_api_token(self.api_token)\
+                resp = local_dashboard.with_api_token(self.api_token)\
                     .create(force=True)
                 self.clone(resp['id'], state['id'])
                 self.with_id(resp['groupId']).delete()
@@ -263,7 +261,17 @@ class Dashboard(Resource):
         return self
 
     def with_filters(self, filters):
-        """Filters to be included in the dashboard"""
+        """Filters to be included in the dashboard.
+
+        This method exposes functionality like the "DASHBOARD VARIABLES" screen in the SignalFx UI.
+
+        Example:
+
+        >>> Dashboard().with_filter(DashboardFilters().with_variables(
+        >>>    FilterVariable().with_property("aws_account_id").with_alias("aws_account_id").with_value(aws_account_id)
+        >>>  ).with_time(FilterTime().with_start("-7d").with_end("Now"))
+        >>> )
+        """
         self.filters.update({'filters': filters.options})
         return self
 
@@ -277,18 +285,6 @@ class Dashboard(Resource):
         """Default events to display on the dashboard"""
         for selectedeventoverlay in selectedeventoverlays:
             self.selectedevents['selectedEventOverlays'].append(deepcopy(selectedeventoverlay))
-        return self
-
-    def with_numbered_dashboards(self, resourcelist, resource):
-        """Helper to number dashboards according to their index in a list.
-        Single digit numbers will be padded with a leading zero.
-
-        Arguments:
-            resourcelist: A list of dashboard resources
-            resource: The dashboard to be numbered
-        """
-        numberedname = str(resourcelist.index(resource) + 1).zfill(2) + ' - ' + resource.__get__('name')
-        self.options.update({'name': numberedname})
         return self
 
     def create(self, group_id=None, dry_run=False, force=False, interactive=False):

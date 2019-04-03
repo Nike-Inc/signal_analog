@@ -24,11 +24,15 @@ class FilterVariable(object):
     def with_apply_if_exists(self, apply_if_exists):
         """Apply the filter if it exists.
 
+        True enables the UI option "Allow data matching the filter condition or missing <dimension-name>".
+
+        See https://docs.signalfx.com/en/latest/dashboards/dashboard-filter-dynamic.html#how-allow-data
+
             Arguments:
                 apply_if_exists: Boolean
         """
         util.assert_valid(apply_if_exists, expected_type=bool)
-        self.options.update({'apply_if_exists': apply_if_exists})
+        self.options.update({'applyIfExists': apply_if_exists})
         return self
 
     def with_description(self, description):
@@ -183,6 +187,13 @@ class DashboardFilters(object):
     in the charts within the dashboard. They can be adhoc or saved as variables to allow easy reuse of filter criteria.
     Filters can also be used to apply a custom time window to all of the charts in the dashboard.
     The properties of the included object are indicated as filters.propertyName.
+
+    Example:
+
+    >>> Dashboard().with_filter(DashboardFilters().with_variables(
+    >>>     FilterVariable().with_property("aws_account_id").with_alias("aws_account_id").with_value(aws_account_id)
+    >>>   ).with_time(FilterTime().with_start("-7d").with_end("Now"))
+    >>> )
     """
 
     def __init__(self):
@@ -225,6 +236,10 @@ class DashboardFilters(object):
 
     def with_time(self, time):
         """Checks if either start or end time is defined
+
+            Example:
+
+            >>> DashboardFilters().with_time(FilterTime().with_start("-1d").with_end("Now"))
 
             Arguments:
                 time: FilterTime
