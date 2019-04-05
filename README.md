@@ -27,6 +27,8 @@ good overview of the SignalFx API consult the [upstream documentation][sfxdocs].
       - [Talking to the SignalFlow API Directly](#talking-to-the-signalflow-api-directly)
       - [General `Resource` Guidelines](#general-resource-guidelines)
       - [Creating a CLI for your resources](#creating-a-cli-for-your-resources)
+  - [Documentation](#documentation)
+  - [Example Code](#example-code)
   - [Contributing](#contributing)
 
 ## Features
@@ -717,6 +719,10 @@ This gives you the following features:
 
 - [Signal Analog Documentation](https://signal-analog.readthedocs.io/)
 - [Introductory Article on Medium](https://medium.com/nikeengineering/introducing-signal-analog-the-troposphere-like-library-for-automating-monitoring-resources-c99eb8c2dca7)
+
+## Example Code
+
+- See [examples](https://github.com/Nike-Inc/signal_analog/tree/master/examples) included in this project.
 
 ## Contributing
 
