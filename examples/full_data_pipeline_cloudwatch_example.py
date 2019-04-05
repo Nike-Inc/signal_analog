@@ -2,7 +2,7 @@
 #
 # Python script for creating/updating a Data Pipeline Dashboard group.
 #
-# For example, a Data Pipeline might include messages on a SQS queue triggers a Lambda that then writes to
+# For example, a Data Pipeline might include messages on a SQS queue, that triggers a Lambda, that then writes to
 # Dynamo, with another Lambda listening to the Stream, triggering something else, etc.
 #
 # Layout follows a two column design with each item in the pipeline getting at least one left and right chart.
