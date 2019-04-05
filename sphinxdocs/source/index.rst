@@ -33,4 +33,4 @@ Links
 
 * `Introductory Article on Medium <https://medium.com/nikeengineering/introducing-signal-analog-the-troposphere-like-library-for-automating-monitoring-resources-c99eb8c2dca7>`_
 
-* `Example Cod <https://github.com/Nike-Inc/signal_analog/tree/master/examples>`_
+* `Example Code <https://github.com/Nike-Inc/signal_analog/tree/master/examples>`_
