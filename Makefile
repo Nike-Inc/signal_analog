@@ -27,29 +27,22 @@ MODULE_NAME := signal_analog
 help:
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test ## remove all Python artifacts
-
-
-clean-build: ## remove build artifacts
+clean: ## remove all Python artifacts
 	@rm -fr build/
 	@rm -fr dist/
 	@rm -fr .eggs/
 	@find . -name '*.egg-info' -exec rm -fr {} +
 	@find . -name '*.egg' -exec rm -fr {} +
-
-clean-pyc: ## remove Python file artifacts
 	@find . -name '*.pyc' -exec rm -f {} +
 	@find . -name '*.pyo' -exec rm -f {} +
 	@find . -name '*~' -exec rm -f {} +
 	@find . -name '__pycache__' -exec rm -fr {} +
-
-clean-test: ## remove test and coverage artifacts
 	@rm -fr .tox/
 	@rm -f .coverage
 	@rm -fr htmlcov/
 
 lint: ## check style with flake8
-	flake8 $(MODULE_NAME)
+	@flake8 $(MODULE_NAME)
 
 test: ## run tests quickly with the default Python
 	LC_ALL=en_US.utf-8 LANG=en_US.utf-8 \
@@ -65,33 +58,9 @@ coverage: ## check code coverage quickly with the default Python
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
-activity_diagrams: ## generate PNGs of activity uml diagrams
-	@plantuml docs/activity/*.puml
-
-docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/$(MODULE_NAME).rst
-	rm -f docs/modules.rst
-	sphinx-apidoc -o docs/ $(MODULE_NAME)
-	$(MAKE) -C docs clean
-	$(MAKE) -C docs html
-	$(BROWSER) docs/_build/html/index.html
-
-servedocs: docs ## compile the docs watching for changes
-	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
-
-release: clean ## package and upload a release
-	python setup.py sdist upload -r python-local
-	python setup.py bdist_wheel upload -r python-local
-
 dist: clean ## builds source and wheel package
-	python setup.py sdist
 	python setup.py bdist_wheel
 	ls -l dist
 
 install: clean ## install the package to the active Python's site-packages
 	python setup.py install
-
-generate-flow: clean ## generate the SignalFlow module using `st`
-	curl --output flow.html https://developers.signalfx.com/reference && \
-		st flow.html --output-path signal_analog/flow.py && \
-		rm -rf flow.html
