@@ -123,13 +123,13 @@ class DashboardGroup(Resource):
         state = deepcopy(dashboard_group_state)
 
         remote_dashboard_ids = state['dashboards']
+        remote_group_ids = state['id']
 
         def get_config_helper(id):
             res = Dashboard(session=self.session_handler).with_api_token(self.api_token).with_id(id).read()
             return {'id': id, 'name': res['name']}
 
         remote_dashboards = list(map(get_config_helper, remote_dashboard_ids))
-
         local_dashboards = self.dashboards
 
         # Update dashboards that exist in SignalFx
@@ -137,6 +137,7 @@ class DashboardGroup(Resource):
             for local_dashboard in local_dashboards:
                 if remote_dashboard['name'] == local_dashboard.__get__('name'):
                     local_dashboard.with_id(remote_dashboard['id'])\
+                        .with_group_id(remote_group_ids)\
                         .with_api_token(self.api_token)\
                         .update()
                     break
@@ -154,10 +155,9 @@ class DashboardGroup(Resource):
         for local_dashboard in local_dashboards:
             if local_dashboard.__get__('name') not in remote_names:
                 resp = local_dashboard.with_api_token(self.api_token)\
-                    .create(force=True)
+                    .create(group_id=remote_group_ids, force=True)
                 self.clone(resp['id'], state['id'])
-                self.with_id(resp['groupId']).delete()
-
+                Dashboard().with_id(resp['id']).with_api_token(self.api_token).delete()
         return state
 
     def update(self, name=None, description=None, resource_id=None, dry_run=False):
@@ -193,8 +193,7 @@ class DashboardGroup(Resource):
                         "PUT {1} \nRequest Body: \n {2}".format(self.options['name'], (
                                 self.base_url + self.endpoint + '/' + self.options['id']), self.options))
                     return None
-
-                return super(DashboardGroup, self).update(name=name, description=description, resource_id=resource_id)
+                return super(DashboardGroup, self).update(name=name, description=description, resource_id=resource_id, info_only=True)
             except ResourceMatchNotFoundError:
                 return self.create(dry_run=dry_run)
 
@@ -214,6 +213,7 @@ class DashboardGroup(Resource):
             return None
 
         return super(DashboardGroup, self).delete(resource_id=resource_id)
+
 
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
         """Clones a SignalFx dashboard using the /dashboardgroup/_id_/dashboard helper
