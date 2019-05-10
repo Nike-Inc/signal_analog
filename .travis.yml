@@ -5,6 +5,7 @@ python:
 install:
 - pip install .
 - pip install -r requirements_dev.txt
+- pip install --upgrade pytest  # Fixes Travis-specific issue w/ pytest
 script:
 - make test
 - make lint
