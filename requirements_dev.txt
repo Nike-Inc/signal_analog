@@ -1,6 +1,6 @@
 betamax
 betamax_serializers
-bumpversion
+bump2version
 click
 coverage
 email_validator
