@@ -1,3 +1,10 @@
+## Unreleased Changes
+
+### Fixed
+
+  - `signal_analog` has learned to use the `groupId` field when updating
+  Dashboard resources after the recent Sfx API changes
+
 ## 2.7.0 (2019-04-03)
 
 ### Updated
