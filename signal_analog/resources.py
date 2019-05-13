@@ -86,6 +86,16 @@ class Resource(object):
         self.options.update({'id': ident})
         return self
 
+    def with_group_id(self, ident):
+        """The groupId for this resource. Useful for creates/deletes.
+
+        Arguments:
+            ident: String
+        """
+        util.assert_valid(ident)
+        self.options.update({'groupId': ident})
+        return self
+
     def __set_api_token__(self, token):
         """Internal helper for setting valid API tokens.
 
@@ -281,22 +291,31 @@ class Resource(object):
                                dry_run=dry_run, interactive=interactive,
                                force=force)
 
-    def update(self, name=None, description=None, resource_id=None):
+    def update(self, name=None, description=None, resource_id=None, info_only=False):
         """Attempt to update the given resource in SignalFx.
 
         Your have to provide the resource id via
         'with_id' or you can pass the id as a parameter
 
+        info_only will read the provided resource back from SFX
+
         Arguments:
             name: String
             description: String
             resource_id: String
+            info_only: Boolean
         """
         rid = resource_id if resource_id else self.__get__('id')
         if name:
             self.options.update({'name': name})
         if description:
             self.options.update({'description': description})
+        if info_only is True:
+            if rid:
+                return self.__action__(
+                    'get', self.endpoint + '/' + rid, lambda x: x)
+            else:
+                raise ValueError('Id is required for resource updates')
         if rid:
             return self.__action__(
                 'put', self.endpoint + '/' + rid, lambda x: x)
