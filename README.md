@@ -728,11 +728,11 @@ This gives you the following features:
 
 Please read our [docs here for more info about contributing](CONTRIBUTING.md).
 
-[sfxdocs]: https://developers.signalfx.com/docs/signalfx-api-overview
-[signalflow]: https://developers.signalfx.com/docs/signalflow-overview
-[charts]: https://developers.signalfx.com/reference#charts-overview-1
+[sfxdocs]: https://developers.signalfx.com/
+[signalflow]: https://developers.signalfx.com/signalflow_analytics/signalflow_overview.html
+[charts]: https://developers.signalfx.com/charts_reference.html
 [terrific]: https://media.giphy.com/media/jir4LEGA68A9y/200.gif
-[dashboards]: https://developers.signalfx.com/v2/reference#dashboards-overview
-[dashboard-groups]: https://developers.signalfx.com/v2/reference#dashboard-groups-overview
-[detectors]: https://developers.signalfx.com/v2/reference#detectors-overview
+[dashboards]: https://developers.signalfx.com/dashboards_reference.html
+[dashboard-groups]: https://developers.signalfx.com/dashboard_groups_reference.html
+[detectors]: https://developers.signalfx.com/detectors_reference.html
 [Riposte]: https://github.com/Nike-inc/riposte

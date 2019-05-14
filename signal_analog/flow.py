@@ -656,7 +656,7 @@ class Function(object):
 
     def fill(self, value=None, duration=None):
         """Fills in missing values for time series in a stream. See
-        https://developers.signalfx.com/reference#fill-stream-method
+        https://developers.signalfx.com/signalflow_analytics/methods/fill_stream_method.html
 
         The fill method accepts an optional value parameter to substitute missing
         values of a time series. If no value parameter is supplied, the last observed
@@ -675,21 +675,21 @@ class Function(object):
 
     def integrate(self):    # noqa: F811 -- redefinition of unused 'integrate' from line [...]
         """Multiplies the values of each input time series by the resolution (in seconds) of the computation.
-        See https://developers.signalfx.com/reference#integrate-method
+        See https://developers.signalfx.com/signalflow_analytics/methods/integrate_stream_method.html
         """
         self.call_stack.append(Integrate())
         return self
 
     def kpss(self, over=None, mode='level'):
         """Calculates the Kwiatkowski–Phillips–Schmidt–Shin (KPSS) statistic on the specified time window of the stream
-        see https://developers.signalfx.com/reference#kpss-stream-method
+        see https://developers.signalfx.com/signalflow_analytics/methods/kpss_stream_method.html
         """
         self.call_stack.append(Kpss(over, mode))
         return self
 
     def rateofchange(self):
         """Calculates the difference between the current value and the previous value for each time interval
-        See https://developers.signalfx.com/reference#rateofchange-method
+        See https://developers.signalfx.com/signalflow_analytics/methods/rateofchange_stream_method.html
         """
         self.call_stack.append(RateOfChange())
         return self

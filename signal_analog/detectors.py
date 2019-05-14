@@ -568,7 +568,7 @@ class Detector(Resource):
             force: Boolean to force a create
             interactive: Boolean to start interactive create
 
-        See: https://developers.signalfx.com/v2/reference#detector
+        See: https://developers.signalfx.com/detectors_reference.html#tag/Create-Single-Detector
         """
 
         if self.__create_helper__(force=force, interactive=interactive):
@@ -585,7 +585,7 @@ class Detector(Resource):
             description: String defining description of updated detector
             dry_run: Boolean to test a dry run
 
-        See: https://developers.signalfx.com/v2/reference#detectorid-2
+        See: https://developers.signalfx.com/detectors_reference.html#tag/Update-Single-Detector
         """
 
         updated_opts = dict(self.options)
