@@ -76,7 +76,7 @@ class Chart(Resource):
         For more information SignalFlow consult the `signal_analog.flow`
         module or the upstream SignalFlow documentation here:
 
-        https://developers.signalfx.com/docs/signalflow-overview
+        https://developers.signalfx.com/signalflow_analytics/signalflow_overview.html
         """
         util.assert_valid(program)
         # Chart's don't require you to use a Program object, so make a best
@@ -113,7 +113,7 @@ class Chart(Resource):
         Arguments:
             dry_run: Boolean to determine if this invocation will be a dry run
 
-        See: https://developers.signalfx.com/v2/reference#create-chart
+        See: https://developers.signalfx.com/charts_reference.html#tag/Create-Single-Chart
         """
         self.options = self.to_dict()
         return super(Chart, self).create(dry_run=dry_run)
@@ -132,7 +132,7 @@ class Chart(Resource):
         SignalFx API it is much more difficult to determine which is the right
         chart to update. Updating charts via dashboards is the better way to go.
 
-        See: https://developers.signalfx.com/v2/reference#update-chart
+        See: https://developers.signalfx.com/charts_reference.html#tag/Update-Single-Chart
         """
 
         updated_opts = dict(self.options)

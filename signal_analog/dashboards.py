@@ -11,7 +11,7 @@ from signal_analog.resources import Resource
 class DashboardGroup(Resource):
     """Representation of a Dashboard Group in SignalFx:
 
-    See: https://developers.signalfx.com/v2/reference#dashboard-groups-overview
+    See: https://developers.signalfx.com/dashboard_groups_reference.html
     """
 
     def __init__(self, session=None):
@@ -59,7 +59,7 @@ class DashboardGroup(Resource):
             force: Boolean to force creation in case of errors
             interactive: Boolean to be prompted for user input in case of errors
 
-        See: https://developers.signalfx.com/v2/reference#create-dashboard-group
+        See: https://developers.signalfx.com/dashboard_groups_reference.html#tag/Create-Single-Dashboard-Group
         """
 
         if dry_run:
@@ -105,7 +105,7 @@ class DashboardGroup(Resource):
         Arguments:
             dry_run: Boolean to test a dry run
 
-        See: https://developers.signalfx.com/v2/reference#get-dashboard-groups
+        See: https://developers.signalfx.com/dashboard_groups_reference.html#tag/Retrieve-Dashboard-Groups-Using-Query
         """
         if dry_run:
             click.echo("Returns the data for Dashboard Group id \"{0}\". API call that is executed: \n GET {1}".format(
@@ -173,7 +173,7 @@ class DashboardGroup(Resource):
             resource_id: String matching a dashboard group resource
             dry_run: Boolean to test a dry run
 
-        See: https://developers.signalfx.com/v2/reference#update-dashboard-group
+        See: https://developers.signalfx.com/dashboard_groups_reference.html#tag/Update-Single-Dashboard-Group
         """
 
         if 'id' in self.options or resource_id:
@@ -211,7 +211,7 @@ class DashboardGroup(Resource):
             resource_id: String matching a dashboard group resource
             dry_run: Boolean to test a dry run
 
-        See: https://developers.signalfx.com/v2/reference#delete-dashboard-group
+        See: https://developers.signalfx.com/dashboard_groups_reference.html#tag/Delete-Single-Dashboard-Group
         """
         if dry_run:
             click.echo("Dashboard Group id \"{0}\" will be deleted. API call that is executed: \n DELETE {1}".format(
@@ -229,7 +229,7 @@ class DashboardGroup(Resource):
             resource_id: String matching a dashboard group resource
             dry_run: Boolean to test a dry run
 
-        See: https://developers.signalfx.com/v2/reference#clone-dashboard-into-dashboard-group
+        See: https://developers.signalfx.com/dashboard_groups_reference.html#tag/Clone-Dashboard-to-Group
         """
         if dry_run:
             self.clone_options['sourceDashboard'] = dashboard_id
@@ -302,7 +302,7 @@ class Dashboard(Resource):
             force: Boolean to force creation in case of errors
             interactive: Boolean to be prompted for user input in case of errors
 
-        See: https://developers.signalfx.com/v2/reference#dashboardsimple
+        See: https://developers.signalfx.com/dashboards_reference.html#tag/Create-Simple-Dashboard
         """
 
         if dry_run:
@@ -362,7 +362,7 @@ class Dashboard(Resource):
             resource_id: String matching a dashboard resource
             dry_run: Boolean to test a dry run
 
-        See: https://developers.signalfx.com/v2/reference#get-dashboard
+        See: https://developers.signalfx.com/dashboards_reference.html#tag/Retrieve-Dashboards-Using-Query
         """
         if dry_run:
             click.echo("Returns the data for Dashboard id \"{0}\". API call that is executed: \n GET {1}".format(
@@ -444,7 +444,7 @@ class Dashboard(Resource):
             resource_id: String matching the resource ID for this dashboard
             dry_run: Boolean to test a dry run
 
-        See: https://developers.signalfx.com/v2/reference#update-dashboard
+        See: https://developers.signalfx.com/dashboards_reference.html#tag/Update-Single-Dashboard
         """
         if 'id' in self.options or resource_id:
             dashboard = self.read()
@@ -524,7 +524,7 @@ This typically happens when we delete a chart from an existing dashboard.
             resource_id: String matching the resource id for a dashboard
             dry_run: Boolean to test a dry run
 
-        See: https://developers.signalfx.com/v2/reference#delete-dashboard
+        See: https://developers.signalfx.com/dashboards_reference.html#tag/Delete-Single-Dashboard
         """
         if dry_run:
             click.echo("Dashboard id \"{0}\" will be deleted. API call that is executed: \n DELETE {1}".format(

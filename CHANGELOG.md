@@ -5,6 +5,12 @@
   - `signal_analog` has learned to use the `groupId` field when updating
   Dashboard resources after the recent Sfx API changes
 
+### Updated
+
+  - As many documentation links as possible since the last doc update from Sfx.
+  Notable missing updates are those for 3rd party integration Notifications in
+  the `signal_analog.detectors` module.
+
 ## 2.7.0 (2019-04-03)
 
 ### Updated
