@@ -1,0 +1,27 @@
+version: 2
+
+jobs:
+  build:
+    docker:
+      - image: circleci/python:3.7
+    steps:
+      - checkout
+      - run: sudo chown -R circleci:circleci /usr/local/bin
+      - run: sudo chown -R circleci:circleci /usr/local/lib/python3.7/site-packages
+      - restore_cache:  # ensure this step occurs *before* installing dependencies
+          key: signal-analog-{{ .Branch }}
+      - run:
+          command: |
+            sudo pip install -r requirements_dev.txt
+            sudo python setup.py install
+      - run:
+          command: |
+            mkdir -p test-results
+            pytest --ignore=src --junitxml=test-results/report.xml
+      - store_test_results:
+          path: test-results
+      - save_cache:
+          key: signal-analog-{{ .Branch }}
+          paths:
+            - "/usr/local/bin"
+            - "/usr/local/lib/python3.7/site-packages"
