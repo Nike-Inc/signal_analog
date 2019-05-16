@@ -3,8 +3,6 @@
 import re
 import pytest
 import requests
-import betamax
-from betamax_serializers import pretty_json
 
 from email_validator import EmailNotValidError
 from signal_analog.combinators import Div, GT, LT
@@ -18,16 +16,6 @@ from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
                                     TeamEmailNotification, Rule, Severity, \
                                     Time, TimeConfig, VisualizationOptions, \
                                     Detector
-
-
-# Global config. This will store all recorded requests in the 'mocks' dir
-with betamax.Betamax.configure() as config:
-    betamax.Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
-    config.cassette_library_dir = 'tests/mocks'
-
-# Don't get in the habit of doing this, but it simplifies testing
-global_session = requests.Session()
-global_recorder = betamax.Betamax(global_session)
 
 
 def test_email_valid():
@@ -450,7 +438,7 @@ def test_detector_with_assign_combinator():
     assert program.statements.pop() == utilization_sum
 
 
-def test_detector_update():
+def test_detector_update(sfx_recorder, session):
 
     api_token = 'foo'
     label = 'foo'
@@ -466,12 +454,12 @@ def test_detector_update():
         .with_notifications(EmailNotification('foo.bar@example.com'))
 
     # Assert that we can actually update values within a detector
-    with global_recorder.use_cassette('detector_update_success',
+    with sfx_recorder.use_cassette('detector_update_success',
                                       serialize_with='prettyjson'):
 
 
         def detector(threshold):
-            return Detector(session=global_session)\
+            return Detector(session=session)\
                 .with_name('test_update')\
             .with_program(program(threshold))\
             .with_rules(rule)

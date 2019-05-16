@@ -2,14 +2,13 @@ try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
+
 import json
 import sys
 from contextlib import contextmanager
 
-import betamax
 import pytest
 import requests
-from betamax_serializers import pretty_json
 from mock import patch
 
 from signal_analog.charts import TimeSeriesChart, PlotType
@@ -17,18 +16,7 @@ from signal_analog.dashboards import Dashboard, DashboardGroup
 from signal_analog.errors import ResourceMatchNotFoundError, \
     ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError, \
     SignalAnalogError
-from signal_analog.flow import Data
 from signal_analog.filters import DashboardFilters, FilterVariable, FilterSource, FilterTime
-
-
-# Global config. This will store all recorded requests in the 'mocks' dir
-with betamax.Betamax.configure() as config:
-    betamax.Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
-    config.cassette_library_dir = './mocks'
-
-# Don't get in the habit of doing this, but it simplifies testing
-global_session = requests.Session()
-global_recorder = betamax.Betamax(global_session)
 
 
 # Method to capture stdout
@@ -40,19 +28,6 @@ def stdout_redirected(new_stdout):
         yield None
     finally:
         sys.stdout = save_stdout
-
-
-def mk_chart(name):
-    program = Data('cpu.utilization').publish()
-    return TimeSeriesChart(session=global_session)\
-        .with_name(name)\
-        .with_program(program)
-
-
-def mk_dashboard(dashboard_name, chart_name):
-    return Dashboard(session=global_session)\
-        .with_name(dashboard_name)\
-        .with_charts(mk_chart(chart_name))
 
 
 def test_dashboard_init():
@@ -67,9 +42,9 @@ def test_dashboard_with_name():
     assert dashboard.options['name'] == expected_name
 
 
-def test_dashboard_with_charts():
-    chart1 = mk_chart('chart1')
-    chart2 = mk_chart('chart2')
+def test_dashboard_with_charts(chart):
+    chart1 = chart('chart1')
+    chart2 = chart('chart2')
 
     expected_values = [chart1, chart2]
 
@@ -203,34 +178,34 @@ def test_find_match_none():
 @pytest.mark.parametrize('input',
                          ['Shoeadmin Application Dashboard',
                           'Riposte Template Dashboard'])
-def test_create_signal_analog_error(input):
+def test_create_signal_analog_error(input, session, sfx_recorder):
     """Test the cases we expect to fail."""
-    with global_recorder.use_cassette(input.lower().replace(' ', '_'),
+    with sfx_recorder.use_cassette(input.lower().replace(' ', '_'),
                                       serialize_with='prettyjson'):
         with pytest.raises(SignalAnalogError):
-            Dashboard(session=global_session)\
+            Dashboard(session=session)\
                     .with_name(input)\
                     .with_api_token('foo')\
                     .create()
 
 
-def test_dashboard_create_success():
-    with global_recorder.use_cassette('dashboard_create_success',
+def test_dashboard_create_success(sfx_recorder, session, chart):
+    with sfx_recorder.use_cassette('dashboard_create_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .create()
 
 
-def test_dashboard_create_force_success():
-    dashboard = Dashboard(session=global_session)\
+def test_dashboard_create_force_success(sfx_recorder, session, chart):
+    dashboard = Dashboard(session=session)\
         .with_name('testy mctesterson')\
         .with_api_token('foo')\
-        .with_charts(mk_chart('lol'))
+        .with_charts(chart('lol'))
 
-    with global_recorder.use_cassette('dashboard_create_success_force',
+    with sfx_recorder.use_cassette('dashboard_create_success_force',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
         dashboard.create()
@@ -242,13 +217,13 @@ def test_dashboard_create_force_success():
 
 
 @patch('click.confirm')
-def test_dashboard_create_interactive_success(confirm):
+def test_dashboard_create_interactive_success(confirm, sfx_recorder, session, chart):
     confirm.__getitem__.return_value = 'y'
-    dashboard = Dashboard(session=global_session) \
+    dashboard = Dashboard(session=session) \
         .with_name('testy mctesterson') \
         .with_api_token('foo') \
-        .with_charts(mk_chart('lol'))
-    with global_recorder.use_cassette('dashboard_create_success_interactive',
+        .with_charts(chart('lol'))
+    with sfx_recorder.use_cassette('dashboard_create_success_interactive',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
         dashboard.create()
@@ -260,13 +235,13 @@ def test_dashboard_create_interactive_success(confirm):
 
 
 @patch('click.confirm')
-def test_dashboard_create_interactive_failure(confirm):
+def test_dashboard_create_interactive_failure(confirm, sfx_recorder, session, chart):
     confirm.__getitem__.return_value = 'n'
-    dashboard = Dashboard(session=global_session) \
+    dashboard = Dashboard(session=session) \
         .with_name('testy mctesterson') \
         .with_api_token('foo') \
-        .with_charts(mk_chart('lol'))
-    with global_recorder.use_cassette('dashboard_create_failure_interactive',
+        .with_charts(chart('lol'))
+    with sfx_recorder.use_cassette('dashboard_create_failure_interactive',
                                       serialize_with='prettyjson'):
         # Create our first dashboard
         dashboard.create()
@@ -276,27 +251,27 @@ def test_dashboard_create_interactive_failure(confirm):
             dashboard.create(interactive=True)
 
 
-def test_dashboard_update_success():
-    with global_recorder.use_cassette('dashboard_update_success',
+def test_dashboard_update_success(sfx_recorder, session, chart):
+    with sfx_recorder.use_cassette('dashboard_update_success',
                                       serialize_with='prettyjson'):
-        dashboard = Dashboard(session=global_session) \
+        dashboard = Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol'))
+            .with_charts(chart('lol'))
 
         dashboard.create()
         dashboard.update(name='updated_dashboard_name',
                          description='updated_dashboard_description')
 
 
-def test_dashboard_update_failure():
-    chart = mk_chart('lol')
+def test_dashboard_update_failure(sfx_recorder, session, chart):
+    chart = chart('lol')
 
-    dashboard = Dashboard(session=global_session) \
+    dashboard = Dashboard(session=session) \
         .with_name('testy mctesterson') \
         .with_api_token('foo') \
         .with_charts(chart)
-    with global_recorder.use_cassette('dashboard_update_failure',
+    with sfx_recorder.use_cassette('dashboard_update_failure',
                                       serialize_with='prettyjson'):
         # Just to make sure there are multiple dashboards exists, create a new
         # dashboard with the same name
@@ -309,15 +284,15 @@ def test_dashboard_update_failure():
                              description='updated_dashboard_description')
 
 
-def test_dashboard_update_child_chart():
-    chart = mk_chart('rawr')
+def test_dashboard_update_child_chart(sfx_recorder, session, chart):
+    chart = chart('rawr')
 
-    dashboard = Dashboard(session=global_session)\
+    dashboard = Dashboard(session=session)\
         .with_name('foobarium')\
         .with_api_token('foo')\
         .with_charts(chart)
 
-    with global_recorder.use_cassette('dashboard_update_child_chart',
+    with sfx_recorder.use_cassette('dashboard_update_child_chart',
                                       serialize_with='prettyjson'):
         # We expect that updating the chart immediately shouldn't have
         # any effect on the state of the chart.
@@ -328,16 +303,16 @@ def test_dashboard_update_child_chart():
         assert len(resp['charts']) == 1
 
 
-def test_dashboard_create_child_chart():
-    chart = mk_chart('rawr')
-    chart2 = mk_chart('roar')
+def test_dashboard_create_child_chart(sfx_recorder, session, chart):
+    chart1 = chart('rawr')
+    chart2 = chart('roar')
 
-    dashboard = Dashboard(session=global_session)\
+    dashboard = Dashboard(session=session)\
         .with_name('bariumfoo')\
         .with_api_token('foo')\
-        .with_charts(chart)
+        .with_charts(chart1)
 
-    with global_recorder.use_cassette('dashboard_create_child_chart',
+    with sfx_recorder.use_cassette('dashboard_create_child_chart',
                                       serialize_with='prettyjson'):
         resp = dashboard.create()
         assert len(resp['charts']) == 1
@@ -349,16 +324,16 @@ def test_dashboard_create_child_chart():
         assert len(resp_update['charts']) == 2
 
 
-def test_dashboard_delete_child_chart():
-    chart = mk_chart('rawr')
-    chart2 = mk_chart('roar')
+def test_dashboard_delete_child_chart(sfx_recorder, session, chart):
+    chart1 = chart('rawr')
+    chart2 = chart('roar')
 
-    dashboard = Dashboard(session=global_session)\
+    dashboard = Dashboard(session=session)\
         .with_name('isley brothers')\
         .with_api_token('foo')\
-        .with_charts(chart, chart2)
+        .with_charts(chart1, chart2)
 
-    with global_recorder.use_cassette('dashboard_delete_child_chart',
+    with sfx_recorder.use_cassette('dashboard_delete_child_chart',
                                       serialize_with='prettyjson'):
         resp = dashboard.create()
         assert len(resp['charts']) == 2
@@ -373,7 +348,7 @@ def test_dashboard_delete_child_chart():
         assert len(resp_delete['charts']) == 1
 
 
-def test_dashboard_create_with_filters_with_one_variable_success():
+def test_dashboard_create_with_filters_with_one_variable_success(sfx_recorder, session, chart):
     app_var = FilterVariable().with_alias('app') \
         .with_property('app') \
         .with_is_required(True) \
@@ -382,17 +357,17 @@ def test_dashboard_create_with_filters_with_one_variable_success():
     dashboard_filter = DashboardFilters() \
         .with_variables(app_var)
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_with_one_variable_success',
+    with sfx_recorder.use_cassette('dashboard_create_with_filters_with_one_variable_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_with_multiple_variables_success():
+def test_dashboard_create_with_filters_with_multiple_variables_success(sfx_recorder, session, chart):
     app_var = FilterVariable().with_alias('app') \
         .with_property('app') \
         .with_is_required(True) \
@@ -406,17 +381,17 @@ def test_dashboard_create_with_filters_with_multiple_variables_success():
     dashboard_filter = DashboardFilters() \
         .with_variables(app_var, env_var)
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_with_multiple_variables_success',
+    with sfx_recorder.use_cassette('dashboard_create_with_filters_with_multiple_variables_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_with_multiple_values_success():
+def test_dashboard_create_with_filters_with_multiple_values_success(sfx_recorder, session, chart):
     app_var = FilterVariable().with_alias('app') \
         .with_property('app') \
         .with_is_required(True) \
@@ -425,17 +400,17 @@ def test_dashboard_create_with_filters_with_multiple_values_success():
     dashboard_filter = DashboardFilters() \
         .with_variables(app_var)
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_with_multiple_values_success',
+    with sfx_recorder.use_cassette('dashboard_create_with_filters_with_multiple_values_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_with_empty_alias_failure():
+def test_dashboard_create_with_filters_with_empty_alias_failure(session, chart):
     with pytest.raises(ValueError):
         app_var = FilterVariable().with_alias('') \
             .with_property('app') \
@@ -445,15 +420,15 @@ def test_dashboard_create_with_filters_with_empty_alias_failure():
         dashboard_filter = DashboardFilters() \
             .with_variables(app_var)
 
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_with_empty_property_failure():
+def test_dashboard_create_with_filters_with_empty_property_failure(session, chart):
     with pytest.raises(ValueError):
         app_var = FilterVariable().with_alias('app') \
             .with_property('') \
@@ -463,15 +438,15 @@ def test_dashboard_create_with_filters_with_empty_property_failure():
         dashboard_filter = DashboardFilters() \
             .with_variables(app_var)
 
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_with_missing_alias_failure():
+def test_dashboard_create_with_filters_with_missing_alias_failure(session, chart):
     with pytest.raises(ValueError):
         app_var = FilterVariable().with_property('app') \
             .with_is_required(True) \
@@ -480,15 +455,15 @@ def test_dashboard_create_with_filters_with_missing_alias_failure():
         dashboard_filter = DashboardFilters() \
             .with_variables(app_var)
 
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_with_missing_property_failure():
+def test_dashboard_create_with_filters_with_missing_property_failure(session, chart):
     with pytest.raises(ValueError):
         app_var = FilterVariable().with_alias('app') \
             .with_is_required(True) \
@@ -497,15 +472,15 @@ def test_dashboard_create_with_filters_with_missing_property_failure():
         dashboard_filter = DashboardFilters() \
             .with_variables(app_var)
 
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_with_unexpected_data_type_failure():
+def test_dashboard_create_with_filters_with_unexpected_data_type_failure(session, chart):
     with pytest.raises(ValueError):
         app_var = FilterVariable().with_alias('app') \
             .with_is_required("THIS SHOULD BE BOOLEAN NOT A STRING") \
@@ -514,15 +489,15 @@ def test_dashboard_create_with_filters_with_unexpected_data_type_failure():
         dashboard_filter = DashboardFilters() \
             .with_variables(app_var)
 
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_source_success():
+def test_dashboard_create_with_filters_source_success(sfx_recorder, session, chart):
     aws_src = FilterSource()\
         .with_property("aws_region")\
         .with_value("us-west-2")
@@ -530,17 +505,17 @@ def test_dashboard_create_with_filters_source_success():
     dashboard_filter = DashboardFilters()\
         .with_sources(aws_src)
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_source_success',
+    with sfx_recorder.use_cassette('dashboard_create_with_filters_source_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_source_NOT_success():
+def test_dashboard_create_with_filters_source_NOT_success(sfx_recorder, session, chart):
     aws_src = FilterSource()\
         .with_property("aws_region")\
         .with_value("us-west-2") \
@@ -549,17 +524,17 @@ def test_dashboard_create_with_filters_source_NOT_success():
     dashboard_filter = DashboardFilters()\
         .with_sources(aws_src)
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_source_NOT_success',
+    with sfx_recorder.use_cassette('dashboard_create_with_filters_source_NOT_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_source_with_empty_property_failure():
+def test_dashboard_create_with_filters_source_with_empty_property_failure(session, chart):
     with pytest.raises(ValueError):
         aws_src = FilterSource() \
             .with_property("") \
@@ -568,15 +543,15 @@ def test_dashboard_create_with_filters_source_with_empty_property_failure():
         dashboard_filter = DashboardFilters() \
             .with_sources(aws_src)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_source_with_empty_value_failure():
+def test_dashboard_create_with_filters_source_with_empty_value_failure(session, chart):
     with pytest.raises(ValueError):
         aws_src = FilterSource() \
             .with_property("aws_region") \
@@ -585,15 +560,15 @@ def test_dashboard_create_with_filters_source_with_empty_value_failure():
         dashboard_filter = DashboardFilters() \
             .with_sources(aws_src)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_source_with_empty_is_not_failure():
+def test_dashboard_create_with_filters_source_with_empty_is_not_failure(session, chart):
     with pytest.raises(ValueError):
         aws_src = FilterSource() \
             .with_property("aws_region") \
@@ -603,15 +578,15 @@ def test_dashboard_create_with_filters_source_with_empty_is_not_failure():
         dashboard_filter = DashboardFilters() \
             .with_sources(aws_src)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_source_with_missing_property_failure():
+def test_dashboard_create_with_filters_source_with_missing_property_failure(session, chart):
     with pytest.raises(ValueError):
         aws_src = FilterSource() \
             .with_value("us-west-2")
@@ -619,15 +594,15 @@ def test_dashboard_create_with_filters_source_with_missing_property_failure():
         dashboard_filter = DashboardFilters() \
             .with_sources(aws_src)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_source_with_missing_value_failure():
+def test_dashboard_create_with_filters_source_with_missing_value_failure(session, chart):
     with pytest.raises(ValueError):
         aws_src = FilterSource() \
             .with_property("aws_region")
@@ -635,30 +610,30 @@ def test_dashboard_create_with_filters_source_with_missing_value_failure():
         dashboard_filter = DashboardFilters() \
             .with_sources(aws_src)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_source_with_missing_property_and_value_failure():
+def test_dashboard_create_with_filters_source_with_missing_property_and_value_failure(session, chart):
     with pytest.raises(ValueError):
         aws_src = FilterSource()
 
         dashboard_filter = DashboardFilters() \
             .with_sources(aws_src)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_as_string_success():
+def test_dashboard_create_with_filters_time_as_string_success(sfx_recorder, session, chart):
     time = FilterTime()\
         .with_start("-1h")\
         .with_end("Now")
@@ -666,17 +641,17 @@ def test_dashboard_create_with_filters_time_as_string_success():
     dashboard_filter = DashboardFilters()\
         .with_time(time)
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_time_as_string_success',
+    with sfx_recorder.use_cassette('dashboard_create_with_filters_time_as_string_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_time_as_integer_success():
+def test_dashboard_create_with_filters_time_as_integer_success(sfx_recorder, session, chart):
     time = FilterTime()\
         .with_start(1523721600000)\
         .with_end(1523808000000)
@@ -684,17 +659,17 @@ def test_dashboard_create_with_filters_time_as_integer_success():
     dashboard_filter = DashboardFilters()\
         .with_time(time)
 
-    with global_recorder.use_cassette('dashboard_create_with_filters_time_as_integer_success',
+    with sfx_recorder.use_cassette('dashboard_create_with_filters_time_as_integer_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .create()
 
 
-def test_dashboard_create_with_filters_time_empty_start_time_failure():
+def test_dashboard_create_with_filters_time_empty_start_time_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime() \
             .with_start('') \
@@ -703,15 +678,15 @@ def test_dashboard_create_with_filters_time_empty_start_time_failure():
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_empty_end_time_failure():
+def test_dashboard_create_with_filters_time_empty_end_time_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime() \
             .with_start('-1h') \
@@ -720,15 +695,15 @@ def test_dashboard_create_with_filters_time_empty_end_time_failure():
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_missing_start_time_failure():
+def test_dashboard_create_with_filters_time_missing_start_time_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime() \
             .with_end('Now')
@@ -736,15 +711,15 @@ def test_dashboard_create_with_filters_time_missing_start_time_failure():
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_missing_end_time_failure():
+def test_dashboard_create_with_filters_time_missing_end_time_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime() \
             .with_start('-1h')
@@ -752,30 +727,30 @@ def test_dashboard_create_with_filters_time_missing_end_time_failure():
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_missing_start_and_end_time_failure():
+def test_dashboard_create_with_filters_time_missing_start_and_end_time_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()
 
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_and_end_time_as_different_data_types_failure():
+def test_dashboard_create_with_filters_time_start_and_end_time_as_different_data_types_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start(1523808000000)\
@@ -784,15 +759,15 @@ def test_dashboard_create_with_filters_time_start_and_end_time_as_different_data
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_and_end_time_as_unsupported_data_type_failure():
+def test_dashboard_create_with_filters_time_start_and_end_time_as_unsupported_data_type_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start(True)\
@@ -801,15 +776,15 @@ def test_dashboard_create_with_filters_time_start_and_end_time_as_unsupported_da
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_first_character_is_not_negative_sign_failure():
+def test_dashboard_create_with_filters_time_start_first_character_is_not_negative_sign_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start("1h")\
@@ -818,15 +793,15 @@ def test_dashboard_create_with_filters_time_start_first_character_is_not_negativ
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_unexpected_last_character_failure():
+def test_dashboard_create_with_filters_time_start_unexpected_last_character_failure(chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start("-1z")\
@@ -835,15 +810,15 @@ def test_dashboard_create_with_filters_time_start_unexpected_last_character_fail
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_no_positive_integer_after_negative_sign_failure():
+def test_dashboard_create_with_filters_time_start_no_positive_integer_after_negative_sign_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start("--1h")\
@@ -852,15 +827,15 @@ def test_dashboard_create_with_filters_time_start_no_positive_integer_after_nega
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_no_integer_after_negative_sign_failure():
+def test_dashboard_create_with_filters_time_start_no_integer_after_negative_sign_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start("-zh")\
@@ -869,15 +844,15 @@ def test_dashboard_create_with_filters_time_start_no_integer_after_negative_sign
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_end_time_is_not_Now_failure():
+def test_dashboard_create_with_filters_time_end_time_is_not_Now_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start("-1h")\
@@ -886,15 +861,15 @@ def test_dashboard_create_with_filters_time_end_time_is_not_Now_failure():
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_and_end_time_are_negative_integers_failure():
+def test_dashboard_create_with_filters_time_start_and_end_time_are_negative_integers_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start(-1523808000000)\
@@ -903,15 +878,15 @@ def test_dashboard_create_with_filters_time_start_and_end_time_are_negative_inte
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_time_is_negative_integer_failure():
+def test_dashboard_create_with_filters_time_start_time_is_negative_integer_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start(-1523808000000)\
@@ -920,15 +895,15 @@ def test_dashboard_create_with_filters_time_start_time_is_negative_integer_failu
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_end_time_is_negative_integer_failure():
+def test_dashboard_create_with_filters_time_end_time_is_negative_integer_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start(1523808000000)\
@@ -937,15 +912,15 @@ def test_dashboard_create_with_filters_time_end_time_is_negative_integer_failure
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_time_is_not_less_than_end_time_failure():
+def test_dashboard_create_with_filters_time_start_time_is_not_less_than_end_time_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start(1523894400000)\
@@ -954,34 +929,34 @@ def test_dashboard_create_with_filters_time_start_time_is_not_less_than_end_time
         dashboard_filter = DashboardFilters() \
             .with_time(time)
 
-        Dashboard(session=global_session) \
+        Dashboard(session=session) \
             .with_name('testy mctesterson') \
             .with_api_token('foo') \
-            .with_charts(mk_chart('lol')) \
+            .with_charts(chart('lol')) \
             .with_filters(dashboard_filter) \
             .create()
 
 
-def test_dashboard_create_with_dashboard_group_id_success():
-    with global_recorder.use_cassette('dashboard_create_with_dashboard_group_id_success',
+def test_dashboard_create_with_dashboard_group_id_success(sfx_recorder, session, chart):
+    with sfx_recorder.use_cassette('dashboard_create_with_dashboard_group_id_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .create(group_id='DnogQGhAcAA')
 
 
-def test_dashboard_create_with_invalid_dashboard_group_id_failure():
+def test_dashboard_create_with_invalid_dashboard_group_id_failure(session, chart):
     with pytest.raises(RuntimeError):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .create(group_id='asdf;lkj')
 
 
-def test_dashboard_update_with_filters_success():
+def test_dashboard_update_with_filters_success(sfx_recorder, session, chart):
     app_var = FilterVariable().with_alias('app') \
         .with_property('app') \
         .with_is_required(True) \
@@ -995,19 +970,19 @@ def test_dashboard_update_with_filters_success():
     dashboard_filter = DashboardFilters() \
         .with_variables(app_var, env_var)
 
-    with global_recorder.use_cassette('dashboard_update_with_filters_success',
+    with sfx_recorder.use_cassette('dashboard_update_with_filters_success',
                                       serialize_with='prettyjson'):
 
         # This Dashboard does not exist. So, a new dashboard should be created
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .update()
 
 
-def test_dashboard_update_existing_dashboard_with_filters_success():
+def test_dashboard_update_existing_dashboard_with_filters_success(sfx_recorder, session, chart):
 
     app_var = FilterVariable().with_alias('app') \
         .with_property('app') \
@@ -1017,49 +992,49 @@ def test_dashboard_update_existing_dashboard_with_filters_success():
     dashboard_filter = DashboardFilters() \
         .with_variables(app_var)
 
-    with global_recorder.use_cassette('dashboard_update_with_filters_success',
+    with sfx_recorder.use_cassette('dashboard_update_with_filters_success',
                                       serialize_with='prettyjson'):
 
         # This Dashboard already exists. So, it will be updated
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\
-            .with_charts(mk_chart('lol'))\
+            .with_charts(chart('lol'))\
             .with_filters(dashboard_filter)\
             .update()
 
 
-def test_dashboard_read_success():
-    with global_recorder.use_cassette('dashboard_read_success',
+def test_dashboard_read_success(sfx_recorder, session):
+    with sfx_recorder.use_cassette('dashboard_read_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_api_token('foo')\
             .read('DWgS_7IAgAA')
 
 
-def test_dashboard_delete_success():
-    with global_recorder.use_cassette('dashboard_delete_success',
+def test_dashboard_delete_success(sfx_recorder, session):
+    with sfx_recorder.use_cassette('dashboard_delete_success',
                                       serialize_with='prettyjson'):
-        Dashboard(session=global_session)\
+        Dashboard(session=session)\
             .with_api_token('foo')\
             .delete('DWgS_7IAgAA')
 
 
-def test_dashboard_group_create_success():
-    with global_recorder.use_cassette('dashboard_group_create_success',
+def test_dashboard_group_create_success(sfx_recorder, session):
+    with sfx_recorder.use_cassette('dashboard_group_create_success',
                                       serialize_with='prettyjson'):
-        DashboardGroup(session=global_session)\
+        DashboardGroup(session=session)\
             .with_name('spaceX')\
             .with_api_token('foo')\
             .create()
 
 
-def test_dashboard_group_create_force_success():
-    dashboard_group = DashboardGroup(session=global_session)\
+def test_dashboard_group_create_force_success(sfx_recorder, session):
+    dashboard_group = DashboardGroup(session=session)\
         .with_name('spaceX')\
         .with_api_token('foo')\
 
-    with global_recorder.use_cassette('dashboard_group_create_success_force',
+    with sfx_recorder.use_cassette('dashboard_group_create_success_force',
                                       serialize_with='prettyjson'):
         # Create our first dashboard group
         dashboard_group.create()
@@ -1071,12 +1046,12 @@ def test_dashboard_group_create_force_success():
 
 
 @patch('click.confirm')
-def test_dashboard_group_create_interactive_success(confirm):
+def test_dashboard_group_create_interactive_success(confirm, sfx_recorder, session):
     confirm.__getitem__.return_value = 'y'
-    dashboard_group = DashboardGroup(session=global_session) \
+    dashboard_group = DashboardGroup(session=session) \
         .with_name('spaceX') \
         .with_api_token('foo')
-    with global_recorder.use_cassette(
+    with sfx_recorder.use_cassette(
         'dashboard_group_create_success_interactive',
             serialize_with='prettyjson'):
 
@@ -1090,12 +1065,12 @@ def test_dashboard_group_create_interactive_success(confirm):
 
 
 @patch('click.confirm')
-def test_dashboard_group_create_interactive_failure(confirm):
+def test_dashboard_group_create_interactive_failure(confirm, sfx_recorder, session):
     confirm.__getitem__.return_value = 'n'
-    dashboard_group = DashboardGroup(session=global_session) \
+    dashboard_group = DashboardGroup(session=session) \
         .with_name('spaceX') \
         .with_api_token('foo')
-    with global_recorder.use_cassette(
+    with sfx_recorder.use_cassette(
         'dashboard_group_create_failure_interactive',
             serialize_with='prettyjson'):
 
@@ -1107,15 +1082,15 @@ def test_dashboard_group_create_interactive_failure(confirm):
             dashboard_group.create(interactive=True)
 
 
-def test_dashboard_group_update_success():
+def test_dashboard_group_update_success(sfx_recorder, session):
 
     name = 'spaceX lol'
     updated_name = 'updated_dashboard_group_name'
 
-    with global_recorder.use_cassette('dashboard_group_update_success',
+    with sfx_recorder.use_cassette('dashboard_group_update_success',
                                       serialize_with='prettyjson'):
 
-        dashboard_group = DashboardGroup(session=global_session)\
+        dashboard_group = DashboardGroup(session=session)\
             .with_name(name)\
             .with_api_token('foo')
 
@@ -1130,12 +1105,12 @@ def test_dashboard_group_update_success():
         assert update_result['name'] == updated_name
 
 
-def test_dashboard_group_update_failure():
+def test_dashboard_group_update_failure(sfx_recorder, session):
 
-    dashboard_group = DashboardGroup(session=global_session) \
+    dashboard_group = DashboardGroup(session=session) \
         .with_name('spaceX') \
         .with_api_token('foo')
-    with global_recorder.use_cassette('dashboard_group_update_failure',
+    with sfx_recorder.use_cassette('dashboard_group_update_failure',
                                       serialize_with='prettyjson'):
         # Just to make sure there are multiple dashboard groups exists,
         # create a new dashboard group with the same name
@@ -1149,15 +1124,15 @@ def test_dashboard_group_update_failure():
                 description='updated_dashboard_group_description')
 
 
-def test_dashboard_group_with_dashboard_create_success():
+def test_dashboard_group_with_dashboard_create_success(sfx_recorder, session, dashboard):
 
     name = 'spaceX unique'
-    group = DashboardGroup(session=global_session)\
+    group = DashboardGroup(session=session)\
         .with_name(name)\
-        .with_dashboards(mk_dashboard('Falcon99', 'chart1'))\
+        .with_dashboards(dashboard('Falcon99', 'chart1'))\
         .with_api_token('foo')\
 
-    with global_recorder.use_cassette(
+    with sfx_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_success',
             serialize_with='prettyjson'):
 
@@ -1167,15 +1142,15 @@ def test_dashboard_group_with_dashboard_create_success():
         assert len(result['dashboards']) == 1
 
 
-def test_dashboard_group_with_dashboard_create_force_success():
+def test_dashboard_group_with_dashboard_create_force_success(sfx_recorder, session, dashboard):
 
     name = 'spaceX'
-    dashboard_group = DashboardGroup(session=global_session)\
+    dashboard_group = DashboardGroup(session=session)\
         .with_name(name) \
-        .with_dashboards(mk_dashboard('Falcon99', 'chart1'))\
+        .with_dashboards(dashboard('Falcon99', 'chart1'))\
         .with_api_token('foo')
 
-    with global_recorder.use_cassette(
+    with sfx_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_success_force',
             serialize_with='prettyjson'):
 
@@ -1186,17 +1161,17 @@ def test_dashboard_group_with_dashboard_create_force_success():
 
 
 @patch('click.confirm')
-def test_dashboard_group_with_dashboard_create_interactive_success(confirm):
+def test_dashboard_group_with_dashboard_create_interactive_success(confirm, sfx_recorder, session, dashboard):
     confirm.__getitem__.return_value = 'y'
 
     name = 'spaceX'
 
-    dashboard_group = DashboardGroup(session=global_session) \
+    dashboard_group = DashboardGroup(session=session) \
         .with_name(name) \
-        .with_dashboards(mk_dashboard('Falcon99', 'chart1')) \
+        .with_dashboards(dashboard('Falcon99', 'chart1')) \
         .with_api_token('foo')
 
-    with global_recorder.use_cassette(
+    with sfx_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_success_interactive',
             serialize_with='prettyjson'):
 
@@ -1206,17 +1181,17 @@ def test_dashboard_group_with_dashboard_create_interactive_success(confirm):
 
 
 @patch('click.confirm')
-def test_dashboard_group_with_dashboard_create_interactive_failure(confirm):
+def test_dashboard_group_with_dashboard_create_interactive_failure(confirm, sfx_recorder, session, dashboard):
     confirm.__getitem__.return_value = 'n'
 
     name = 'spaceX'
 
-    dashboard_group = DashboardGroup(session=global_session) \
+    dashboard_group = DashboardGroup(session=session) \
         .with_name(name) \
-        .with_dashboards(mk_dashboard('Falcon99', 'chart1')) \
+        .with_dashboards(dashboard('Falcon99', 'chart1')) \
         .with_api_token('foo')
 
-    with global_recorder.use_cassette(
+    with sfx_recorder.use_cassette(
         'dashboard_group_with_dashboard_create_failure_interactive',
             serialize_with='prettyjson'):
 
@@ -1225,31 +1200,31 @@ def test_dashboard_group_with_dashboard_create_interactive_failure(confirm):
             assert len(result['dashboards']) == 1
 
 
-def test_dashboard_group_with_dashboard_update_success():
-    with global_recorder.use_cassette(
+def test_dashboard_group_with_dashboard_update_success(sfx_recorder, session, dashboard):
+    with sfx_recorder.use_cassette(
         'dashboard_group_with_dashboard_update_success',
             serialize_with='prettyjson'):
 
-        dashboard_group = DashboardGroup(session=global_session) \
+        dashboard_group = DashboardGroup(session=session) \
             .with_name('spaceX') \
             .with_dashboards(
-                mk_dashboard('Falcon99', 'chart1'),
-                mk_dashboard('FalconHeavy', 'chart2')) \
+                dashboard('Falcon99', 'chart1'),
+                dashboard('FalconHeavy', 'chart2')) \
             .with_api_token('foo')
 
         dashboard_group.update()
 
 
-def test_dashboard_group_with_delete_existing_dashboard_update_success():
+def test_dashboard_group_with_delete_existing_dashboard_update_success(sfx_recorder, session, dashboard):
     name = 'spaceX'
 
-    with global_recorder.use_cassette(
+    with sfx_recorder.use_cassette(
         'dashboard_group_with_delete_existing_dashboard_update_success',
             serialize_with='prettyjson'):
 
-        dashboard_group = DashboardGroup(session=global_session) \
+        dashboard_group = DashboardGroup(session=session) \
             .with_name(name) \
-            .with_dashboards(mk_dashboard('Draagoon', 'chart3')) \
+            .with_dashboards(dashboard('Draagoon', 'chart3')) \
             .with_api_token('foo')
 
         response = dashboard_group.update()
@@ -1258,11 +1233,11 @@ def test_dashboard_group_with_delete_existing_dashboard_update_success():
         assert len(response['dashboards']) == 1
 
 
-def test_dashboard_group_read_success():
-    with global_recorder.use_cassette('dashboard_group_read_success',
+def test_dashboard_group_read_success(sfx_recorder, session):
+    with sfx_recorder.use_cassette('dashboard_group_read_success',
                                       serialize_with='prettyjson'):
         expected = '[prod] Legacyidmapping Application Dashboard Group'
-        response = DashboardGroup(session=global_session)\
+        response = DashboardGroup(session=session)\
             .with_api_token('foo')\
             .with_name(expected)\
             .read()
@@ -1270,18 +1245,18 @@ def test_dashboard_group_read_success():
         assert response['name'] == expected
 
 
-def test_dashboard_group_delete_success():
-    with global_recorder.use_cassette('dashboard_group_delete_success',
+def test_dashboard_group_delete_success(sfx_recorder, session):
+    with sfx_recorder.use_cassette('dashboard_group_delete_success',
                                       serialize_with='prettyjson'):
-        DashboardGroup(session=global_session)\
+        DashboardGroup(session=session)\
             .with_api_token('foo')\
             .delete('DWgXZfyAcAA')
 
 
-def test_dashboard_group_clone_success():
-    with global_recorder.use_cassette('dashboard_group_clone_success',
+def test_dashboard_group_clone_success(sfx_recorder, session):
+    with sfx_recorder.use_cassette('dashboard_group_clone_success',
                                       serialize_with='prettyjson'):
-        DashboardGroup(session=global_session)\
+        DashboardGroup(session=session)\
             .with_api_token('foo')\
             .clone('DWgX6iYAcAA', 'DWgX6dNAYAA')
 
