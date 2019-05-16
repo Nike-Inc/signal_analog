@@ -1,7 +1,4 @@
-import betamax
 import click
-import requests
-from betamax_serializers import pretty_json
 from click.testing import CliRunner
 
 from signal_analog.charts import TimeSeriesChart
@@ -9,23 +6,14 @@ from signal_analog.cli import CliBuilder
 from signal_analog.dashboards import Dashboard
 from signal_analog.flow import Data
 
-# Global config. This will store all recorded requests in the 'mocks' dir
-with betamax.Betamax.configure() as config:
-    betamax.Betamax.register_serializer(pretty_json.PrettyJSONSerializer)
-    config.cassette_library_dir = 'tests/mocks'
 
-# Don't get in the habit of doing this, but it simplifies testing
-global_session = requests.Session()
-global_recorder = betamax.Betamax(global_session)
-
-
-def test_cli_create_success():
+def test_cli_create_success(sfx_recorder, session):
     program = Data('cpu.utilization').publish()
     chart = TimeSeriesChart().with_name('lol').with_program(program)
 
-    with global_recorder.use_cassette('cli_create_success',
+    with sfx_recorder.use_cassette('cli_create_success',
                                       serialize_with='prettyjson'):
-        dashboard = Dashboard(session=global_session)\
+        dashboard = Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_charts(chart)
 
@@ -36,13 +24,13 @@ def test_cli_create_success():
         assert result.exit_code == 0
 
 
-def test_cli_create_failure():
+def test_cli_create_failure(sfx_recorder, session):
     program = Data('cpu.utilization').publish()
     chart = TimeSeriesChart().with_name('lol').with_program(program)
 
-    with global_recorder.use_cassette('cli_create_failure',
+    with sfx_recorder.use_cassette('cli_create_failure',
                                       serialize_with='prettyjson'):
-        dashboard = Dashboard(session=global_session)\
+        dashboard = Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_charts(chart)
 
@@ -53,13 +41,13 @@ def test_cli_create_failure():
         assert result.exception
 
 
-def test_cli_create_force_success():
+def test_cli_create_force_success(sfx_recorder, session):
     program = Data('cpu.utilization').publish()
     chart = TimeSeriesChart().with_name('lol').with_program(program)
 
-    with global_recorder.use_cassette('cli_create_force_success',
+    with sfx_recorder.use_cassette('cli_create_force_success',
                                       serialize_with='prettyjson'):
-        dashboard = Dashboard(session=global_session)\
+        dashboard = Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_charts(chart)
 
@@ -70,13 +58,13 @@ def test_cli_create_force_success():
         assert result.exit_code == 0
 
 
-def test_cli_create_interactive_success():
+def test_cli_create_interactive_success(sfx_recorder, session):
     program = Data('cpu.utilization').publish()
     chart = TimeSeriesChart().with_name('lol').with_program(program)
 
-    with global_recorder.use_cassette('cli_create_interactive_success',
+    with sfx_recorder.use_cassette('cli_create_interactive_success',
                                       serialize_with='prettyjson'):
-        dashboard = Dashboard(session=global_session)\
+        dashboard = Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_charts(chart)
 
@@ -87,13 +75,13 @@ def test_cli_create_interactive_success():
         assert result.exit_code == 0
 
 
-def test_cli_create_interactive_failure():
+def test_cli_create_interactive_failure(sfx_recorder, session):
     program = Data('cpu.utilization').publish()
     chart = TimeSeriesChart().with_name('lol').with_program(program)
 
-    with global_recorder.use_cassette('cli_create_interactive_failure',
+    with sfx_recorder.use_cassette('cli_create_interactive_failure',
                                       serialize_with='prettyjson'):
-        dashboard = Dashboard(session=global_session)\
+        dashboard = Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_charts(chart)
 
@@ -105,13 +93,13 @@ def test_cli_create_interactive_failure():
         assert result.exception
 
 
-def test_cli_update_success():
+def test_cli_update_success(sfx_recorder, session):
     program = Data('cpu.utilization').publish()
     chart = TimeSeriesChart().with_name('lol').with_program(program)
 
-    with global_recorder.use_cassette('cli_update_success',
+    with sfx_recorder.use_cassette('cli_update_success',
                                       serialize_with='prettyjson'):
-        dashboard = Dashboard(session=global_session)\
+        dashboard = Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_charts(chart)
 
@@ -123,13 +111,13 @@ def test_cli_update_success():
         assert result.exit_code == 0
 
 
-def test_cli_update_failure():
+def test_cli_update_failure(sfx_recorder, session):
     program = Data('cpu.utilization').publish()
     chart = TimeSeriesChart().with_name('lol').with_program(program)
 
-    with global_recorder.use_cassette('cli_update_failure',
+    with sfx_recorder.use_cassette('cli_update_failure',
                                       serialize_with='prettyjson'):
-        dashboard = Dashboard(session=global_session)\
+        dashboard = Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_charts(chart)
 
