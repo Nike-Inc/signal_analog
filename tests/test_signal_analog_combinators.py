@@ -1,13 +1,11 @@
 """Tests for `signal_analog.combinators` package."""
+
 from hypothesis import given, settings
 from hypothesis.strategies import one_of, just, none, lists
 import pytest
 
 import signal_analog.combinators as comb
 from .generators import ascii, flows
-
-
-settings.load_profile("ci")
 
 
 @given(one_of(none(), just("")))

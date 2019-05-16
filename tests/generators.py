@@ -7,9 +7,6 @@ from hypothesis import settings
 import signal_analog.flow as flow
 
 
-settings.load_profile("ci")
-
-
 def ascii():
     return text(
         characters(min_codepoint=1, max_codepoint=128,
