@@ -405,6 +405,16 @@ class DisplayOptionsMixin(object):
         self.chart_options.update({'sortBy': sort_by.value})
         return self
 
+    def with_group_by(self, group_by):
+        """Determine how values are grouped.
+
+        Arguments:
+            group_by: List of strings that defines how we group values. Ex. ['role', 'instance-id']
+        """
+        util.assert_valid(group_by)
+        self.chart_options.update({'groupBy': group_by})
+        return self
+
     def with_unit_prefix(self, prefix):
         """Add a unit prefix to this chart.
 
