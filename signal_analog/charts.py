@@ -787,6 +787,16 @@ class HeatmapChart(Chart, DisplayOptionsMixin):
         self.chart_options.update({'colorScale': opts})
         return self
 
+    def with_colorscale2(self, thresholds):
+        """List of secondary visualization properties
+
+        Arguments:
+            thresholds: The thresholds to set for the color range being used.
+        """
+        util.assert_valid(thresholds)
+        self.chart_options.update({'colorScale2': thresholds})
+        return self
+
 
 class TextChart(Chart, DisplayOptionsMixin):
 
