@@ -791,7 +791,12 @@ class HeatmapChart(Chart, DisplayOptionsMixin):
         """List of secondary visualization properties
 
         Arguments:
-            thresholds: The thresholds to set for the color range being used.
+            thresholds: Ranges for which each color will be applied. Ex.
+                [
+                    {"gte": 80, "paletteIndex": 16},
+                    {"gt": 50, "lt": 80, "paletteIndex": 18},
+                    {"lte": 50, "paletteIndex": 20},
+                ]
         """
         util.assert_valid(thresholds)
         self.chart_options.update({'colorScale2': thresholds})
