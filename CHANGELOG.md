@@ -1,3 +1,8 @@
+## Unreleased Changes
+
+* Added `groupBy` support to the chart options. Allows grouping for example of HeatMap charts into groups on multiple levels.
+* Added support for `colorScale2` option on HeatMap charts. This allows to set custom chart colors for a defined range of values.
+
 ## 2.7.2 (2019-05-14)
 
 ### Fixed

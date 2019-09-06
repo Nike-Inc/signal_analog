@@ -309,6 +309,16 @@ def test_hm_chart_with_colorscale():
     chart = HeatmapChart().with_colorscale([70, 50])
     assert chart.chart_options['colorScale'] == opts
 
+def test_hm_chart_with_colorscale2():
+    opts = [{"gte": 80, "paletteIndex": 16},{"gt": 50, "lt": 80, "paletteIndex": 18}]
+    chart = HeatmapChart().with_colorscale2(opts)
+    assert chart.chart_options['colorScale2'] == opts
+
+def test_hm_chart_with_group_by():
+    opts = ['item-1', 'item-2']
+    chart = HeatmapChart().with_group_by(opts)
+    assert chart.chart_options['groupBy'] == opts
+
 def test_ts_list_charts_mixin():
     """TimeSeries and ListCharts can set legend options. But not others."""
 

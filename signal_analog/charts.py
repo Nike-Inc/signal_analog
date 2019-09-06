@@ -405,6 +405,16 @@ class DisplayOptionsMixin(object):
         self.chart_options.update({'sortBy': sort_by.value})
         return self
 
+    def with_group_by(self, group_by):
+        """Determine how values are grouped.
+
+        Arguments:
+            group_by: List of strings that defines how we group values. Ex. ['role', 'instance-id']
+        """
+        util.assert_valid(group_by)
+        self.chart_options.update({'groupBy': group_by})
+        return self
+
     def with_unit_prefix(self, prefix):
         """Add a unit prefix to this chart.
 
@@ -775,6 +785,21 @@ class HeatmapChart(Chart, DisplayOptionsMixin):
         thresholds.sort(reverse=True)
         opts = {'thresholds': thresholds}
         self.chart_options.update({'colorScale': opts})
+        return self
+
+    def with_colorscale2(self, thresholds):
+        """List of secondary visualization properties
+
+        Arguments:
+            thresholds: Ranges for which each color will be applied. Ex.
+                [
+                    {"gte": 80, "paletteIndex": 16},
+                    {"gt": 50, "lt": 80, "paletteIndex": 18},
+                    {"lte": 50, "paletteIndex": 20},
+                ]
+        """
+        util.assert_valid(thresholds)
+        self.chart_options.update({'colorScale2': thresholds})
         return self
 
 
