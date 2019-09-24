@@ -45,7 +45,7 @@ def test_pd_invalid():
 
 def test_bp_valid():
     bp_id = 'foo'
-    n = BigPandaNotificataion(bp_id)
+    n = BigPandaNotification(bp_id)
     assert n.options['type'] == 'BigPanda'
     assert n.options['credentialId'] == bp_id
 
