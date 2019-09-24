@@ -9,7 +9,7 @@ from signal_analog.combinators import Div, GT, LT
 from signal_analog.flow import Assign, Data, Detect, Program, Ref, When
 from signal_analog.charts import TimeSeriesChart
 from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
-                                    BigPandaNotificataion, \
+                                    BigPandaNotification, \
                                     SlackNotification, HipChatNotification, \
                                     ServiceNowNotification, \
                                     VictorOpsNotification, \
