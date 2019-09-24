@@ -9,6 +9,7 @@ from signal_analog.combinators import Div, GT, LT
 from signal_analog.flow import Assign, Data, Detect, Program, Ref, When
 from signal_analog.charts import TimeSeriesChart
 from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
+                                    BigPandaNotificataion, \
                                     SlackNotification, HipChatNotification, \
                                     ServiceNowNotification, \
                                     VictorOpsNotification, \
@@ -40,6 +41,18 @@ def test_pd_valid():
 def test_pd_invalid():
     with pytest.raises(ValueError):
         PagerDutyNotification('')
+
+
+def test_bp_valid():
+    bp_id = 'foo'
+    n = BigPandaNotificataion(bp_id)
+    assert n.options['type'] == 'BigPanda'
+    assert n.options['credentialId'] == bp_id
+
+
+def test_bp_invalid():
+    with pytest.raises(ValueError):
+        BigPandaNotification('')
 
 
 def test_slack_valid():
