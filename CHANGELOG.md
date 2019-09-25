@@ -1,3 +1,7 @@
+## Unrelease changes
+
+* Added `BigPandaNotification` for BigPanda integration within detectors.
+
 ## 2.8.0 (2019-09-06)
 
 * Added `groupBy` support to the chart options. Allows grouping for example of HeatMap charts into groups on multiple levels.

@@ -57,6 +57,29 @@ class PagerDutyNotification(Notification):
         self.options = {'type': 'PagerDuty', 'credentialId': pd_id}
 
 
+class BigPandaNotification(Notification):
+    """A BigPanda notification for detector rules."""
+
+    def __init__(self, bp_id):
+        """Initializes a new BigPanda notification.
+
+        This does not setup a BigPanda integration for you, one must already
+        exist before using this notification type. No validation is done to
+        ensure that a BigPanda integration id is valid.
+
+        These values will typically differ depending on the on-call rotation
+        you want to add to the detector.
+
+        See the integration page for more detail:
+        https://docs.signalfx.com/en/latest/admin-guide/integrate-notifications.html#integrate-with-bigpanda
+
+        Arguments:
+            bp_id: the id of the BigPanda integration to include.
+        """
+        util.assert_valid(bp_id)
+        self.options = {'type': 'BigPanda', 'credentialId': bp_id}
+
+
 class SlackNotification(Notification):
     """A slack notification for detector rules."""
 
