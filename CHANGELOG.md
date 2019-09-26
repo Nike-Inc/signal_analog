@@ -1,4 +1,4 @@
-## Unrelease changes
+## 2.9.0 (2019-09-26)
 
 * Added `BigPandaNotification` for BigPanda integration within detectors.
 
