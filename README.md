@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/Nike-Inc/signal_analog.svg?token=ifpf79nsCVxHsobs3pQ5&branch=master)](https://travis-ci.com/Nike-Inc/signal_analog)
+[![CircleCI](https://circleci.com/gh/Nike-Inc/signal_analog.svg?style=svg)](https://circleci.com/gh/Nike-Inc/signal_analog)
 # signal_analog
 
 A [`troposphere`](https://github.com/cloudtools/troposphere)-inspired library
