@@ -43,7 +43,7 @@ test_requirements = [
 
 setup(
     name='signal_analog',
-    version='2.9.0',
+    version='2.9.1',
     description='A troposphere-like library for managing SignalFx'
                 + 'Charts, Dashboards, and Detectors.',
     long_description=readme + '\n\n' + history,
@@ -51,7 +51,7 @@ setup(
     author="Fernando Freire",
     author_email='fernando.freire@nike.com',
     url='https://github.com/Nike-inc/signal_analog',
-    packages=find_packages(include=['signal_analog']),
+    packages=find_packages(exclude=['tests']),
     include_package_data=True,
     install_requires=requirements,
     zip_safe=False,

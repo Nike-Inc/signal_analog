@@ -8,6 +8,8 @@ from signal_analog.dashboards import Dashboard
 import signal_analog.util as util
 import json
 
+import signal_analog.error.signalfx as sfxerr
+
 
 bad_str_inputs = [None, ""]
 
@@ -86,7 +88,7 @@ def test_resource_create_error():
                 resource = Resource().with_api_token('test')
                 resource.options = {'opt': 'val'}
 
-                with pytest.raises(RuntimeError):
+                with pytest.raises(sfxerr.SignalFxError):
                         resource.create()
 
 

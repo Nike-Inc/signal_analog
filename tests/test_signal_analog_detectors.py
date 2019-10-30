@@ -3,6 +3,7 @@
 import re
 import pytest
 import requests
+import time
 
 from email_validator import EmailNotValidError
 from signal_analog.combinators import Div, GT, LT
@@ -478,7 +479,6 @@ def test_detector_update(sfx_recorder, session):
             .with_rules(rule)
 
         create_response = detector(90).with_api_token(api_token).create()
-        import time
         time.sleep(3)
         update_response = detector(99).with_api_token(api_token).update()
 
@@ -486,3 +486,23 @@ def test_detector_update(sfx_recorder, session):
         assert '90' in create_response['programText']
         assert '99' in update_response['programText']
         assert create_response['id'] == update_response['id']
+
+
+def test_detector_delete_not_found(sfx_recorder, api_token, detector):
+
+    with sfx_recorder.use_cassette('detector_delete_success',
+                                   serialize_with='prettyjson'):
+
+        haskell_curry = detector('francisco_friar', 9001).with_api_token(api_token)
+        tim_curry_lol = detector('francisco_friar', 9001).with_api_token(api_token)
+
+        create_response = haskell_curry.create()
+        time.sleep(3)
+        delete_response = haskell_curry.delete()
+        time.sleep(3)
+        # TODO something should happen here, empty response I think
+        second_delete_response = tim_curry_lol.delete()
+
+        assert '9001' in create_response['programText']
+        assert delete_response is None
+        assert second_delete_response is None

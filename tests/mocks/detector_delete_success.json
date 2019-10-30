@@ -1,0 +1,373 @@
+{
+  "http_interactions": [
+    {
+      "recorded_at": "2019-10-30T20:31:16",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.22.0"
+          ],
+          "X-SF-Token": [
+            "<SFX_TOKEN>"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/detector?name=francisco_friar"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAKvmUlBQSs4vzStRUrBSMNABcYtSi0tzSopBAtEKsVy1APL4sYckAAAA",
+          "encoding": null,
+          "string": ""
+        },
+        "headers": {
+          "Cache-Control": [
+            "no-cache, no-store, must-revalidate, no-transform"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "51"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 30 Oct 2019 20:31:16 GMT"
+          ],
+          "Expires": [
+            "0"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/detector?name=francisco_friar"
+      }
+    },
+    {
+      "recorded_at": "2019-10-30T20:31:16",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": "{\"name\": \"francisco_friar\", \"programText\": \"detect(data(\\\"cpu.utilization\\\") > 9001).publish(label=\\\"francisco_friar\\\")\", \"rules\": [{\"detectLabel\": \"francisco_friar\", \"severity\": \"Info\", \"notifications\": [{\"type\": \"Email\", \"email\": \"francisco.friar@polite.thoughtleader.org\"}]}]}"
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "279"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.22.0"
+          ],
+          "X-SF-Token": [
+            "<SFX_TOKEN>"
+          ]
+        },
+        "method": "POST",
+        "uri": "https://api.signalfx.com/v2/detector"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAHVTwW7bMAy95ysMnVJgCNohTbABG5ZuPXTo0GJpMRTLMNAy7XCRLYGSgiZF/n2ybKe1tx7Fx0fykU9PoyQR4N1aM+0x+8HkkK1I3idPAQmYQyjj+2fy600T8rZNCaEQOdRhIRnBYVaHz87nb6ez+XQ+m51Pn0HNNSg+K29vl/vFw2IhGtBbp8tb1gbZETbN26oZWslkHOkqkhsGxTbi8urrFm/UQnaVFKSovqPVyteMWKnySrWgdfcme33IFwkXu/+PqrTcNPQclMUYK+HxCyrY9ZpVUGIskTNUkqzUv3Mm4KaM3iJ/u1teU0muX8yA3ECBS4OScpJwlNEqN6wLhvIOHyMx7MehdOMwNIxXQho/CcoV7SNxJU6Sj8m709Ozk4nxqSK7HscVfVgN5wqpTQP2CtvbtgYYnKCTmHTNr+uKr2qt08hCqgZrq3ekXV9j17J23c40+7ssgVRbKcQxPnvNJrHZJ6NVsO4kGNkXa6cQMuSJ5kJE6uFoXgNhf2HwaPcLne0Gonr40qd/gsRBCvsq1Xpzz2oAWAyHJdeY56rKdbcCR6ZLHR2HEQ6Klz/rn68WaCXudYU9a23JeuhOfGN6Rh8d/gJhDVvI0AMAAA==",
+          "encoding": null,
+          "string": ""
+        },
+        "headers": {
+          "Cache-Control": [
+            "no-cache, no-store, must-revalidate, no-transform"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "472"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 30 Oct 2019 20:31:16 GMT"
+          ],
+          "Expires": [
+            "0"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/detector"
+      }
+    },
+    {
+      "recorded_at": "2019-10-30T20:31:19",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.22.0"
+          ],
+          "X-SF-Token": [
+            "<SFX_TOKEN>"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/detector?name=francisco_friar"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAH1T22rbQBB991eIfXIgGKc4dlpIqdPmISUlIU4ooS5ltBrJW4+0y15M7OB/72p1cWS11ZvOmds5O/M6iCLGpSssiz5EZ6flr0bjyJoS+BG9esRj4OxKarHD5LsWFnVgK86zFiGv43+eNqAzdZgHA7avKMY1gsUkNDyfvZtMZ5PZdHo+eUtLXdLsMzlzv9jNn+dz1tDOWJnfa6lQW4HVIG3tBA3XQlkhi1CgyRKhHbu++brBO5rzQz2CGOkBjSRXZnWFpRoKLgyXv1ItIMw0Hfuvo4fA2CeV9DVdzC76IVfbfykjyddViRTIYI3m8PIFCUJW4YhquIAcQ6HjEWteblB/e1zcilzY45IK+BoyXCjkIhUcWt2tXUrLTEP+iC8h2dtqkduhFwDDJePKjbxZJHYhdclOoo/R+/H47GSkXEzCrIbB1cvl8XQ+tGmhHWFnx/qvd5AbNSPclnX/o7sMFAZi6hlZeiZtV++hdbnEW1U5ep2DoLaeZzAAnaaj0PSTkuSvYeRvw2UrSwgJ6pHUGauT92/uQYF31IsIV3Qlk21PYidi4eLfXnAvSLsilnL9pKlHGfSPLmy1YDdFKg+mWKGa8EFnMGYh657uX67Zp+e4kwUeLeFGGAfNGtyp1te6jW8y2P8BCm05jGIEAAA=",
+          "encoding": null,
+          "string": ""
+        },
+        "headers": {
+          "Cache-Control": [
+            "no-cache, no-store, must-revalidate, no-transform"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "503"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 30 Oct 2019 20:31:19 GMT"
+          ],
+          "Expires": [
+            "0"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/detector?name=francisco_friar"
+      }
+    },
+    {
+      "recorded_at": "2019-10-30T20:31:20",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Length": [
+            "0"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.22.0"
+          ],
+          "X-SF-Token": [
+            "<SFX_TOKEN>"
+          ]
+        },
+        "method": "DELETE",
+        "uri": "https://api.signalfx.com/v2/detector/EIJveOlAcAA"
+      },
+      "response": {
+        "body": {
+          "encoding": null,
+          "string": ""
+        },
+        "headers": {
+          "Cache-Control": [
+            "no-cache, no-store, must-revalidate, no-transform"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Date": [
+            "Wed, 30 Oct 2019 20:31:20 GMT"
+          ],
+          "Expires": [
+            "0"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 204,
+          "message": "No Content"
+        },
+        "url": "https://api.signalfx.com/v2/detector/EIJveOlAcAA"
+      }
+    },
+    {
+      "recorded_at": "2019-10-30T20:31:23",
+      "request": {
+        "body": {
+          "encoding": "utf-8",
+          "string": ""
+        },
+        "headers": {
+          "Accept": [
+            "*/*"
+          ],
+          "Accept-Encoding": [
+            "gzip, deflate"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "User-Agent": [
+            "python-requests/2.22.0"
+          ],
+          "X-SF-Token": [
+            "<SFX_TOKEN>"
+          ]
+        },
+        "method": "GET",
+        "uri": "https://api.signalfx.com/v2/detector?name=francisco_friar"
+      },
+      "response": {
+        "body": {
+          "base64_string": "H4sIAAAAAAAAAKvmUlBQSs4vzStRUrBSMNABcYtSi0tzSopBAtEKsVy1APL4sYckAAAA",
+          "encoding": null,
+          "string": ""
+        },
+        "headers": {
+          "Cache-Control": [
+            "no-cache, no-store, must-revalidate, no-transform"
+          ],
+          "Connection": [
+            "keep-alive"
+          ],
+          "Content-Encoding": [
+            "gzip"
+          ],
+          "Content-Length": [
+            "51"
+          ],
+          "Content-Type": [
+            "application/json"
+          ],
+          "Date": [
+            "Wed, 30 Oct 2019 20:31:23 GMT"
+          ],
+          "Expires": [
+            "0"
+          ],
+          "Strict-Transport-Security": [
+            "max-age=7776000"
+          ],
+          "Vary": [
+            "Accept-Encoding, User-Agent"
+          ],
+          "X-Content-Type-Options": [
+            "nosniff"
+          ]
+        },
+        "status": {
+          "code": 200,
+          "message": "OK"
+        },
+        "url": "https://api.signalfx.com/v2/detector?name=francisco_friar"
+      }
+    }
+  ],
+  "recorded_with": "betamax/0.8.1"
+}
