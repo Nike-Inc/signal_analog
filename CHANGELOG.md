@@ -1,3 +1,9 @@
+## 2.9.1 (2019-10-30)
+
+* Resources have learned that deleting nothing results in nothing, and will
+stop complaining about this scenario (it will still register it's displeasure
+in a debug log message)
+
 ## 2.9.0 (2019-09-26)
 
 * Added `BigPandaNotification` for BigPanda integration within detectors.
