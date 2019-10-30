@@ -51,7 +51,7 @@ setup(
     author="Fernando Freire",
     author_email='fernando.freire@nike.com',
     url='https://github.com/Nike-inc/signal_analog',
-    packages=find_packages(include=['signal_analog']),
+    packages=find_packages(exclude=['tests']),
     include_package_data=True,
     install_requires=requirements,
     zip_safe=False,

@@ -18,6 +18,8 @@ from signal_analog.errors import ResourceMatchNotFoundError, \
     SignalAnalogError
 from signal_analog.filters import DashboardFilters, FilterVariable, FilterSource, FilterTime
 
+import signal_analog.error.signalfx as sfxerr
+
 
 # Method to capture stdout
 @contextmanager
@@ -948,7 +950,7 @@ def test_dashboard_create_with_dashboard_group_id_success(sfx_recorder, session,
 
 
 def test_dashboard_create_with_invalid_dashboard_group_id_failure(session, chart):
-    with pytest.raises(RuntimeError):
+    with pytest.raises(sfxerr.SignalFxError):
         Dashboard(session=session)\
             .with_name('testy mctesterson')\
             .with_api_token('foo')\

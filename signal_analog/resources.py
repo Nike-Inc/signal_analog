@@ -8,6 +8,8 @@ from signal_analog import debug
 from signal_analog.errors import ResourceMatchNotFoundError, \
     ResourceHasMultipleExactMatchesError, ResourceAlreadyExistsError
 
+import signal_analog.error.signalfx as sfxerr
+
 # py2/3 compatibility hack so that we can consistently handle JSON errors.
 try:
     from simplejson.decoder import JSONDecodeError
@@ -194,8 +196,13 @@ class Resource(object):
                       "empty id"
                 click.echo(msg.format(str(self.__class__.__name__)))
                 sys.exit(1)
-            # Tell the user exactly what went wrong according to SignalFX
-            raise RuntimeError(error.response.text)
+            elif response.status_code == 404:
+                raise sfxerr.ResourceNotFound(endpoint)
+            elif response.status_code == 401:
+                raise sfxerr.Unauthorized()
+            else:
+                # Tell the user exactly what went wrong according to SignalFX
+                raise sfxerr.SignalFxError(error.response.text)
         except JSONDecodeError:
             # Some responses from the API don't return anything, in these
             # situations we shouldn't either
@@ -337,9 +344,14 @@ class Resource(object):
             return self.__action__(
                 'get', self.endpoint + '/' + rid, lambda x: None)
         else:
-            return self.__action__(
+            result = self.__action__(
                 'get', self.endpoint, lambda x: None,
-                params={'name': self.__get__('name')})['results'][0]
+                params={'name': self.__get__('name')})['results']
+
+            if len(result) == 0:
+                raise sfxerr.ResourceNotFound(self.endpoint)
+            else:
+                return result[0]
 
     def delete(self, resource_id=None):
         """Delete the given resource in the SignalFx API.
@@ -354,9 +366,15 @@ class Resource(object):
                 'delete', self.endpoint + '/' + rid,
                 lambda x: None)
         else:
-            return self.__action__(
-                'delete', self.endpoint + '/' + self.read()['id'],
-                lambda x: None)
+            try:
+                sfx_id = self.read()['id']
+
+                return self.__action__(
+                    'delete', self.endpoint + '/' + sfx_id,
+                    lambda x: None)
+            except sfxerr.ResourceNotFound as err:
+                debug(err)
+                return None
 
     def clone(self, dashboard_id, dashboard_group_id, dry_run=False):
         """Default implementation for resource cloning.
