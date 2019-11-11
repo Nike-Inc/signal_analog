@@ -1,3 +1,7 @@
+## 2.9.2 (2019-11-11)
+
+* `StrArg` will only reject `None` instead of all falsey values, allowing `0` to be given as a value.
+
 ## 2.9.1 (2019-10-30)
 
 * Resources have learned that deleting nothing results in nothing, and will
