@@ -79,13 +79,13 @@ development.
 
         $ make lint
 
-6.  Commit your changes and push your branch to BitBucket:
+6.  Commit your changes and push your branch to GitHub:
 
         $ git add .
         $ git commit -m "Your detailed description of your changes."
         $ git push origin name-of-your-bugfix-or-feature
 
-7.  Submit a pull request through the BitBucket website.
+7.  Submit a pull request through the GitHub website.
 
 ## Pull Request Guidelines
 

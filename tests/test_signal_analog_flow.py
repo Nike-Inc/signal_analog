@@ -247,6 +247,11 @@ def test_percentile_happy():
     assert data.call_stack[0].args[0].arg == 99
 
 
+def test_above_happy_zero():
+    data = Data('foo').above(0)
+    assert data.call_stack[0].args[0].arg == 0
+
+
 @pytest.mark.parametrize("clazz", [Count, Mean, Mean_plus_stddev, Median, Min,
                                    Max, Size, Stddev, Sum, Variance])
 def test_transform_aggregation_happy(clazz):

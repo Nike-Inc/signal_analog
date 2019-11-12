@@ -792,7 +792,7 @@ class StrArg(object):
     def __init__(self, arg):
         """Base SignalFlow StrArg method class.
         """
-        if not arg:
+        if arg is None:
             raise Exception("Arg cannot be None.")
         self.arg = arg
 
