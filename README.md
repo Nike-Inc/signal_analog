@@ -485,6 +485,33 @@ detector = Detector()\
 The above example won't actually alert on anything until we add a `Rule`, which
 you can find examples for in the previous section.
 
+### Linking Charts to Existing Detectors
+
+To see a visualization of a Detector's status from within a chart, the `signal_analog.flow` module provides an Alert data stream that can create a signal flow statement. That statement can be appended to the charts Program object. In this example we assume a Detector was previously created and exists. To create the link we will need the detector id. One place to obtain the detector id is to navigate to the detector in the web user interface. The url will have the id in it. The url will look somehting like: https://app.signalfx.com/#/detector/v2/{detector_id}
+
+To refresh our memory, our previous chart example was:
+
+```python
+from signal_analog.combinators import And
+
+ts = Data('memory.utilization', filter=all_filters).publish()
+```
+
+We can append an additional alert data stream. Import Program and Alerts form the `signal_analog.flow` module. First we need to wrap the Data object in a Program object:
+
+```python
+ts_program = Program(ts)
+```
+
+Then we can create a new statement using an Alert object with the detector id, publish the stream, and append the new statement to our program:
+
+```python
+notifications = Alerts(detector_id).publish()
+ts_program.statements.append(notifications)
+```
+
+The alert should show as a green box around the chart if the Detector is not in Alarm.
+
 ### Using Flow and Combinator Functions In Formulas
 
 `signal_analog` also provides functions for combining SignalFlow statements
