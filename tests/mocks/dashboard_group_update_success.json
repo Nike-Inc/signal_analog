@@ -97,7 +97,7 @@
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"created\" : 1519837403765,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DXIz3LaAYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DXIz3LYAgAA\",\n  \"lastUpdated\" : 1519837403765,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX lol\",\n  \"teams\" : [\"original_team_id\"]\n}"
+          "string": "{\n  \"created\" : 1519837403765,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DXIz3LaAYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DXIz3LYAgAA\",\n  \"lastUpdated\" : 1519837403765,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX lol\",\n  \"teams\" : []\n}"
         },
         "headers": {
           "Connection": [
