@@ -5,7 +5,6 @@ except ImportError:
 
 import betamax
 import json
-import os
 import sys
 from contextlib import contextmanager
 
