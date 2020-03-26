@@ -3,6 +3,7 @@ try:
 except ImportError:
     from io import StringIO
 
+import betamax
 import json
 import sys
 from contextlib import contextmanager
@@ -803,7 +804,7 @@ def test_dashboard_create_with_filters_time_start_first_character_is_not_negativ
             .create()
 
 
-def test_dashboard_create_with_filters_time_start_unexpected_last_character_failure(chart):
+def test_dashboard_create_with_filters_time_start_unexpected_last_character_failure(session, chart):
     with pytest.raises(ValueError):
         time = FilterTime()\
             .with_start("-1z")\
@@ -1085,26 +1086,36 @@ def test_dashboard_group_create_interactive_failure(confirm, sfx_recorder, sessi
 
 
 def test_dashboard_group_update_success(sfx_recorder, session):
+    # Enforcing the request body helps to prevent a defect from being masked due to over-mocking
+    # the requests/responses.
+    with betamax.Betamax.configure() as config:
+        initial_cassette_options = config.default_cassette_options['match_requests_on']
+        config.default_cassette_options['match_requests_on'] = ['body', 'method', 'uri']
 
-    name = 'spaceX lol'
-    updated_name = 'updated_dashboard_group_name'
+        with sfx_recorder.use_cassette('dashboard_group_update_success',
+            serialize_with='prettyjson'):
+            name = 'spaceX lol'
+            updated_name = 'updated_dashboard_group_name'
+            updated_team_id = 'updated_team_id'
 
-    with sfx_recorder.use_cassette('dashboard_group_update_success',
-                                      serialize_with='prettyjson'):
+            dashboard_group = DashboardGroup(session=session)\
+                .with_name(name)\
+                .with_api_token('foo')
 
-        dashboard_group = DashboardGroup(session=session)\
-            .with_name(name)\
-            .with_api_token('foo')
+            create_result = dashboard_group.create()
 
-        create_result = dashboard_group.create()
+            update_result = dashboard_group\
+                .with_id(create_result['id'])\
+                .with_teams(updated_team_id)\
+                .update(name='updated_dashboard_group_name',
+                        description='updated_dashboard_group_description')
 
-        update_result = dashboard_group\
-            .with_id(create_result['id'])\
-            .update(name='updated_dashboard_group_name',
-                    description='updated_dashboard_group_description')
+            assert create_result['name'] == name
+            assert update_result['name'] == updated_name
+            assert updated_team_id in update_result['teams']
 
-        assert create_result['name'] == name
-        assert update_result['name'] == updated_name
+        with betamax.Betamax.configure() as config:
+            config.default_cassette_options['match_requests_on'] = initial_cassette_options
 
 
 def test_dashboard_group_update_failure(sfx_recorder, session):

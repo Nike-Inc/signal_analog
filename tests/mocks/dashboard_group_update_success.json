@@ -1,6 +1,5 @@
 {
-  "http_interactions": [
-    {
+  "http_interactions": [{
       "recorded_at": "2018-02-28T17:03:25",
       "request": {
         "body": {
@@ -98,7 +97,7 @@
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"created\" : 1519837403765,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DXIz3LaAYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DXIz3LYAgAA\",\n  \"lastUpdated\" : 1519837403765,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX lol\",\n  \"teams\" : [ ]\n}"
+          "string": "{\n  \"created\" : 1519837403765,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ \"DXIz3LaAYAA\" ],\n  \"description\" : \"\",\n  \"id\" : \"DXIz3LYAgAA\",\n  \"lastUpdated\" : 1519837403765,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"spaceX lol\",\n  \"teams\" : []\n}"
         },
         "headers": {
           "Connection": [
@@ -380,7 +379,7 @@
       "request": {
         "body": {
           "encoding": "utf-8",
-          "string": "{\"created\": 1519837403765, \"creator\": \"ClusPSzAYAA\", \"dashboards\": [\"DXIz3LaAYAA\"], \"description\": \"updated_dashboard_group_description\", \"id\": \"DXIz3LYAgAA\", \"lastUpdated\": 1519837403765, \"lastUpdatedBy\": \"ClusPSzAYAA\", \"name\": \"updated_dashboard_group_name\", \"teams\": []}"
+          "string": "{\"created\": 1519837403765, \"creator\": \"ClusPSzAYAA\", \"dashboards\": [\"DXIz3LaAYAA\"], \"description\": \"updated_dashboard_group_description\", \"id\": \"DXIz3LYAgAA\", \"lastUpdated\": 1519837403765, \"lastUpdatedBy\": \"ClusPSzAYAA\", \"name\": \"updated_dashboard_group_name\", \"teams\": [\"updated_team_id\"]}"
         },
         "headers": {
           "Accept": [
@@ -411,7 +410,7 @@
       "response": {
         "body": {
           "encoding": null,
-          "string": "{\n  \"created\" : 1519837403765,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ ],\n  \"description\" : \"updated_dashboard_group_description\",\n  \"id\" : \"DXIz3LYAgAA\",\n  \"lastUpdated\" : 1519837414408,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"updated_dashboard_group_name\",\n  \"teams\" : [ ]\n}"
+          "string": "{\n  \"created\" : 1519837403765,\n  \"creator\" : \"ClusPSzAYAA\",\n  \"dashboards\" : [ ],\n  \"description\" : \"updated_dashboard_group_description\",\n  \"id\" : \"DXIz3LYAgAA\",\n  \"lastUpdated\" : 1519837414408,\n  \"lastUpdatedBy\" : \"ClusPSzAYAA\",\n  \"name\" : \"updated_dashboard_group_name\",\n  \"teams\" : [\"updated_team_id\"]\n}"
         },
         "headers": {
           "Connection": [

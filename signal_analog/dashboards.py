@@ -178,7 +178,10 @@ class DashboardGroup(Resource):
 
         if 'id' in self.options or resource_id:
             dashboard_group = super(DashboardGroup, self).read(resource_id=resource_id)
+            # Preserving the teams configuration since the options gets overwritten when the dashboards are updated.
+            teams = self.options['teams']
             self.options = self.__update_dashboard_resources__(dashboard_group)
+            self.options['teams'] = teams
             return super(DashboardGroup, self).update(name=name, description=description, resource_id=resource_id)
         else:
             query_result = self.__find_existing_resources__()
@@ -194,7 +197,7 @@ class DashboardGroup(Resource):
                         "Updates the Dashboard Group named: \"{0}\". If it doesn't exist, will create a new one.  "
                         "API call being executed: \n"
                         "PUT {1} \nRequest Body: \n {2}".format(self.options['name'], (
-                                self.base_url + self.endpoint + '/' + self.options['id']), self.options))
+                            self.base_url + self.endpoint + '/' + self.options['id']), self.options))
                     return None
 
                 return super(DashboardGroup, self)\
@@ -497,7 +500,7 @@ class Dashboard(Resource):
                     click.echo("Updates the Dashboard named: \"{0}\". If it doesn't exist, will create a new one.  "
                                "API call being executed: \n"
                                "PUT {1} \nRequest Body: \n {2}".format(self.options['name'], (
-                                self.base_url + self.endpoint + '/' + dashboard['id']), dashboard))
+                                   self.base_url + self.endpoint + '/' + dashboard['id']), dashboard))
                     return None
 
                 try:
