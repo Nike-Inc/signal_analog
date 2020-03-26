@@ -1,3 +1,7 @@
+## 2.9.3 (2020-3-18)
+
+* Added `Alerts` in `signal_analog.flow` module to allow linking Detectors to Charts. 
+
 ## 2.9.2 (2019-11-11)
 
 * `StrArg` will only reject `None` instead of all falsey values, allowing `0` to be given as a value.

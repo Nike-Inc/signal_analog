@@ -3,10 +3,10 @@
 import pytest
 
 from signal_analog.flow import Program, Data, Filter, Op, When, Assign, Ref, \
-                               Top, KWArg, StrArg, Count, Mean, \
-                               Mean_plus_stddev, Median, Min, Max, Size, \
-                               Stddev, Sum, Variance, \
-                               AggregationTransformationMixin, Plot
+    Top, KWArg, StrArg, Count, Mean, \
+    Mean_plus_stddev, Median, Min, Max, Size, \
+    Stddev, Sum, Variance, \
+    AggregationTransformationMixin, Plot, Alerts
 from signal_analog.combinators import Mul, GT, Div
 from signal_analog.errors import \
     ProgramDoesNotPublishTimeseriesError
@@ -15,7 +15,7 @@ from hypothesis import given, settings
 from .generators import ascii, flows
 
 
-@pytest.mark.parametrize("value", [None, "", {'foo':'bar'}])
+@pytest.mark.parametrize("value", [None, "", {'foo': 'bar'}])
 def test_program_init_add_statement_invalid(value):
     """Ensure that neither Program's constructor nor add_statement allows
        non-statement values.
@@ -58,6 +58,7 @@ def test_find_label_published():
 
     assert program.find_label('A') == data
 
+
 def test_count_percentage_by_methods():
     # TODO consider making this test use dynamic fn calls to test all stream
     #      methods with the same signature.
@@ -66,29 +67,34 @@ def test_count_percentage_by_methods():
         .bottom(count=4, percentage=22.4, by=["env", "datacenter"])\
         .publish(label='A')
 
-    assert data.call_stack[0].args  == [KWArg("count", 3), KWArg("percentage", 22.3), KWArg("by", ["env", "datacenter"])]
-    assert data.call_stack[1].args  == [KWArg("count", 4), KWArg("percentage", 22.4), KWArg("by", ["env", "datacenter"])]
+    assert data.call_stack[0].args == [KWArg("count", 3), KWArg(
+        "percentage", 22.3), KWArg("by", ["env", "datacenter"])]
+    assert data.call_stack[1].args == [KWArg("count", 4), KWArg(
+        "percentage", 22.4), KWArg("by", ["env", "datacenter"])]
+
 
 def test_fill():
     data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
         .fill(value=42, duration="1m")\
-        .publish(label = 'a')
-    
-    assert data.call_stack[0].name =='fill'
+        .publish(label='a')
+
+    assert data.call_stack[0].name == 'fill'
     assert data.call_stack[0].args == [KWArg("value", 42), KWArg("duration", '1m')]
+
 
 def test_integrate():
     data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
         .integrate()\
-        .publish(label = 'a')
+        .publish(label='a')
 
     assert data.call_stack[0].name == 'integrate'
     assert data.call_stack[0].args == []
 
+
 def test_kpss():
     data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
         .kpss(over='1h')\
-        .publish(label = 'a')
+        .publish(label='a')
 
     assert data.call_stack[0].name == 'kpss'
     # mode should default to level
@@ -96,7 +102,7 @@ def test_kpss():
 
     data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
         .kpss(over='2m', mode='trend')\
-        .publish(label = 'a')
+        .publish(label='a')
 
     # should allow trend
     assert data.call_stack[0].args == [KWArg("over", '2m'), KWArg("mode", 'trend')]
@@ -108,10 +114,11 @@ def test_kpss():
     except ValueError as ve:
         assert str(ve) == 'kpss mode must be level|trend'
 
+
 def test_rateofchange():
     data = Data("cpu.utilization", filter=Filter('app', 'test-app'))\
         .rateofchange()\
-        .publish(label = 'a')
+        .publish(label='a')
 
     assert data.call_stack[0].name == 'rateofchange'
     assert data.call_stack[0].args == []
@@ -120,12 +127,13 @@ def test_rateofchange():
 def test_find_label_empty():
     assert Program().find_label('A') is None
 
+
 def test_op_combines_mul():
     data1 = Data('request.mean')\
         .publish(label='A')
     data2 = Data('request.count')\
         .publish(label='B')
-    muldata = Op(Mul(data1,data2))
+    muldata = Op(Mul(data1, data2))
     program = Program(muldata)
     assert program.statements[0] == muldata
 
@@ -170,6 +178,7 @@ def test_valid_publish_statements_multi():
         Data('foo').publish(label='foo')
     ).validate()
 
+
 def test_valid_publish_statements_plot_happy():
     Program(
         Plot('A', 'foo', fx=[Max()], label="lol")
@@ -177,6 +186,7 @@ def test_valid_publish_statements_plot_happy():
     Program(
         Plot('A', 'foo', fx=None, label="lol")
     ).validate()
+
 
 def test_valid_publish_statements_assign_happy():
     Program(
@@ -277,3 +287,10 @@ def test_transform_aggregation_not_stream_method():
 
     with pytest.raises(ValueError):
         Bar().check_pre_conditions()
+
+
+def test_alert_publish_happy():
+    data = Alerts('foo').publish(label='ok')
+    prog = Program(data)
+    prog.validate()
+    assert str(prog) == 'alerts(detector_id=\"foo\").publish(label=\"ok\")'
