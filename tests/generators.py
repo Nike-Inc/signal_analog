@@ -17,7 +17,8 @@ def ascii():
 def flows():
     return recursive(
         filters() | datas() | consts() | graphites() | newrelics(),
-        lambda children: whens() | detects())
+        lambda children: whens() | detects(),
+        max_leaves=5)
 
 
 @composite
