@@ -14,6 +14,7 @@ from signal_analog.detectors import EmailNotification, PagerDutyNotification, \
                                     SlackNotification, HipChatNotification, \
                                     ServiceNowNotification, \
                                     VictorOpsNotification, \
+                                    AmazonEventBridgeNotification, \
                                     WebhookNotification, TeamNotification, \
                                     TeamEmailNotification, Rule, Severity, \
                                     Time, TimeConfig, VisualizationOptions, \
@@ -112,6 +113,14 @@ def test_victorops_valid():
     assert n.options['type'] == 'VictorOps'
     assert n.options['credentialId'] == void
     assert n.options['routingKey'] == routing
+
+
+def test_amazoneventbridge_valid():
+    aeb_id = 'foo'
+    n = AmazonEventBridgeNotification(aeb_id)
+
+    assert n.options['type'] == 'AmazonEventBridge'
+    assert n.options['credentialId'] == aeb_id
 
 
 def test_webhook_valid():

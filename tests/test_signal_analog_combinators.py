@@ -82,6 +82,18 @@ def test_binary_combinator_gte(f, ff):
     assert str(comb.GTE(f, ff)) == "{0} >= {1}".format(str(f), str(ff))
 
 
+@given(flows(), flows())
+def test_binary_combinator_eq(f, ff):
+    """EQ combinator should always intersperse '==' in the elements."""
+    assert str(comb.EQ(f, ff)) == "{0} == {1}".format(str(f), str(ff))
+
+
+@given(flows(), flows())
+def test_binary_combinator_ne(f, ff):
+    """NE combinator should always intersperse '!=' in the elements."""
+    assert str(comb.NE(f, ff)) == "{0} != {1}".format(str(f), str(ff))
+
+
 @given(flows())
 def test_combinator_not(expr):
     """Not combinator should always prefix 'not' to its expression."""
