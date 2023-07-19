@@ -1,3 +1,8 @@
+## 2.10.0 (2023-7-19)
+
+* Added `AmazonEventBridgeNotification` for Amazon EventBridge integration within detectors.
+* Added combinators `EQ` (Equal) and `NE` (Not Equal).
+
 ## 2.9.3 (2020-3-18)
 
 * Added `Alerts` in `signal_analog.flow` module to allow linking Detectors to Charts. 
