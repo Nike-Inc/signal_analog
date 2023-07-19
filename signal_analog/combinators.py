@@ -99,6 +99,22 @@ class GTE(NAryCombinator):
         super(GTE, self).__init__('>=', left, right)
 
 
+class EQ(NAryCombinator):
+    """Equal combinator for comparing SignalFlow objects.
+    """
+
+    def __init__(self, left, right):
+        super(EQ, self).__init__('==', left, right)
+
+
+class NE(NAryCombinator):
+    """Not Equal combinator for comparing SignalFlow objects.
+    """
+
+    def __init__(self, left, right):
+        super(NE, self).__init__('!=', left, right)
+
+
 class Mul(NAryCombinator):
     """Multiplication combinator for performing math on SignalFlow objects.
     """
