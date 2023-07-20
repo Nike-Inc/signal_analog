@@ -180,6 +180,27 @@ class VictorOpsNotification(Notification):
         }
 
 
+class AmazonEventBridgeNotification(Notification):
+    """An Amazon EventBridge notification for detector rules."""
+
+    def __init__(self, aeb_id):
+        """Initializes a new Amazon EventBridge notification.
+
+        This does not set up a Amazon EventBridge integration for you, one must already
+        exist before using this notification type. No validation is done to
+        ensure that a Amazon EventBridge integration id is valid.
+
+        Arguments:
+            aeb_id: the Amazon EventBridge integration id to use
+        """
+        util.assert_valid(aeb_id)
+
+        self.options = {
+            'type': 'AmazonEventBridge',
+            'credentialId': aeb_id
+        }
+
+
 class WebhookNotification(Notification):
     """A Webhook notification for detector rules."""
 

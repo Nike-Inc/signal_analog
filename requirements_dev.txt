@@ -5,8 +5,7 @@ click
 coverage
 email_validator
 enum34
-# https://github.com/PyCQA/pycodestyle/issues/728
--e git+https://gitlab.com/pycqa/flake8@9631dac5#egg=flake8
+flake8
 hypothesis
 mock
 pytest

@@ -11,13 +11,14 @@ def ascii():
     return text(
         characters(min_codepoint=1, max_codepoint=128,
                    blacklist_categories=['Cc', 'Cs']),
-        min_size=1)
+        min_size=1, max_size=5)
 
 
 def flows():
     return recursive(
         filters() | datas() | consts() | graphites() | newrelics(),
-        lambda children: whens() | detects())
+        lambda children: whens() | detects(),
+        max_leaves=5)
 
 
 @composite
