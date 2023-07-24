@@ -1,3 +1,7 @@
+## 2.10.1 (2023-7-24)
+
+* Added `auto_resolve_after` parameter in `Detect` class.
+
 ## 2.10.0 (2023-7-19)
 
 * Added `AmazonEventBridgeNotification` for Amazon EventBridge integration within detectors.
