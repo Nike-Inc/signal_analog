@@ -78,7 +78,8 @@ def detects(draw):
     on = draw(flows())
     off = draw(ascii())
     mode = draw(sampled_from(["paired", "split"]))
-    return flow.Detect(on, off=off, mode=mode)
+    auto_resolve_after = draw(ascii())
+    return flow.Detect(on, off=off, mode=mode, auto_resolve_after=auto_resolve_after)
 
 
 @composite
