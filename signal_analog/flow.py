@@ -992,8 +992,8 @@ class Union(Function):
 
 class Detect(Function):
 
-    def __init__(self, on, off=None, mode=None):
-        """Creates a  object.
+    def __init__(self, on, off=None, mode=None, auto_resolve_after=None):
+        """Creates an object.
 
         A 'detect' object is used to create events when a  condition is met
         and when it clears. These events can be used to notify people of when
@@ -1003,18 +1003,22 @@ class Detect(Function):
         Arguments:
             on: Data when expression that will fire an event with the status "anomalous".
             off: Data when expression that will fire an event with the status "ok". If not specified then the 'off' is
-            equivalent to not on
+                 equivalent to not on
             mode: String mode of the detector
 
-                    paired - both on and off conditions are always evaluated simultaneously. The alert is raised if on
-                    is true and off is false, and the alert is cleared if the off is true and on is false.
+                    paired: both on and off conditions are always evaluated simultaneously. The alert is raised if on
+                            is true and off is false, and the alert is cleared if the off is true and on is false.
 
-                    split - the on condition is evaluated only if there is no alert, and the alert is raised when the
-                    on condition evaluates to true. The off condition is only evaluated when the alert is raised, and
-                    the alert is cleared when the off condition evaluates to true.
+                    split: the on condition is evaluated only if there is no alert, and the alert is raised when the
+                           on condition evaluates to true. The off condition is only evaluated when the alert is raised, and
+                           the alert is cleared when the off condition evaluates to true.
+            auto_resolve_after: After any input data stream stops receiving data points for the specified duration,
+                                the detector clears active alerts.
         """
         super(Detect, self).__init__("detect")
-        self.args = [Arg(on), KWArg("off", off), KWArg("mode", mode)]
+        self.args = [Arg(on),
+                     KWArg("off", off), KWArg("mode", mode),
+                     KWArg("auto_resolve_after", auto_resolve_after)]
 
 
 class Op(Function):
