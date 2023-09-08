@@ -2,8 +2,7 @@
 # signal_analog
 
 A [`troposphere`](https://github.com/cloudtools/troposphere)-inspired library
-for programmatic, declarative definition and management of SignalFx Charts,
-Dashboards, and Detectors.
+for programmatic, declarative definition and management of SignalFx Charts, Dashboards, and Detectors.
 
 This library assumes a basic familiarity with resources in SignalFx. For a
 good overview of the SignalFx API consult the [upstream documentation][sfxdocs].
@@ -59,7 +58,7 @@ pip install -r requirements.txt
 ## Usage
 
 `signal_analog` provides two kinds of abstractions, one for building resources
-in the SignalFx API and the other for describing metric timeseries through the
+in the SignalFx API and the other for describing metric time series through the
 [Signal Flow DSL][signalflow].
 
 The following sections describe how to use `Resource` abstractions in
@@ -73,15 +72,15 @@ conjunction with the [Signal Flow DSL][signalflow].
 Consult the [upstream documentation][charts] for more information Charts.
 
 Let's consider an example where we would like to build a chart to monitor
-memory utilization for a single applicaton in a single environment.
+memory utilization for a single application in a single environment.
 
-This assumes a service reports metrics for application name as `app` and
+Our example assumes a service reports the metrics for application name as `app` and
 environment as `env` with memory utilization reporting via the
 `memory.utilization` metric name.
 
-In a timeseries chart, all data displayed on the screen comes from at least one
+In a time series chart, all data displayed on the screen comes from at least one
 `data` definition in the SignalFlow language. Let's begin by defining our
-timeseries:
+time series:
 
 ```python
 from signal_analog.flow import Data
@@ -89,22 +88,20 @@ from signal_analog.flow import Data
 ts = Data('memory.utilization')
 ```
 
-In SignalFlow parlance a timeseries is only displayed on a chart if it has been
-"published". All stream functions in SignalFlow have a `publish` method that
-may be called at the _end_ of all timeseries transformations.
+In SignalFlow terminology, a time series is only displayed on a chart if it has been
+"published".  All stream functions in SignalFlow have a `publish` method that may be called at the _end_ of a time series transformation.
 
 ```python
 ts = Data('memory.utilization').publish()
 ```
 
 As a convenience, all transformations on stream functions return the callee,
-so in the above example `ts` remains bound to an instance of `Data`.
+so in the above example, `ts` remains bound to an instance of `Data`.
 
-Now, this timeseries isn't very useful by itself; if we attached this program
-to a chart we would see _all_ timeseries for _all_ [Riposte] applications
+Now, this time series isn't super useful by itself; if we attached this program to a chart, we would see _all_ time series for _all_ [Riposte] applications
 reporting to SignalFx!
 
-We can restrict our view of the data by adding a filter on application name:
+We can restrict our view of the data by adding a filter on the application name:
 
 ```python
 from signal_analog.flow import Data, Filter
@@ -114,9 +111,9 @@ app_filter = Filter('app', 'foo')
 ts = Data('memory.utilization', filter=app_filter).publish()
 ```
 
-Now if we created a chart with this program we would only be looking at metrics
-that relate to the `foo` application. Much better, but we're still
-looking at instance of `foo` _regardless_ of the environment it
+If we created a chart with this program, we would only be looking at metrics
+related to the `foo` application. Much better, but we're still
+looking at an instance of `foo` _regardless_ of the environment it
 lives in.
 
 What we'll want to do is combine our `app_filter` with another filter for the
@@ -153,7 +150,7 @@ memory_chart = TimeSeriesChart().with_name('Memory Used %').with_program(ts)
 ```
 
 Each Chart understands how to serialize our SignalFlow programs appropriately,
-so it is sufficient to simply pass in our reference here.
+so it is sufficient to pass in only our reference here.
 
 Finally, let's change the plot type on our chart so that we see solid areas
 instead of flimsy lines:
@@ -169,7 +166,7 @@ memory_chart = TimeSeriesChart()\
 
 [Terrific]; there's only a few more details before we have a complete chart.
 
-In the following sections we'll see how we can create dashboards from
+In the following sections, we demonstrate creating a dashboard from a
 collections of charts.
 
 ### Building Dashboards
@@ -192,14 +189,14 @@ dash = Dashboard()
 ```
 
 Many of the same methods for charts are available on dashboards as well, so
-let's give our dashboard a memorable name and configure it's API token:
+let's give our dashboard a memorable name and configure its API token:
 
 ```python
 dash.with_name('My Little Dashboard: Metrics are Magic')\
     .with_api_token('my-api-token')
 ```
 
-Our final task will be to add charts to our dashboard and create it in the API!
+Our final task will be to add charts to the dashboard and create it in the API!
 
 ```python
 response = dash\
@@ -208,7 +205,7 @@ response = dash\
   .create()
 ```
 
-At this point one of two things will happen:
+At this point, one of two things will happen:
 
   - We receive some sort of error from the SignalFx API and an exception
   is thrown
@@ -225,7 +222,7 @@ response = dash\
   .create(group_id="asdf;lkj")
 ``` 
  
-Now, storing API keys in source isn't ideal, so if you'd like to see how you
+Now, storing API keys in the source isn't ideal, so if you'd like to see how you
 can pass in your API keys at runtime check the documentation below to see how
 you can [dynamically build a CLI for your resources](#cli-builder).
 
@@ -246,7 +243,7 @@ dash.update(
 
 ### Providing Dashboard Filters
 
-Dashboards can be configured to provide various filters that affect the behavior of all configured charts (overriding any conflicting filters at the chart level). You may wish to do this in order to quickly change the environment that you're observing for a given set of charts.
+Dashboards can be configured to provide various filters that affect all configured charts (overriding any conflicting filters at the chart level). You may wish to do this to quickly change the environment that you're observing for a given set of charts.
 
 
 ```python
@@ -293,8 +290,7 @@ response = dash\
 
 ### Dashboard Event Overlays and Selected Event Overlays
 
-To view events overlayed on your charts within a dashboard requires an event to be viewed, a chart with showEventLines
-enabled, and a dashboard with the correct eventOverlays settings (and selectedEventOverlays to show events by default).
+To view events overlayed on your charts within a dashboard requires a viewed event, a chart with `showEventLines` enabled, and a dashboard with the correct `eventOverlays` settings (and selectedEventOverlays to show events by default).
 
 Assuming that the events you would like to see exist; you would make a chart with showEventLines like so:
 
@@ -305,11 +301,11 @@ program = Data('cpu.utilization').publish()
 chart = TimeSeriesChart().with_name('Chart With Event Overlays')\
     .with_program(program).show_event_lines(True)
 ```
-With our chart defined, we are ready to prepare our event overlays and selected event overlays for the dashboard.
-First we define the event signals we would like to match. In this case, we will look for an event named "test" (include
- leading and/or trailing asterisks as wildcards if you need partial matching).
-Next we use those event signals to create our eventOverlays, making sure to include a color index for our event's symbol,
-and setting event line to True.
+We are ready to prepare our event overlays and selected event overlays for the dashboard with our chart defined.
+First, we define the event signals we would like to match. In this case, we will look for an event named "test" (include either or both
+ leading and trailing asterisks as wildcards if you need partial matching).
+Next, we use those event signals to create our eventOverlays, making sure to include a color index for our event's symbol,
+and setting the event line to `True`.
 We also pass our event signals along to the selectedEventOverlays, which will tell the dashboard to display matching
 events by default.
 
@@ -348,8 +344,8 @@ if __name__ == '__main__':
 
 ### Creating Detectors
 
-`signal_analog` provides a means of managing the lifecycle of `Detectors` in
-the `signal_analog.detectors` module. As of `v0.21.0` only a subset of
+`signal_analog` provides a means of managing the `Detectors` lifecycle in
+the `signal_analog.detectors` module. As of `v0.21.0`, only a subset of
 the full Detector API is supported.
 
 Consult the [upstream documentation][detectors] for more information about
@@ -388,7 +384,7 @@ With our name and program in hand, it's time to build up an alert rule that we
 can use to notify our teammates:
 
 ```python
-# We provide a number of notification strategies in the detectors module.
+# We provide several notification strategies in the detectors module.
 from signal_analog.detectors import EmailNotification, Rule, Severity
 
 info_rule = Rule()\
@@ -405,16 +401,16 @@ detector.with_api_token('foo').create()
 # section below.
 ```
 
-To add multiple alerting rules we would need to use different `detect`
+To add multiple alerting rules, we would need to use different `detect`
 statements with distinct `label`s to differentiate them from one another.
 
 #### Detectors that Combine Data Streams
 
 More complex detectors, like those created as a function of two other data
-streams, require a more complex setup including data stream assignments.
-If we wanted to create a detector that watched for an average above a certain
-threshold, we may want to use the quotient of the sum() of the data and the
-count() of the datapoints over a given period of time.
+streams require a more complex setup, including data stream assignments.
+If we wanted to make a detector that watched for an average above a certain
+threshold, we may wish to use the quotient of the sum() of the data and the
+count() of the data points over a given interval.
 
 ```python
 from signal_analog.flow import \
@@ -464,7 +460,7 @@ program = Program(Data('cpu.utilization').publish(label='A'))
 cpu_chart = TimeSeriesChart().with_name('Disk Utilization').with_program(program)
 ```
 
-In order to alert on this chart we'll use the `from_chart`  builder for
+To alert the chart, we'll use the `from_chart`  builder for
 detectors:
 
 ```python
@@ -482,12 +478,12 @@ detector = Detector()\
     )
 ```
 
-The above example won't actually alert on anything until we add a `Rule`, which
-you can find examples for in the previous section.
+The above example won't alert on anything until we add a `Rule`, which
+you can find examples in the previous section.
 
 ### Linking Charts to Existing Detectors
 
-To see a visualization of a Detector's status from within a chart, the `signal_analog.flow` module provides an Alert data stream that can create a signal flow statement. That statement can be appended to the charts Program object. In this example we assume a Detector was previously created. To create the link we will need the detector id. One place to obtain the detector id is to navigate to the detector in the web user interface. The url will have the id in it. The url has the form: https://app.signalfx.com/#/detector/v2/{detector_id}
+To see a visualization of a Detector's status from within a chart, the `signal_analog.flow` module provides an Alert data stream that can create a signal flow statement. That statement can be appended to the chart's Program object. In this example, we assume a Detector was previously created. To create the link, we will need the detector id. One place to obtain the detector id is to navigate to the detector in the web user interface. The URL will have the id in it. The URL has the form: https://app.signalfx.com/#/detector/v2/{detector_id}
 
 To refresh our memory, our data in the previous chart example was:
 
@@ -495,7 +491,7 @@ To refresh our memory, our data in the previous chart example was:
 ts = Data('memory.utilization', filter=all_filters).publish()
 ```
 
-We can append an additional alert data stream. Import Program and Alerts form the `signal_analog.flow` module. First we need to wrap the Data object in a Program object:
+We can append an additional alert data stream. Import Program and Alerts form the `signal_analog.flow` module. First, we need to wrap the Data object in a Program object:
 
 ```python
 ts_program = Program(ts)
@@ -516,7 +512,7 @@ ts_program.statements.append(notifications)
                  .with_default_plot_type(PlotType.area_chart)
 ```
  
- By default the alert will show as a green box around the chart when the Detector is not in Alarm. The Detector can also be accessed from the bell icon in the upper right corner of the chart. 
+ By default, the alert will show as a green box around the chart when the Detector is not in Alarm. The Detector can also be accessed from the bell icon in the upper right corner of the chart. 
 
 ### Using Flow and Combinator Functions In Formulas
 
@@ -555,7 +551,7 @@ the Dashboard Groups API.
 Building on the examples described in the previous section, we'd now like to
 build a dashboard group containing our dashboards.
 
-First, lets build a couple of Dashboard objects similar to how we did it in
+First, let us build a couple of Dashboard objects similar to how we did it in
 the `Building Dashboards` example:
 
 ```python
@@ -567,7 +563,7 @@ dash1 = Dashboard().with_name('My Little Dashboard1: Metrics are Magic')\
 dash2 = Dashboard().with_name('My Little Dashboard2: Metrics are Magic')\
     .with_charts(memory_chart)
 ```
-**Note: we do not create Dashboard objects ourselves, the DashboardGroup object
+**Note: we do not create Dashboard objects ourselves; the DashboardGroup object
 is responsible for creating all child resources.**
 
 Many of the same methods for dashboards are available on dashboard groups as
@@ -580,7 +576,7 @@ dg.with_name('My Dashboard Group')\
     .with_api_token('my-api-token')
 ```
 
-Our final task will be to add dashboard to our dashboard group and create it
+Our final task will be to add a dashboard to our dashboard group and create it
 in the API!
 
 ```python
@@ -590,7 +586,7 @@ response = dg\
     .create()
 ```
 
-Now, storing API keys in source isn't ideal, so if you'd like to see how you
+Now, storing API keys in the source isn't ideal, so if you'd like to see how you
 can pass in your API keys at runtime check the documentation below to see how
 you can [dynamically build a CLI for your resources](#cli-builder).
 
@@ -615,13 +611,13 @@ dg.with_api_token('my-api-token').with_dashboards(dash1, dash2).update()
 
 ### Talking to the SignalFlow API Directly
 
-If you need to process SignalFx data outside the confince of the API it may be
+If you need to process SignalFx data outside the API's confines, it may be
 useful to call the SignalFlow API directly. Note that you may incur time
-penalties when pulling data out depending on the source of the data
+penalties when pulling data out depending on the data source
 (e.g. AWS/CloudWatch).
 
-SignalFlow constructs are contained in the `flow` module. The following is an
-example SignalFlow program that monitors an API services (like [Riposte])
+SignalFlow constructs reside in the `flow` module. The following is an
+example SignalFlow program that monitors an API service (like [Riposte])
 RPS metrics for the `foo` application in the `test` environment.
 
 ```python
@@ -634,7 +630,7 @@ program = Data('requests.count', filter=all_filters)).publish()
 ```
 
 You now have an object representation of the SignalFlow program. To take it for
-a test ride you can use the official SignalFx client like so:
+a test ride, you can use the official SignalFx client like so:
 
 ```python
 # Original example found here:
@@ -663,17 +659,17 @@ with signalfx.SignalFx().signalflow('MY_TOKEN') as flow:
 
 #### Charts Always Belong to Dashboards
 
-It is always assumed that a Chart belongs to an existing Dashboard. This makes
+We assume that a Chart belongs to an existing Dashboard making
 it easier for the library to manage the state of the world.
 
 #### Resource Names are Unique per Account
 
-In a `signal_analog` world it is assumed that all resource names are unique.
-That is, if we have two dashboards 'Foo Dashboard', when we attempt to update
+In a `signal_analog` world, it is assumed that all resource names are unique.
+That is, if we have two dashboards, 'Foo Dashboard' when we attempt to update
 _either_ dashboard via `signal_analog` we expect to see errors.
 
-Resource names are assumed to be unique in order to simplify state management
-by the library itself. In practice we have not found this to be a major
+Resource names are assumed to be unique to simplify state management
+by the library itself. In practice, we have not found this to be a significant
 inconvenience.
 
 #### Configuration is the Source of Truth
@@ -684,7 +680,7 @@ local configuration.
 
 #### Only "CCRUD" Methods Interact with the SignalFx API
 
-`Resource` objects contain a number of builder methods to enable a "fluent" API
+`Resource` objects contain many builder methods to enable a "fluent" API
 when describing your project's dashboards in SignalFx. It is assumed that these
 methods do not perform state-affecting actions in the SignalFx API.
 
@@ -693,7 +689,7 @@ state of your resources in SignalFx.
 
 ### Creating a CLI for your Resources
 
-`signal_analog` provides builders for fully featured command line clients that
+`signal_analog` provides builders for fully-featured command-line clients that
 can manage the lifecycle of sets of resources.
 
 #### Simple CLI integration
@@ -726,11 +722,11 @@ Assuming we called this `dashboards.py` we could run it in one of two ways:
   - Give the script execution rights and run it directly
   (typically `chmod +x dashboards.py`)
       - `./dashboards.py --api-key mykey update`
-  - Pass the script in to the Python executor
+  - Pass the script into the Python executor
       - `python dashboards.py --api-key mykey update`
 
-If you want to know about the available actions you can take with your new
-CLI you can always the `--help` command.
+If you want to know about the available actions, you can take with your new
+CLI, you can always use the `--help` command.
 
 ```shell
 ./dashboards.py --help
@@ -740,12 +736,12 @@ This gives you the following features:
   - Consistent resource management
       - All resources passed to the CLI builder can be updated with one
       `update` invocation, rather than calling the `update()` method on each
-      resource indvidually
+      resource individually
   - API key handling for all resources
       - Rather than duplicating your API key for each resource, you can instead
       invoke the CLI with an API key
       - This also provides a way to supply keys for users who don't want to
-      store them in source control (that's you! don't store your keys in
+      store them in source control (that's you! don't store keys in
       source control)
 
 ## Documentation
